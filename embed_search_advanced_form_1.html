@@ -1,0 +1,127 @@
+<div id="page_searchcomplex_include_content" class="page_content container-max-md px-0">
+    <div class="page-searchcomplex__container-inner page-content__container-inner">
+        {{ start_form }}
+        {{ start_script }}
+        {{ main_form_start }}
+
+        <div id="page_searchcomplex_word" class="form-group form-group-lg">
+            <label class="form-label">{{ text.search_expression }}</label>
+            <input name="search" id="searchcomplex_input" placeholder="{{ text.expression|lower }}" type="search" class="form-control" value="{{ search_word_value }}" maxlength="255" />
+        </div>
+
+        <fieldset id="page_searchcomplex_type" class="form-group form-group-lg">
+            <legend class="form-label">{{ text.search_type }}</legend>
+            <div class="custom-control custom-radio">
+                <input class="custom-control-input" id="searchcomplex__type-and" name="type" type="radio" value="2" {% if search_type_value == 2 %}checked='checked'{% endif %} />
+                <label class="custom-control-label" for="searchcomplex__type-and">{{ text.search_type_and }}</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input class="custom-control-input" id="searchcomplex__type-or" name="type" type="radio" value="1" {% if search_type_value == 1 %}checked='checked'{% endif %} />
+                <label class="custom-control-label" for="searchcomplex__type-or">{{ text.search_type_or }}</label>
+            </div>
+        </fieldset>
+
+        <fieldset id="page_searchcomplex_in" class="form-group form-group-lg">
+            <legend class="form-label">{{ text.search_in_what }}</legend>
+            <div class="custom-control custom-checkbox">
+                <input name="w_nev" id="w_nev" class="custom-control-input" type="checkbox" value="1" {% if name_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_nev" class="custom-control-label">{{ text.search_in_name }}</label>
+            </div>
+            {% if search_in_sku %}
+            <div class="custom-control custom-checkbox">
+                <input name="w_cikk" id="w_cikk" class="custom-control-input" type="checkbox" value="1" {% if sku_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_cikk" class="custom-control-label">{{ text.search_in_sku }}</label>
+            </div>
+            {% endif %}
+            <div class="custom-control custom-checkbox">
+                <input name="w_rovleir" id="w_rovleir" class="custom-control-input" type="checkbox" value="1" {% if short_desc_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_rovleir" class="custom-control-label">{{ text.search_in_short_description }}</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input name="w_tulaj" id="w_tulaj" class="custom-control-input" type="checkbox" value="1" {% if long_desc_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_tulaj" class="custom-control-label">{{ text.search_product_details }}</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input name="w_link" id="w_link" class="custom-control-input" type="checkbox" value="1" {% if link_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_link" class="custom-control-label">{{ text.search_in_link }}</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input name="w_egyeb" id="w_egyeb" class="custom-control-input" type="checkbox" value="1" {% if variants_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_egyeb" class="custom-control-label">{{ text.search_in_variants }}</label>
+            </div>
+            {% if search_in_plus_data %}
+            <div class="custom-control custom-checkbox">
+                <input name="w_artdata" id="w_artdata" class="custom-control-input" type="checkbox" value="1" {% if plus_data_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_artdata" class="custom-control-label">{{ text.search_in_other_product_data }}</label>
+            </div>
+            {% endif %}
+            {% if search_in_params %}
+            <div class="custom-control custom-checkbox">
+                <input name="w_param" id="w_param" class="custom-control-input" type="checkbox" value="1" {% if params_checked %}checked='checked'{% endif %} onclick="func_in_what();" />
+                <label for="w_param" class="custom-control-label">{{ text.search_product_parameters }}</label>
+            </div>
+            {% endif %}
+        </fieldset>
+
+        <fieldset id="page_searchcomplex_cat" class="form-group form-group-lg">
+            {% if not cat_sub_selected %}
+                <label class="form-label" for="#cat_select_menu">{{ text.search_all_categories }}</label>
+            {% else %}
+                <div class="searchcomplex-cat-btns">
+                <button type="button" class="searchcomplex-cat-btn btn btn-text" onclick="func_cat_select(0);">{{ text.main_category }}</button>
+                {% if cat_sub_list is empty %}
+                </div>
+                {% endif %}
+            {% endif %}
+
+            {% for cat_sub in cat_sub_list %}
+                {% if cat_sub.id != "" %}
+                <button type="button" class="searchcomplex-cat-btn btn btn-text" onclick="func_cat_select({{ cat_sub.id }});">{{ cat_sub.name }}</button>
+                {% else %}
+                <span class="searchcomplex-cat-text">{{ cat_sub.name }}</span>
+                {% endif %}
+                {% if loop.last %}</div>{% endif %}
+            {% endfor %}
+
+            {% if cat_sub_exists %}
+            <div class="form-select-group{% if cat_sub_selected %} mt-3{% endif %}">
+                <select class="form-control" name="cat_select_menu" id="cat_select_menu" onchange="func_cat_select(document.form_searchcomplex.cat_select_menu.value);">
+                    <option value="" style="display:none;" selected="selected" disabled="disabled">{{ text.please_select }}</option>
+                    {% for option in cat_select_options %}
+                    <option value="{{ option.value }}">{{ option.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </fieldset>
+
+        <div class="form-row form-group form-group-lg">
+            <div class="col-sm">
+                <div id="page_searchcomplex_price_min" class="form-group">
+                    <label for="min_price">{{ text.search_minimum_price }}</label>
+                    <div class="input-group">
+                        <input name="min_price" placeholder="{{ text.search_minimum_price }}" id="min_price" type="number" class="form-control" value="{{ search_min_price }}" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">{{ money_type }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div id="page_searchcomplex_price_max" class="form-group">
+                    <label for="max_price">{{ text.search_maximum_price }}</label>
+                    <div class="input-group">
+                        <input name="max_price" placeholder="{{ text.search_maximum_price }}" id="max_price" type="number" class="form-control" value="{{ search_max_price }}" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">{{ money_type }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-sarchcomplex__search-btn-wrap form-group text-center">
+            <button type="button" class="page-sarchcomplex__search-btn btn btn-primary icon--a-search" onclick="search_submit();">{{ text.button_search }}</button>
+        </div>
+        {{ main_form_end }}
+    </div>
+</div>

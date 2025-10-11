@@ -1,0 +1,14 @@
+{% if element_disp %}
+[% set {{ name }} %]
+    {% for slide in slides %}
+        <div class="js-element title-box title-box-{{ name }}{% if theme == 'dark' %} theme-dark{% endif %}" data-element-name="{{ name }}">
+            <div class="title-box__inner">
+                <div class="title-box__title main-title">{{ slide.title }}</div>
+                {% if slide.html_disp %}
+                <div class="title-box__content">{{ slide.html }}</div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+[% endset %]
+{% endif %}

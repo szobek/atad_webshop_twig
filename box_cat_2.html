@@ -1,0 +1,22 @@
+{% if cats_disp %}
+<ul class="nav-list--{{ level }}">
+    {% for cat_item in cat_list %}
+    <li class="nav-item nav-item-{{ cat_item.id }} js-nav-item-{{ cat_item.id }}">
+        <a class="nav-link" href="{{ cat_item.url }}"{% if cat_item.target_blank %} target="_blank"{% endif %}
+           aria-label="{{ cat_item.name }} {{ text.category }}{% if cat_item.product_count_disp %} ({{ cat_item.product_count }} {{ text.piece }} {{ text.product }}){% endif %}"
+        >
+            <span class="nav-link__text">
+            {{ cat_item.name }}{% if cat_item.product_count_disp %}&nbsp;<span class="nav-item__count round-bracket-around">{{ cat_item.product_count }}</span>{% endif %}
+            </span>
+        </a>
+    </li>
+    {% endfor %}
+
+    {% if level_limit_exceeded %}
+    <li class="nav-item">
+        <a class="nav-link nav-item__all-cat" href="{{ parent_url }}">{{ text.more_categories }}</a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+

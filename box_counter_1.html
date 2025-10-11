@@ -1,0 +1,7 @@
+<div id="box_counter_content" class="box_content box--counter">
+    <div class="box-counter__numbers d-flex">
+        {% for number in numbers %}
+            <div class="box-counter__number">{{ number.value }}</div>
+        {% endfor %}
+    </div>
+</div>

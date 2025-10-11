@@ -1,0 +1,63 @@
+{% if products_disp %}
+    {% set img_width = backvar.main_img_maxwidth %}
+    {% set img_height = backvar.main_img_maxheight %}
+    {% set carousel_enabled = backvar.custom_carousel_enabled %}
+    {% set carousel_arrows = backvar.custom_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_carousel_nums %}
+    {% set carousel_dots = backvar.custom_carousel_dots %}
+
+    {{ start_script }}
+
+    {# fő oldali ajánló #}
+    {% if ref_source == "start" %}
+    <div class="start-artref start-block-small"
+        {% if animation_on_scroll == "1" and backvar.custom_aos != '0' %}
+            {% set temp_aos %}
+                {% if backvar.custom_aos != '' %}
+                    {{ backvar.custom_aos }}
+                {% else %}
+                    {{ animation_on_scroll_type }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            {% if backvar.custom_aos_duration != '' %}
+            data-aos-duration="{{ backvar.custom_aos_duration }}"
+            {% endif %}
+            {% if backvar.custom_aos_offset != '' %}
+            data-aos-offset="{{ backvar.custom_aos_offset }}"
+            {% endif %}
+            {% if backvar.custom_aos_delay != '' %}
+            data-aos-delay="{{ backvar.custom_aos_delay }}"
+            {% endif %}
+        {% endif %}
+    >
+        {% set prod_recomm_title = text.special_offers %}
+
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}{% endembed %}
+    </div>
+    {% else %}
+    {# ref_source values:
+    - not_found
+    - no_product
+    - page_content
+    - order_send
+    #}
+    {% if ref_source == "page_content" %}
+        {% if backvar.custom_page_content_carousel_enabled is same as("0") %}
+            {% set carousel_enabled = 0 %}
+        {% elseif backvar.custom_page_content_carousel_enabled is same as("1") %}
+            {% set carousel_enabled = 1 %}
+        {% endif %}
+    {% endif %}
+
+    <div class="page-content-artref main-block">
+        {% set prod_recomm_title = product_offer_visible_title %}
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}{% endembed %}
+    </div>
+    {% endif %}
+    <script>
+        $(document).ready(function() {
+            initTippy();
+        });
+    </script>
+{% endif %}

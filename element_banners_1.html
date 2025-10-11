@@ -1,0 +1,282 @@
+{% if element_disp %}
+    {% set hasImage = false %}  {# there is no slide yet that has an image #}
+    {% set tempCss %}
+        {% for slide in slides %}
+            {% if slide.img_default_disp %}
+                {% if hasImage != true %} {# the first slide that has an image for global formatting #}
+                    .{{ name }}__img-outer {
+                        max-width: 100%;
+                        max-height: 100%;
+                        margin: auto;
+                    }
+                    .{{ name }}__img-wrap {
+                        position: relative;
+                    }
+                    .{{ name }}__img-wrap img {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    }
+                    {% set hasImage = true %}
+                {% endif %}
+                .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-outer {
+                    width: {{ slide.img_default_width }}px;
+                }
+                .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                    padding-top: {{ (slide.img_default_height / slide.img_default_width * 100) }}%;
+                }
+                {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px) {
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-outer {
+                            width: {{ slide.img_large_width }}px;
+                        }
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                            padding-top: {{ (slide.img_large_height / slide.img_large_width * 100) }}%;
+                        }
+                    }
+                {% endif %}
+                {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px){
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-outer {
+                            width: {{ slide.img_medium_width }}px;
+                        }
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                            padding-top: {{ (slide.img_medium_height / slide.img_medium_width * 100) }}%;
+                        }
+                    }
+                {% endif %}
+                {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px){
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-outer {
+                            width: {{ slide.img_small_width }}px;
+                        }
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                            padding-top: {{ (slide.img_small_height / slide.img_small_width * 100) }}%;
+                        }
+                    }
+                {% endif %}
+
+                {# LOOP FOR TEXT LAYER STYLING #}
+                {% for text in slide.texts %}
+                    {% set tempTextContent = "" %}
+                    {% set tempTextContent %}
+                        {% if text.font_color_disp %}color:{{ text.font_color }};{% endif %}
+                        {% if text.bg_color_disp %}background-color:{{ text.bg_color }}; background:{{ text.bg_color }};{% endif %}
+                        {% if text.border_color_disp %}border-color:{{ text.border_color }};{% endif %}
+                        {% if text.border_style_disp and text.border_style !="none" %}border-style:{{ text.border_style }};{% endif %}
+                        {% if text.border_width_disp %}border-width:{{ text.border_width }};{% endif %}
+                    {% endset %}
+                    {% if tempTextContent|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+                        #{{ name }}_{{ text.id }} { {{ tempTextContent }} }
+                    {% endif %}
+                    {% if text.hover_disp %}
+                        #{{ name }}_{{ text.id }}:hover {
+                        {% if text.bg_color_hover_disp %}
+                            background-color:{{ text.bg_color_hover }};
+                            background:{{ text.bg_color_hover }};
+                        {% endif %}
+                        {% if text.font_color_hover_disp %}
+                            color:{{ text.font_color_hover }};
+                        {% endif %}
+                        }
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endset %}
+    {% if tempCss != "" %}
+        <style>{{ tempCss }}</style>
+    {% endif %}
+
+    {# create preload tags #}
+    {% for slide in slides|filter(slide => slide.num <= 2) %}
+        {# create an array for breakpoints that can be used to skip a given URL if it is equal to the previous URL #}
+        {% set bp_skip = {
+            'sm' : [slide.img_md_url, slide.img_lg_url, slide.img_default_url],
+            'md' : [slide.img_lg_url, slide.img_default_url],
+            'lg' : [slide.img_default_url]
+        } %}
+
+        {% set bp_array = [] %}
+
+        {%- for bp, value in common_vars.grid_breakpoints|reverse %}
+            {% set url = attribute(slide, "img_" ~ bp ~ "_url") %}
+            {% set disp = attribute(slide, "img_" ~ bp ~ "_disp") %}
+            {% set retina_disp = attribute(slide, "img_" ~ bp ~ "_retina_disp") %}
+            {% set retina_url = attribute(slide, "img_" ~ bp ~ "_retina_url") %}
+            {% set retina_ratio = _context[bp ~ "_retina_ratio"] ?? '2' %}
+
+            {% if disp and (bp_skip[bp] is not defined or url not in bp_skip[bp]) %}
+                <link rel="preload"
+                      media="{% if bp_array is not empty %}(min-width:{{ common_vars.grid_breakpoints[bp_array|last] }}px) and {% endif %}(max-width:{{ value - 0.02 }}px)"
+                      imagesrcset="{{ url }} 1x{% if retina_disp %}, {{ retina_url }} {{ retina_ratio }}x{% endif %}"
+                      href="{{ url }}"
+                      as="image"
+                      fetchpriority="high"
+                >
+                {% set bp_array = bp_array|merge([bp]) %}
+            {% endif %}
+        {% endfor -%}
+        <link rel="preload"{% if bp_array is not empty %} media="(min-width: {{ common_vars.grid_breakpoints[bp_array|last] }}px)"{% endif %} imagesrcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} {{ default_retina_ratio ?? '2' }}x{% endif %}"
+            href="{{ slide.img_default_url }}" as="image" fetchpriority="high"
+        >
+    {% endfor %}
+
+    [% set {{ name }} %]
+    {% if animation_on_scroll == "1" %}
+        {# get default aos animation type #}
+        {% set global_aos = animation_on_scroll_type %}
+
+        {# get default aos delay #}
+        {% set global_aos_delay = animation_on_scroll_delay %}
+
+        {# get default normal duration (slow/fast) #}
+        {% set global_aos_duration_text = animation_on_scroll_duration %}
+
+        {# get default multipliers for slow and fast duration #}
+        {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+        {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+        {% set aos_multiplier = 1 %}
+
+        {% if global_aos_duration_text == 'slow' %}
+            {% set aos_multiplier = global_slow_multiplier %}
+        {% elseif global_aos_duration_text == 'fast' %}
+            {% set aos_multiplier = global_fast_multiplier %}
+        {% endif %}
+    {% endif %}
+
+    <div id="{{ name }}" class="layout--{{ layout }} js-element {{ name }}{% if class != '' %} {{ class }}{% endif %}{% if main_title_disp %} has-title{% else %} no-title{% endif %}"
+             data-element-name="{{ name }}"{% if main_title_disp %} role="region" aria-label="{{ main_title }}"{% endif %}
+    >
+        <div class="{{ name }}__container{% if container_class != '' %} {{ container_class }}{% endif %}">
+            {% if main_title_disp %}
+            <div class="{{ name }}__main-title-wrap"
+                {% if animation_on_scroll == "1" and backvar.custom_aos_on_title != '0' %}
+                    {% set temp_aos_on_title %}
+                        {% if backvar.custom_aos_on_title != '' %}
+                            {{ backvar.custom_aos_on_title }}
+                        {% else %}
+                            {{ global_aos }}
+                        {% endif %}
+                    {% endset %}
+                    data-aos="{{ temp_aos_on_title|trim }}"
+                    data-aos-anchor="#{{ name }}"
+                    {% if backvar.custom_aos_duration_on_title != '' %}
+                        data-aos-duration="{{ backvar.custom_aos_duration_on_title }}"
+                    {% endif %}
+                    {% if backvar.custom_aos_offset_on_title != '' %}
+                        data-aos-offset="{{ backvar.custom_aos_offset_on_title }}"
+                    {% endif %}
+                    {% if backvar.custom_aos_delay_on_title != '' %}
+                        data-aos-delay="{{ backvar.custom_aos_delay_on_title }}"
+                    {% endif %}
+                {% endif %}
+            >
+                <div class="{{ name }}__main-title main-title">{{ main_title }}</div>
+            </div>
+            {% endif %}
+            <div class="{{ name }}__slides">
+                <div role="list" class="{% if grid_class != '' %} {{ grid_class }}{% endif %}">
+                    {% for slide in slides %}
+                    <div role="listitem" class="{{ name }}__slide element-slide{% if grid_col_class != '' %} {{ grid_col_class }}{% endif %}"
+                        {% if animation_on_scroll == "1" and backvar.custom_aos_on_slide != '0' %}
+                            {% set temp_aos_on_slide %}
+                                {% if backvar.custom_aos_on_slide != '' %}
+                                    {{ backvar.custom_aos_on_slide }}
+                                {% else %}
+                                    {{ global_aos }}
+                                {% endif %}
+                            {% endset %}
+                            data-aos="{{ temp_aos_on_slide|trim }}"
+                            {% set temp_aos_delay_on_slide %}
+                                {% if backvar.custom_aos_delay_on_slide != '' %}
+                                    {{ backvar.custom_aos_delay_on_slide }}
+                                {% else %}
+                                    {{ global_aos_delay }}
+                                {% endif %}
+                            {% endset %}
+
+                            {% set temp_aos_delay_between_title_and_slides %}
+                                {% if backvar.custom_aos_delay_between_title_and_slides != '' %}
+                                    {{ backvar.custom_aos_delay_between_title_and_slides }}
+                                {% else %}
+                                    {{ global_aos_delay }}
+                                {% endif %}
+                            {% endset %}
+                            {% if temp_aos_delay_on_slide|trim != '0' %}
+                            data-aos-delay="{{ (((temp_aos_delay_between_title_and_slides|trim * aos_multiplier) / 50|round) * 50) + ((((temp_aos_delay_on_slide|trim * aos_multiplier ) / 50|round) * 50) * loop.index0 ) }}"
+                            {% endif %}
+                            data-aos-anchor="#{{ name }}"
+                            {% if backvar.custom_aos_duration_on_slide != '' %}
+                            data-aos-duration="{{ backvar.custom_aos_duration_on_slide }}"
+                            {% endif %}
+                            {% if backvar.custom_aos_offset_on_slide != '' %}
+                            data-aos-offset="{{ backvar.custom_aos_offset_on_slide }}"
+                            {% endif %}
+                        {% endif %}
+                    >
+                        <div class="{{ name }}__slide-inner element-slide-inner {{ name }}--slide-{{ slide.num }}{% if slide.img_default_disp and slide.img_link_disp %} img-effect-on-hover{% endif %}">
+                            {% if slide.img_default_disp %}
+                            <div class="{{ name }}__img-outer">
+                                <div class="{{ name }}__img-wrap element-img-wrap">
+                                    {% if slide.img_link_disp %}
+                                    <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %} aria-hidden="true" tabindex="-1">
+                                    {% endif %}
+                                        <picture>
+                                            {# create an array for breakpoints that can be used to skip a given URL if it is equal to the previous URL #}
+                                            {% set bp_skip = {
+                                                'sm' : [slide.img_md_url, slide.img_lg_url, slide.img_default_url],
+                                                'md' : [slide.img_lg_url, slide.img_default_url],
+                                                'lg' : [slide.img_default_url]
+                                            } %}
+
+                                            {% set bp_array = [] %}
+
+                                            {%- for bp, value in common_vars.grid_breakpoints|reverse %}
+                                                {% set width = attribute(slide, "img_" ~ bp ~ "_width") %}
+                                                {% set height = attribute(slide, "img_" ~ bp ~ "_height") %}
+                                                {% set url = attribute(slide, "img_" ~ bp ~ "_url") %}
+                                                {% set disp = attribute(slide, "img_" ~ bp ~ "_disp") %}
+                                                {% set retina_disp = attribute(slide, "img_" ~ bp ~ "_retina_disp") %}
+                                                {% set retina_url = attribute(slide, "img_" ~ bp ~ "_retina_url") %}
+                                                {% set retina_ratio = _context[bp ~ "_retina_ratio"] ?? '2' %}
+
+                                                {% if disp and (bp_skip[bp] is not defined or url not in bp_skip[bp]) %}
+                                                    <source width="{{ width }}" height="{{ height }}"
+                                                          media="{% if bp_array is not empty %}(min-width:{{ common_vars.grid_breakpoints[bp_array|last] }}px) and {% endif %}(max-width:{{ value - 0.02 }}px)"
+                                                          srcset="{{ url }} 1x{% if retina_disp %}, {{ retina_url }} {{ retina_ratio }}x{% endif %}"
+                                                    >
+                                                    {% set bp_array = bp_array|merge([bp]) %}
+                                                {% endif %}
+                                            {% endfor -%}
+                                            <source{% if bp_array is not empty %} media="(min-width: {{ common_vars.grid_breakpoints[bp_array|last] }}px)"{% endif %} width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} {{ default_retina_ratio ?? '2' }}x{% endif %}">
+                                            <img{% if loop.index > 2 %} loading="lazy"{% else %} decoding="async" fetchpriority="high"{% endif %} src="{{ slide.img_default_url }}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}">
+                                        </picture>
+                                    {% if slide.img_link_disp %}
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if slide.title_disp %}
+                            <div class="{{ name }}__title element-slide-title">
+                                {% if slide.img_link_disp %}
+                                <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                                {% endif %}
+                                    {{ slide.title }}
+                                {% if slide.img_link_disp %}
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    [% endset %]
+{% endif %}

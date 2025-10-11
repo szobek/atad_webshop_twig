@@ -1,0 +1,506 @@
+<div id="page_contact_content" class="page-contact--2">
+    <div class="container">
+        <div class="row gutters-10">
+            <div class="col-xxl-6 mb-5">
+                <div class="order-mods-section__outer">
+                    <section class="page-contact__contact">
+                        <div class="contact__main-title" id="page_title_contact">{{ text.contact }}</div>
+
+                        {% if custom_content_contact_top_disp %}
+                        <div id="custom-sub-content-contact-top" class="custom-sub-content custom-sub-content--top">
+                            <div class="page_txt">{{ custom_content_contact_top }}</div>
+                        </div>
+                        {% endif %}
+
+                        <div class="page_contact_main_2 mb-4">
+                            {% if company_name_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 name">
+                                <div class="page-contact-label col-md-5">{{ text.company_name }}:</div>
+                                <div class="page-contact-value col-md-7">{{ company_name }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if address_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 addr">
+                                <div class="page-contact-label col-md-5">{{ text.address }}:</div>
+                                <div class="page-contact-value col-md-7">{{ address }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if shop_address_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 addr_shop">
+                                <div class="page-contact-label col-md-5">{{ text.personal_delivery }}:</div>
+                                <div class="page-contact-value col-md-7">{{ shop_address }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if opening_hours_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 opening_hours">
+                                <div class="page-contact-label col-md-5">{{ text.opening_hours }}:</div>
+                                <div class="page-contact-value col-md-7">
+                                    {% for day in open_days %}
+                                        <div class="row no-gutters my-2">
+                                            {% if day.closed %}
+                                                <div class="opening_hours_day col-6 col-sm-4 col-lg-5">{{ day.name }}:</div>
+                                                <div class="opening_hours_closed col-6 col">{{ text.closed }}</div>
+                                            {% endif %}
+                                            {% if day.holiday %}
+                                                <div class="opening_hours_day col-6 col-sm-4 col-lg-5">{{ day.name }}:</div>
+                                                <div class="opening_hours col-6 col">{{ day.holiday_date }} - {{ text.closed }}&nbsp;-&nbsp;{{ day.holiday_title }}</div>
+                                            {% endif %}
+                                            {% if day.workday %}
+                                                <div class="opening_hours_day col-6 col-sm-4 col-lg-5">{{ day.name }}:</div>
+                                                <div class="opening_hours col-6 col-sm">{{ day.open_hour }}&nbsp;-&nbsp;{{ day.close_hour }}</div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                    {% if order_only_open %}
+                                        <div id="order_in_opening_hours"><b>{{ text.order_only_in_opening_hours }}</b>
+                                            {% if order_before_open %}
+                                                <div id="order_time_before_open"><b>{{ order_time_before_open }}</b></div>
+                                            {% endif %}
+                                            {% if order_before_close %}
+                                                <div id="order_time_before_close"><b>{{ order_time_before_close }}</b></div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if phone_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 phone">
+                                <div class="page-contact-label col-md-5">{{ text.phone }}:</div>
+                                <div class="page-contact-value col-md-7"><a href="tel:{{ phone_number }}">{{ phone_number }}</a></div>
+                            </div>
+                            {% endif %}
+
+                            {% if fax_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 fax">
+                                <div class="page-contact-label col-md-5">{{ text.fax }}:</div>
+                                <div class="page-contact-value col-md-7">{{ fax }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if email_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 email">
+                                <div class="page-contact-label col-md-5">{{ text.email }}:</div>
+                                <div class="page-contact-value col-md-7"><a href="mailto:{{ email_address }}">{{ email_replaced }}</a></div>
+                            </div>
+                            {% endif %}
+
+                            {% if website_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 web">
+                                <div class="page-contact-label col-md-5">{{ text.website }}:</div>
+                                <div class="page-contact-value col-md-7"><a href="{{ website }}" target="_blank">{{ website }}</a></div>
+                            </div>
+                            {% endif %}
+
+                            {% if shopname_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 shopname">
+                                <div class="page-contact-label col-md-5">{{ shopname_title }}:</div>
+                                <div class="page-contact-value col-md-7">{{ shopname }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if vatnum_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 vatnum">
+                                <div class="page-contact-label col-md-5">{{ text.vat_number }}:</div>
+                                <div class="page-contact-value col-md-7">{{ vatnum }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if eu_vatnum_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 eu_vatnum">
+                                <div class="page-contact-label col-md-5">{{ text.eu_vat_number }}:</div>
+                                <div class="page-contact-value col-md-7">{{ eu_vatnum }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if registry_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 registry">
+                                <div class="page-contact-label col-md-5">{{ text.company_registration_number }}:</div>
+                                <div class="page-contact-value col-md-7">{{ registry }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if court_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 court">
+                                <div class="page-contact-label col-md-5">{{ text.company_registry_court }}:</div>
+                                <div class="page-contact-value col-md-7">{{ court }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if regnum_ie_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 regnum_ie">
+                                <div class="page-contact-label col-md-5">{{ text.registration_number }}:</div>
+                                <div class="page-contact-value col-md-7">{{ regnum_ie }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if license_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 license">
+                                <div class="page-contact-label col-md-5">{{ text.operating_licence_number }}:</div>
+                                <div class="page-contact-value col-md-7">{{ license }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if regdate_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 regdate">
+                                <div class="page-contact-label col-md-5">{{ text.registration_date }}</div>
+                                <div class="page-contact-value col-md-7">{{ regdate }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if notary_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 notary">
+                                <div class="page-contact-label col-md-5">{{ text.registrar }}:</div>
+                                <div class="page-contact-value col-md-7">{{ notary }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if bankaccountnum_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 bankaccountnum">
+                                <div class="page-contact-label col-md-5">{{ text.bank_account_num }}:</div>
+                                <div class="page-contact-value col-md-7">{{ bankaccountnum }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if iban_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 ibannum">
+                                <div class="page-contact-label col-md-5">{{ text.iban }}:</div>
+                                <div class="page-contact-value col-md-7">{{ iban }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if contact_name_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 contact_name">
+                                <div class="page-contact-label col-md-5">{{ text.contact_name }}:</div>
+                                <div class="page-contact-value col-md-7">{{ contact_name }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if contact_phone_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 contact_phone">
+                                <div class="page-contact-label col-md-5">{{ text.contact_phone }}:</div>
+                                <div class="page-contact-value col-md-7">{{ contact_phone_number }}</div>
+                            </div>
+                            {% endif %}
+
+                            {% if contact_email_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 contact_email">
+                                <div class="page-contact-label col-md-5">{{ text.contact_email }}:</div>
+                                <div class="page-contact-value col-md-7"><a href="mailto:{{ contact_email_address }}">{{ contact_email_replaced }}</a></div>
+                            </div>
+                            {% endif %}
+
+                            {% for data in plus_data %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 contact">
+                                <div class="page-contact-label col-md-5">{{ data.title }}:</div>
+                                <div class="page-contact-value col-md-7">{{ data.value }}</div>
+                            </div>
+                            {% endfor %}
+
+                            {% if hosting_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 hosting_data">
+                                <div class="page-contact-label col-md-5">{{ text.hosting_service }}:</div>
+                                <div class="page-contact-value col-md-7">{{ hosting_name }}</br>{{ hosting_address }}</div>
+                            </div>
+                            {% endif %}
+                            {% if order_min_disp %}
+                            <div class="page-contact-row align-items-center p-3 row gutters-10 mx-0 min_order">
+                                <div class="page-contact-label col-md-5">{{ text.minimum_order_price }}:</div>
+                                <div class="page-contact-value col-md-7">{{ order_min_price_title }} {{ order_min }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if custom_content_contact_bottom_disp %}
+                        <div id="custom-sub-content-contact-bottom" class="custom-sub-content custom-sub-content--bottom">
+                            <div class="page_txt">{{ custom_content_contact_bottom }}</div>
+                        </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+
+            {% if mail_disp %}
+            <div class="col-xxl-6 mb-5">
+                <div class="order-mods-section__outer">
+                    <section class="page-contact__mail">
+                        <div class="contact__main-title" id="page_title_mail">{{ text.contact_us }}</div>
+
+                        {% if mail_main_disp %}
+                        <div class="contact_form container-max-xs px-0 py-4">
+                            {{ mail_script }}
+                            {{ mail_form_start }}
+                            <div class="form-group">
+                                <label for="name">{{ text.name }}</label>
+                                <input name="name" id="name" placeholder="{{ text.name }}" class="form-control" value="{{ logged_name }}" type="text" />
+                            </div>
+                            <div class="form-group">
+                                <label for="sender">{{ text.email }}</label>
+                                <input name="sender" id="sender" placeholder="{{ text.email }}" class="form-control" type="email" value="{{ logged_email }}" />
+                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">{{ text.phone_number }}</label>
+                                <input name="phone" id="phone" placeholder="{{ text.phone_number }}" class="form-control" value="{{ logged_phone }}" type="text" />
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">{{ text.subject }}</label>
+                                <input name="subject" id="subject" placeholder="{{ text.subject }}" class="form-control" type="text" />
+                            </div>
+                            <div class="form-group">
+                                <label for="message">{{ text.message }}</label>
+                                <textarea name="message" id="message" placeholder="{{ text.message }}" class="form-control" rows="5"></textarea>
+                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                            </div>
+                            <div class="form-group form-group-lg">
+                                <div class="custom-control custom-checkbox font-s">
+                                    <input class="custom-control-input" name="mail_privacy_policy" id="mail_privacy_policy" type="checkbox" value="1" />
+                                    <label class="custom-control-label" for="mail_privacy_policy">{{ text.accept_privacy_policy }}</label>
+                                    <input name="mail_privacy_policy_allow" id="mail_privacy_policy_allow" type="hidden" value="1" />
+                                    <div class="invalid-feedback">{{ text.error_required }}</div>
+                                </div>
+                            </div>
+                            <div class="mail-send-btn-wrap text-center">
+                                {{ recaptcha_content }}
+                                <button class="mail-send-btn btn btn-primary icon--a-mail" name="button" type="button" onclick="mail_submit();">{{ text.button_send }}</button>
+                            </div>
+                            {{ mail_form_end }}
+                        </div>
+                        {% endif %}
+
+                        {% if custom_content_mail_disp %}
+                        <div id="custom-sub-content-mail-bottom" class="custom-sub-content custom-sub-content--bottom">
+                            <div class="page_txt">{{ custom_content_mail }}</div>
+                        </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if shipping_disp %}
+            <div class="col-xxl-6 mb-5">
+                <div class="order-mods-section__outer">
+                    <section class="page-contact__shipping">
+                        <div class="contact__main-title" id='page_title_shipping'>{{ text.shipping }}</div>
+                        {% if shipping_main_disp %}
+                        <ul class="page-contact__shipping-methods">
+                            {% for method in shipping_methods %}
+                            <li class="page-contact__shipping-method mb-5" id="page_contact_shipping_{{ method.id }}">
+                                <div class="page-contact__payment-method__name mb-3">{{ method.name }}</div>
+                                <div class="page-contact-content">
+                                    {% if method.text_disp %}
+                                        <div class="page-contact__shipping-method__text mb-3">{{ method.text }}</div>
+                                    {% endif %}
+
+                                    {% if method.img_disp %}
+                                        {% if method.link_disp %}<a href="{{ method.url }}" title="{{ method.alt }}" target="{{ method.target }}" rel="nofollow noreferrer">{% endif %}
+                                        <img class="page-contact__shipping-method__img mb-3 mr-3" src="{{ method.img_url }}" alt="{{ method.alt }}" title="{{ method.alt }}" />
+                                        {% if method.link_disp %}</a>{% endif %}
+                                    {% endif %}
+
+                                    {% if method.price_disp %}{#has shipping cost on admin#}
+                                        <div class="page-contact__shipping-method__prices mb-3">
+
+                                            {% if method.price_text %}{#shipping cost type text#}
+                                                <div class="shipping-cost__type-text font-weight-bold">
+                                                    <div class="shipping-cost__type-text--text">{{ method.fix_text }}</div>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if method.price_fix %}{#shipping cost type fix #}
+                                                <div class="shipping-cost__type-fix font-weight-bold">
+                                                    <span class="shipping-cost__type-fix--text">{{ text.shipping_cost }}:</span>
+                                                    <span class="shipping-cost__type-fix--price">{{ method.price }}</span>
+                                                    <span class="shipping-cost__type-fix--currency">{{ method.money_type }}</span>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if method.price_range %}
+                                                <div class="page-contact__shipping-method__price-table page-contact__table text-center">
+                                                    <div class="row no-gutters py-2 align-items-center page-contact__table__row page-contact__table__row--header">
+                                                        <div class="col-8 shipping-cost__type-text">
+                                                            {{ method.title }}
+                                                        </div>
+                                                        <div class="col-4 shipping-cost__cost-text">
+                                                            {{ text.shipping_cost }}
+                                                        </div>
+                                                    </div>
+                                                    {% for row in method.price_rows %}
+                                                        <div class="row no-gutters py-2 page-contact__table__row">
+                                                            <div class="col-4 shipping-cost__col-from">
+                                                                <span class="shipping-cost__from">{{ row.from }}</span>
+                                                                {% if method.sum_weight %}
+                                                                    <span class="shipping-cost__unit">&nbsp;{{ row.unit }}</span>
+                                                                {% endif %}
+                                                                {% if method.sum_price %}
+                                                                    <span class="shipping-cost__currency-type">&nbsp;{{ method.money_type }}</span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="col-4 shipping-cost__col-to">
+                                                                {% if row.to_disp %}
+                                                                    <span class="shipping-cost__to">{{ row.to }}</span>
+                                                                    {% if method.sum_weight %}
+                                                                        <span class="shipping-cost__unit">&nbsp;{{ row.unit }}</span>
+                                                                    {% endif %}
+                                                                    {% if method.sum_price %}
+                                                                        <span class="shipping-cost__currency-type-s">&nbsp;{{ method.money_type }}</span>
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    -
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="col-4 shipping-cost__col-cost font-weight-bold">
+                                                                {% if row.price_disp %}
+                                                                    <span class="shipping-cost__price">{{ row.price }}&nbsp;{{ method.money_type }}</span>
+                                                                {% else %}
+                                                                    <span class="shipping-cost__text-free">{{ text.free }}</span>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if method.link_disp %}
+                                        <a href="{{ method.url }}" class="page-contact__shipping-method__link mb-3 mr-3 font-s" title="{{ method.alt }}" target="{{ method.target }}" rel="nofollow noreferrer">{{ text.customer_informations_link }}</a>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+
+                        {% if custom_content_shipping_disp %}
+                        <div id="custom-sub-content-shipping-bottom" class="custom-sub-content custom-sub-content--bottom">
+                            <div class="page_txt">{{ custom_content_shipping }}</div>
+                        </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if payment_disp %}
+            <div class="col-xxl-6 mb-5">
+                <div class="order-mods-section__outer">
+                    <section class="page-contact__payment">
+                        <div class="contact__main-title" id="page_title_payment">{{ text.payment }}</div>
+                        {% if payment_main_disp %}
+                        <ul class="page-contact__payment-methods">
+                            {% for method in payment_methods %}
+                                <li class="page-contact__payment-method mb-5" id="page_contact_payment_{{ method.id }}">
+                                    <div class="page-contact__payment-method__name mb-3">{{ method.name }}</div>
+                                    {% if method.text_disp %}
+                                        <div class="page-contact__payment-method__text mb-3">{{ method.text }}</div>
+                                    {% endif %}
+
+                                    {% if method.img_disp %}
+                                        {% if method.link_disp %}<a href="{{ method.url }}" title="{{ method.alt }}" target="{{ method.target }}" rel="nofollow noreferrer">{% endif %}
+                                        <img class="page-contact__payment-method__img mb-3 mr-3" src="{{ method.img_url }}" alt="{{ method.alt }}" title="{{ method.alt }}" />
+                                        {% if method.link_disp %}</a>{% endif %}
+                                    {% endif %}
+
+                                    {% if method.link_disp %}
+                                        <a href="{{ method.url }}" class="page-contact__payment-method__link mb-3 mr-3 font-s" title="{{ method.alt }}" target="{{ method.target }}" rel="nofollow noreferrer">{{ text.customer_informations_link }}</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+
+                        {% if custom_content_payment_disp %}
+                        <div id="custom-sub-content-payment-bottom" class="custom-sub-content custom-sub-content--bottom">
+                            <div class="page_txt">{{ custom_content_payment }}</div>
+                        </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if discount_disp %}
+            <div class="col mb-5">
+                <div class="order-mods-section__outer">
+                    <section class="page-contact__discount">
+                        <div class="contact__main-title" id="page_title_discount">{{ text.discount }}</div>
+                        {% if discount_main_disp %}
+                        <ul class="row gutters-30 page-contact__discounts">
+                            {% for discount in discounts %}
+                            <li class="col-xxl-6 page-contact__discount mb-5">
+                                <div class="page-contact__discount__name mb-3">{{ discount.name }}</div>
+                                <div class="page-contact__discount__table page-contact__table text-center">
+                                    <div class="row no-gutters py-2 align-items-center page-contact__table__row page-contact__table__row--header">
+                                        <div class="col-8 discount__text-ordered-qty">{{ text.order_total_price }}</div>
+                                        <div class="col-4 discount__text-discount-amount">{{ text.discount }}</div>
+                                    </div>
+                                    {% for row in discount.discount_rows %}
+                                        <div class="row no-gutters py-2 page-contact__table__row">
+                                            <div class="col-4">
+                                                <div class="discount__from-wrap">
+                                                    <span class="discount__from">{{ row.from }}</span>
+                                                    <span class="discount__unit font-s">&nbsp;{{ row.money_type }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="discount__to-wrap">
+                                                    {% if row.to_disp %}
+                                                    <span class="discount__to">{{ row.to }}</span>
+                                                    <span class="discount__unit font-s">&nbsp;{{ row.money_type }}</span>
+                                                    {% else %}
+                                                    <span class="discount__no-limit">-</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-4 font-weight-bold">
+                                                <div class="discount__amount-wrap">
+                                                    {% if row.percent_disp %}
+                                                    <span class="discount__percent">{{ row.percent }}&nbsp;%</span>
+                                                    {% else %}
+                                                    <span class="discount__no-percent">-</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+
+                        {% if custom_content_discount_disp %}
+                        <div id="custom-sub-content-discount-bottom" class="custom-sub-content custom-sub-content--bottom">
+                            <div class="page_txt">{{ custom_content_discount }}</div>
+                        </div>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+
+    {% if tab_default_disp %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            setTimeout(
+                function() {
+                    var target_offset = $("#page_title_{{ tab_default }}").offset().top;
+                    $('html,body').animate({
+                        scrollTop: target_offset - 60},
+                    'slow');
+                }, 500
+            );
+        });
+    </script>
+    {% endif %}
+</div>

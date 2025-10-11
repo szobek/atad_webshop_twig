@@ -1,0 +1,98 @@
+{# FELUGRÓ CROSS SALE - cross_popup #}
+{# FELUGRÓ UP SALE - up_popup #}
+{# FELUGRÓ AJÁNLOM A TERMÉKET - recommend #}
+
+{% if products_disp %}
+    {# GLOBAL settings START #}
+    {% set listMainType = "page_popuplist_" %} {#Lista típusa#}
+    {% set listItemType = "page_popuplist_item" %} {#Lista elem típusa#}
+    {% set redirectToDetails = "popup_redirect_to_details" %} {#Átirányítás disp típusa#}
+    {% set cartOnClick = "popup_cart_onclick" %} {#Kosárba tesz onclik értéke#}
+    {% set cartBtnText = "popup_cart_text" %} {#Kosárba tesz szövege#}
+    {# GLOBAL settings END #}
+
+    {# FELUGRÓ CROSS SALE - cross_popup #}
+    {% if product_list_type == "cross_popup" %}
+    <section class="cross-sale position-relative up-block" id="popup_cross_content">
+        {% set img_width = backvar.cross_popup_img_maxwidth %}
+        {% set img_height = backvar.cross_popup_img_maxheight %}
+        {% set carousel_enabled = backvar.custom_cross_popup_carousel_enabled %}
+        {% set carousel_arrows = backvar.custom_cross_popup_carousel_arrows %}
+        {% set carousel_nums = backvar.custom_cross_popup_carousel_nums %}
+        {% set carousel_dots = backvar.custom_cross_popup_carousel_dots %}
+        {% set prod_recomm_title = text.cross_sale_text %}
+        {% set prod_recomm_title_class = "cross-sale__title up-block__title" %}
+
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+            {% block embed_card %}
+                {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                    {% block functions %}{% endblock %}
+                {% endembed %}
+            {% endblock %}
+        {% endembed %}
+    </section>
+    {% endif %}
+    {# END #}
+
+    {# FELUGRÓ UP SALE - up_popup #}
+    {% if product_list_type == "up_popup" %}
+    <section class="up-sale position-relative up-block" id="popup_up_content">
+        {% set img_width = backvar.up_popup_img_maxwidth %}
+        {% set img_height = backvar.up_popup_img_maxheight %}
+        {% set carousel_enabled = backvar.custom_up_popup_carousel_enabled %}
+        {% set carousel_arrows = backvar.custom_up_popup_carousel_arrows %}
+        {% set carousel_nums = backvar.custom_up_popup_carousel_nums %}
+        {% set carousel_dots = backvar.custom_up_popup_carousel_dots %}
+        {% set prod_recomm_title = text.up_sale_text %}
+        {% set prod_recomm_title_class = "up-sale__title up-block__title" %}
+
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+            {% block embed_card %}
+                {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                    {% block functions %}{% endblock %}
+                    {% block cartIpnut %}{% endblock %}
+                {% endembed %}
+            {% endblock %}
+        {% endembed %}
+    </section>
+    {% endif %}
+    {# END #}
+
+    {# FELUGRÓ AJÁNLOM A TERMÉKET - recommend #}
+    {% if product_list_type == "recommend" %}
+    <div class="recommend-block position-relative">
+        {% set img_width = backvar.recommend_img_maxwidth %}
+        {% set img_height = backvar.recommend_img_maxheight %}
+        {% set carousel_enabled = backvar.custom_recommend_carousel_enabled %}
+        {% set carousel_arrows = backvar.custom_recommend_carousel_arrows %}
+        {% set carousel_nums = backvar.custom_recommend_carousel_nums %}
+        {% set carousel_dots = backvar.custom_recommend_carousel_dots %}
+        {% set prod_recomm_title = '' %}
+        {% set prod_recomm_title_class = "recommend__title up-block__title" %}
+        {% set grid_row = "row gutters-5 gutters-sm-10" %}
+        {% set grid_col = "col-6" %}
+
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+            {% block embed_card %}
+                {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                    {% block sale %}{% endblock %}
+                    {% block new %}{% endblock %}
+                    {% block custom_badges %}{% endblock %}
+                    {% block cart %}{% endblock %}
+                    {% block review %}{% endblock %}
+                    {% block functions %}{% endblock %}
+                    {% block params %}{% endblock %}
+                    {% block stock %}{% endblock %}
+                    {% block recommendDel %}
+                    <div class="product__main-wrap">
+                        <button class="product__recommend-del-btn product__main-btn btn btn-primary icon--close btn-block" aria-label="{{ text.delete }}" data-text="{{ text.delete }}" type="button" onclick="recommend_del('{{ product.sku }}','artlist_');"></button>
+                    </div>
+                    {% endblock %}
+                {% endembed %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+    {% endif %}
+
+    {{ start_script }}
+{% endif %}

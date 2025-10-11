@@ -1,0 +1,18 @@
+{% extends "main.html" %}
+
+{% block breadcrumb %}{% endblock %}
+{% block start_elements %}
+{% if common_vars.grid_gutters.default %}
+<link rel="preload" fetchpriority="high"
+      imagesizes="(max-width: [[ preload_imgs.img_width + common_vars.grid_gutters.default - 0.02 ]]px) [[ ((preload_imgs.img_width / (preload_imgs.img_width + common_vars.grid_gutters.default)) * 100)|number_format(1)|replace({'.0':''}) ~ 'vw' -]],[[ preload_imgs.img_width ~ 'px' ]]"
+      imagesrcset="[[ preload_imgs.img_url ~ ' ' ~ preload_imgs.img_width ~ 'w']]
+      [%- if preload_imgs.custom_img_mobile_retina_width -%]
+      ,[[ preload_imgs.img_retina_url|replace({ (preload_imgs.img_retina_width): preload_imgs.custom_img_mobile_retina_width }) ~ ' ' ~ preload_imgs.custom_img_mobile_retina_width ~ 'w' -]]
+      [% endif %]
+      [%- if preload_imgs.img_retina_url != '' -%]
+      ,[[ preload_imgs.img_retina_url ~ ' ' ~ preload_imgs.img_retina_width ~ 'w' -]]
+      [% endif %]"
+      href="[[ preload_imgs.img_url ]]" as="image"
+>
+{% endif %}
+{% endblock %}

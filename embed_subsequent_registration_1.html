@@ -1,0 +1,35 @@
+<div id="order-{{ page }}__postreg" class="order-{{ page }}__postreg h-100">
+    {% if form_disp %}
+    <div class="postreg__inner order-flow-block">
+        <div class="postreg__title main-title text-center">{{ text.register_to_webshop }}</div>
+        <div class="postreg__subtitle mb-4">{{ text.postreg_promo }}</div>
+        <div class="postreg__form-container">
+            {{ postreg_form_start }}
+            <div class="form-group postreg__password mb-3">
+                <label for="passwd1">{{ text.password }}</label>
+                <input name="passwd1" id="passwd1" type="password" class="text_normal check_passwd form-control{% if password_error_disp %} is-invalid{% endif %}" value="{{ password }}" maxlength="100" data-invalid-empty="{{ text.error_required }}" />
+                <div class="invalid-feedback">{{ password_error_text }}</div>
+                <div class="in-progress-feedback"></div>
+            </div>
+            <div class="form-group postreg__password-again mb-4">
+                <label for="passwd2">{{ text.password_again }}</label>
+                <input name="passwd2" id="passwd2" type="password" class="text_normal check_passwd form-control{% if password_error_disp %} is-invalid{% endif %}" value="{{ password_again }}" maxlength="100" data-invalid-empty="{{ text.error_required }}" />
+                <div class="invalid-feedback">{{ password_error_text }}</div>
+                <div class="in-progress-feedback"></div>
+            </div>
+            <div class="postreg__buttons text-center">
+                <button class="postreg__btn-reg btn btn-lg btn-primary" id="button_mod">{{ text.registration }}</button>
+            </div>
+            {{ postreg_form_end }}
+        </div>
+    </div>
+    {% else %}
+    <div class="postreg__inner text-center order-flow-block">
+        <div class="postreg__title main-title text-center">{{ text.register_to_webshop }}</div>
+        <div class="alert alert-success icon--b-check" role="alert">
+            <span class="order-send__registration-success-text">{{ text.registration_success }}</span>
+        </div>
+        <div class="order-send__thanks-for-registration-text mt-3">{{ text.thanks_for_registration }}</div>
+    </div>
+    {% endif %}
+</div>

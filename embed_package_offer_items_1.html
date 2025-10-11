@@ -1,0 +1,38 @@
+{{ start_script }}
+{% set productsArray = "products" %}
+{% set imgWidth = backvar.products_in_bundle_main_img_maxwidth %}
+{% set imgHeight = backvar.products_in_bundle_main_img_maxheight %}
+{% set isCarousel = false %}
+{% set listMainType = "page_artlist_" %}
+
+
+{% set grid_col = "col-6 col-sm-4 col-lg-4 col-xl-4 mb-3 col-xxxl-4 position-relative package-offer-item js-package-offer-item-" ~ package_offer_id %}
+
+<div class="package-offer-items d-flex col-12 col-lg-7 col-xl-8 p-0 w-100 type--1 gutters-5">
+    <div class="row gutters-10 py-0 w-100" role="list">
+        {% embed common_vars.layout_urls.embed_product_list_1_card_1 %}
+            {% block sale %}{% endblock %}
+            {% block new %}{% endblock %}
+            {% block functions %}{% endblock %}
+            {% block stock %}{% endblock %}
+            {% block review %}{% endblock %}
+            {% block params %}{% endblock %}
+            {% block price %}{% endblock %}
+            {% block loginNeeded %}{% endblock %}
+            {% block cart %}{% endblock %}
+            {% block product_statuses %}{% endblock %}
+            {% block custom_badges %}{% endblock %}
+            {% block price_unit %}{% endblock %}
+
+            {% block package_offer_qty %}
+                <div class="js-package-offer-qty badge badge--package-offer-qty d-{% if package_offer_items[loop.index0].quantity > 1 %}flex{% else %}none{% endif %}" data-qty="{{ package_offer_items[loop.index0].quantity }}">
+                    {{ package_offer_items[loop.index0].quantity }}X
+                </div>
+            {% endblock %}
+
+            {% block package_offer_plus_sign %}
+                <div class="package-offer-item-icon{% if loop.last %} package-offer-item-icon-equals{% endif %} position-absolute icon--{% if not loop.last %}plus{% else %}equals ml-4{% endif %} d-inline-flex align-items-center font-xl"></div>
+            {% endblock %}
+        {% endembed %}
+    </div>
+</div>

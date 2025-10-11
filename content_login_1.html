@@ -1,0 +1,92 @@
+<div class="page-login page_content" id="page_login_content">
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    <div class="container mb-4">
+        <div class="row gutters-10 row-gap-10 row-gap-sm-20">
+            {% if noreg_disp %}
+            <div class="col-12 col-lg-4 order-1 order-lg-6">
+                <div class="page-login__no-reg-container d-none d-sm-block">
+                    <div class="page-login__no-reg-inner row gap-20 align-items-center">
+                        <div class="page-login__no-reg-title-wrap">
+                            <div class="page-login__no-reg-title main-title2 icon--b-cart-shopping-fast">{{ text.shopping_without_registration_title }}</div>
+                            <div class="page-login__no-reg-title-sub">{{ text.shopping_without_registration_title_sub }}</div>
+                        </div>
+                        <a class="page-login__btn-no-reg btn btn-primary icon--a-cart-shopping-fast ml-auto ml-lg-0" href="{{ noreg_url }}">{{ text.button_continue_without_registration }}</a>
+                    </div>
+                </div>
+                <a class="page-login__btn-no-reg-mobile btn btn-block btn-primary d-sm-none" href="{{ noreg_url }}">
+                    <div class="icon--cart-shopping-fast"></div>
+                    {{ text.button_continue_without_registration }}
+                </a>
+            </div>
+            {% endif %}
+            <div class="col-6 order-2 d-sm-none">
+                <div class="page-login__login-title-mobile">
+                    <div class="icon--user"></div>
+                    {{ text.login }}
+                </div>
+            </div>
+            <div class="col-6 order-3 d-sm-none">
+                <a class="page-login__btn-reg-mobile btn btn-block" href="{{ reg_url }}">
+                    <div class="icon--pen-line"></div>
+                    {{ text.registration }}
+                </a>
+            </div>
+            <div class="col-12 col-sm-6{% if noreg_disp %} col-lg-4{% endif%} order-4 page-login__sign-in-col">
+                <div class="page-login__col-inner page-login__sign-in">
+                    <div class="page-login__content">
+                        {{ form_start }}
+                        <div class="page-login__login-title main-title2 icon--b-user d-none d-sm-block">{{ text.login }}</div>
+                        <div class="form-group page-login__name">
+                            <label for="shop_user_login_page">{{ username_title }}</label>
+                            <input class="page_login_input form-control" name="shop_user_login" id="shop_user_login_page" placeholder="{{ username_title }}" type="text" />
+                        </div>
+                        <div class="form-group page-login__password form-group-lg">
+                            <label for="shop_pass_login_page">{{ text.password }}</label>
+                            <input class="page_login_input form-control" name="shop_pass_login" id="shop_pass_login_page" placeholder="{{ text.password }}" type="password"/>
+                        </div>
+                        <div class="form-group form-group-lg">
+                            <button class="page-login__btn-sign-in btn btn-primary">{{ text.button_login }}</button>
+                        </div>
+                        <div class="form-group form-group-lg">
+                            <button type="button" class="page-login__remind-btn btn btn-text2" onclick="handleCloseDropdowns(); overlay_login_remind();">{{ text.forgot_my_password }}</button>
+                        </div>
+                        {% if facebook_disp or google_disp %}
+                            <div class="page-login__third-parties">
+                                <div class="row row-gap-10 gutters-5">
+                                    {% if facebook_disp %}
+                                        <div class="col-12">
+                                            {% embed common_vars.layout_urls.embed_facebook_login_1 %}{% endembed %}
+                                        </div>
+                                    {% endif %}
+                                    {% if google_disp %}
+                                        <div class="col-12">
+                                            {% embed common_vars.layout_urls.embed_google_login_1 %}{% endembed %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {{ form_end }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-6{% if noreg_disp %} col-lg-4{% endif%} order-5 page-login__reg-col d-none d-sm-block">
+                <div class="page-login__col-inner page-login__reg" id="page_login_reg">
+                    <div class="page-login__content">
+                        <div class="page-login__reg-title main-title2 icon--b-pen-line">{{ text.registration }}</div>
+                        <div class="page-login-text mb-2">{{ text.registration_advantages }}</div>
+                        <ul class="page-login__reg-adv mb-4">
+                            <li>{{ text.registration_promo_text_1 }}</li>
+                            <li>{{ text.registration_promo_text_2 }}</li>
+                            <li>{{ text.registration_promo_text_3 }}</li>
+                        </ul>
+                        <a class="page-login__btn-reg btn btn-primary icon--a-pen-line" href="{{ reg_url }}">{{ text.registration }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>

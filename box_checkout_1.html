@@ -1,0 +1,14 @@
+{% for payment_method in payment_methods %}
+<div class="checkout__item">
+    {% if payment_method.link_disp %}
+    <a href="{{ payment_method.url }}"{% if payment_method.blank %} target="_blank"{% endif %} class="checkout__link has-img" rel="nofollow noopener">
+    {% endif %}
+        <img class="checkout__img lazyload" title="{{ payment_method.title }}" alt="{{ payment_method.alt }}"
+             src="[unas_shop_url]/main_pic/space.gif" data-src="{{ payment_method.img_url }}" data-srcset="{{ payment_method.img_retina_url }} 2x"
+             style="width:{{ payment_method.img_width }}px;max-height:{{ payment_method.img_height }}px;"
+        >
+    {% if payment_method.link_disp %}
+    </a>
+    {% endif %}
+</div>
+{% endfor %}

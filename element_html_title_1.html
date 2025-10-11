@@ -1,0 +1,9 @@
+{% if element_disp %}
+    <div class="js-element {{ name }}{% if class != '' %} {{ class }}{% endif %}" data-element-name="{{ name }}">
+        <div class="{{ name }}__container {{ container_class }}">
+            {% for slide in slides %}
+               {{ slide.html }}
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

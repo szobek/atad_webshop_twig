@@ -1,0 +1,101 @@
+{% if select_address_disp and not _context[main_type ~ "_readonly"] and not _context[main_type ~ "_addresses_hide_select"] %}
+    <div class="form-group {{ alt_type }}-addresses" id='div_out_{{ alt_type }}_address'> {#id for script#}
+        <label for="select_default_{{ _context[main_type ~ "_hidden_value"] }}_address">{{ text.addresses }}</label>
+        <input type="hidden" value="{{ _context[main_type ~ "_hidden_value"] }}" id="{{ alt_type }}">
+        <div class="form-row">
+            <div class="col">
+                <div class="form-select-group">
+                    <select class="form-control addresses" name="default_{{ _context[main_type ~ "_hidden_value"] }}_address" id="select_default_{{ _context[main_type ~ "_hidden_value"] }}_address">
+                        {% for option in _context[main_type ~ "_addresses"] %}
+                        <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<div class="form-row">
+    {% if _context[main_type ~ "_name_disp"] %}
+        <div class="col-12">
+            <div class="form-group new-customer__{{ alt_type }}-name">
+                <label for="{{ alt_type }}_nev">{% if main_type_value == 'szam' %}{% if company_checked %}{{ text.reg_title_company_name }}{% else %}{{ text.reg_title_name }}{% endif %}{% else %}{{ text.name }}{% endif %}</label>
+                <input class="form-control{% if _context[main_type ~ "_name_error_disp"] %} is-invalid{% endif %}" name="{{ main_type_value }}_nev" placeholder="{% if main_type_value == 'szam' %}{% if company_checked %}{{ text.reg_title_company_name }}{% else %}{{ text.reg_title_name }}{% endif %}{% else %}{{ text.name }}{% endif %}" id="{{ alt_type }}_nev" type="text" autocomplete="name" value="{{ _context[main_type ~ "_name"] }}" maxlength="100" {% if _context[main_type ~ "_readonly"] %} readonly {% endif %} />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+        </div>
+    {% endif %}
+    {% if _context[main_type ~ "_country_disp"] %}
+        <div class="col-12">
+            <div class="form-group {{ alt_type }}-country">
+                <label for="{{ alt_type }}_orszag">{{ text.country }}</label>
+                <div class="form-select-group">
+                    <select class="form-control{% if _context[main_type ~ "_country_error_disp"] %} is-invalid{% endif %}" name="{{ main_type_value }}_orszag" autocomplete="country-name" id="{{ alt_type }}_orszag">
+                        {% for option in _context[main_type ~ "_country_options"] %}
+                        <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %} {% if option.disabled %}disabled="disabled"{% endif %} rel="{{ option.rel }}">
+                            {{ option.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">{{ text.error_required }}</div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if _context[main_type ~ "_county_disp"] %}
+        <div class="col-12">
+            <div class="form-group {{ alt_type }}-county">
+                <label for="{{ alt_type }}_megye">{{ _context[main_type ~ "_county_title"] }}</label>
+                <input class="form-control{% if _context[main_type ~ "_county_error_disp"] %} is-invalid{% endif %}" name="{{ main_type_value }}_megye" placeholder="{{ _context[main_type ~ "_county_title"] }}" id="{{ alt_type }}_megye" type="text" autocomplete="address-level1" value="{{ _context[main_type ~ "_county"] }}" maxlength="100" {% if _context[main_type ~ "_readonly"] %} readonly {% endif %} />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+        </div>
+    {% endif %}
+    {% if _context[main_type ~ "_zip_disp"] %}
+        <div class="col-sm-4">
+            <div class="form-group new-customer__{{ alt_type }}-zip">
+                <label for="{{ alt_type }}_irany">{{ text.zip_code }}</label>
+                <input class="form-control{% if _context[main_type ~ "_zip_error_disp"] %} is-invalid{% endif %}{% if check_zip %} check_zip{% endif %}" name="{{ main_type_value }}_irany" placeholder="{{ text.zip_code }}" id="{{ alt_type }}_irany" type="text" autocomplete="postal-code" value="{{ _context[main_type ~ "_zip"] }}" maxlength="10" {% if _context[main_type ~ "_readonly"] %} readonly {% endif %} />
+                <div class="invalid-feedback">{{ _context[main_type ~ "_zip_error_text"] }}</div>
+                <div class="in-progress-feedback"></div>
+            </div>
+        </div>
+    {% endif %}
+    {% if _context[main_type ~ "_city_disp"] %}
+        <div class="col-sm">
+            <div class="form-group {{ alt_type }}-city">
+                <label for="{{ alt_type }}_varos">{{ text.city }}</label>
+                <input class="form-control{% if _context[main_type ~ "_city_error_disp"] %} is-invalid{% endif %}" name="{{ main_type_value }}_varos" placeholder="{{ text.city }}" id="{{ alt_type }}_varos" type="text" autocomplete="address-level2" value="{{ _context[main_type ~ "_city"] }}" maxlength="100" {% if _context[main_type ~ "_readonly"] %} readonly {% endif %} />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+        </div>
+    {% endif %}
+    {% if _context[main_type ~ "_street_disp"] %}
+        <div class="col-12">
+            <div class="form-group {{ alt_type }}-street">
+                <label for="{{ alt_type }}_utca">{{ text.street_address }}</label>
+                <input class="form-control {% if _context[main_type ~ "_street_error_disp"] %} is-invalid{% endif %}" name="{{ main_type_value }}_utca" placeholder="{{ text.street_address }}" id="{{ alt_type }}_utca" type="text" autocomplete="street-address" value="{{ _context[main_type ~ "_street"] }}" maxlength="100" {% if _context[main_type ~ "_readonly"] %} readonly {% endif %} />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+        </div>
+    {% endif %}
+    {% if _context[main_type ~ "_vat_disp"] %}
+        <div class="col-12" id="div_out_{{ alt_type }}_vat">{#id for script#}
+            <div class="form-group {{ alt_type }}-vat">
+                <label for="szam_ado">{{ text.company_vat_number }}</label>
+                <input class="form-control{% if _context[main_type ~ "_vat_error_disp"] %} is-invalid{% endif %}" id="szam_ado" placeholder="{{ text.company_vat_number }}" name="szam_ado" type="text" value="{{ _context[main_type ~ "_vat"] }}" size="20" maxlength="20"{% if _context[main_type ~ "_readonly"] %} readonly{% endif %} />
+                <div class="invalid-feedback">{{ _context[main_type ~ "_vat_error_text"] }}</div>
+            </div>
+        </div>
+    {% endif %}
+    {% if _context[main_type ~ "_eu_vat_disp"] %}
+        <div class="col-12" id="div_out_{{ alt_type }}_eu_vat">{#id for script#}
+            <div class="form-group {{ alt_type }}-eu-vat">
+                <label for="szam_ado_eu">{{ text.eu_vat_number }}</label>
+                <input class="form-control{% if _context[main_type ~ "_eu_vat_error_disp"] %} is-invalid{% endif %}" id="szam_ado_eu" placeholder="{{ text.eu_vat_number }}" name="szam_ado_eu" type="text" value="{{ _context[main_type ~ "_eu_vat"] }}" size="20" maxlength="20"{% if _context[main_type ~ "_readonly"] %} readonly{% endif %} />
+                <div class="invalid-feedback">{{ _context[main_type ~ "_eu_vat_error_text"] }}</div>
+            </div>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,354 @@
+{% if deleteCol is not defined %}
+    {% set deleteCol = false %}
+{% endif %}
+
+<header class="cart-header text-center">
+    <div class="row gutters-5 gutters-sm-10 gutters-xl-20">
+        <div class="col-auto d-none"><div class="spacer-3"></div></div>
+        <div class="col-auto">
+            [% if page_id in [ 'page_shop_order_control' ] %]
+            <div class="cart-header__name order-control__main-title mb-0">
+                <a class="order-control-modify-btn icon--a-edit" href="{{ cart_url }}" title="{{ text.button_modify }}">{{ text.ordered_products }}</a>
+            </div>
+            [% else %]
+            <div class="cart-header__name">{{ text.product }}</div>
+            [% endif %]
+        </div>
+        <div class="col">
+            <div class="row gutters-5 gutters-sm-10 gutters-xl-20">
+                <div class="col" data-text="{{ text.product }}"></div>
+                <div class="cart-header__qty-col text-center d-none d-md-block">
+                    <div class="cart-header__qty">{{ text.quantity }}
+                        <div class="cart-qty-refresh-btn-placeholder"></div>
+                    </div>
+                </div>
+                <div class="col-auto col-md-2 text-right cart-item-sum-col">
+                    <div class="cart-header__sum{% if deleteCol == true %} has-delete-col{% endif %}">{{ text.total_amount }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="cart-items{% if unit_disp %} has-unit{% endif %} js-cart-root" role="list">
+    {% for product in products %}
+        {% if product.plus_item and product.type != "package_offer" %}
+            <span class="cart-plus-item{% if product.type == "service_plus" %} service-plus-item{% else %} discount-item{% endif %}{% if deleteCol == true %}{% if product.button_delete_disp %} has-del-btn{% endif %}{% endif %}">
+                <div class="cart-plus-item__inner">
+                    <div class="row gutters-5 gutters-sm-10 gutters-xl-20">
+                        {% if product.type == "service_plus" %}
+                            <div class="col-auto d-none d-md-block">
+                                <div class="cart-plus-item__plus-service-holder"></div>
+                            </div>
+                            <div class="col">
+                                <div class="row gutters-5 gutters-sm-10 gutters-xl-20 align-items-center h-100">
+                                    <div class="cart-plus-item__plus-service cart-plus-item__wrapper d-flex col-sm mb-3 mb-sm-0">
+                                        <span class="cart-plus-item__plus-service-icon mr-2 mr-sm-3 icon--plus-circle"></span>
+                                        <span class="cart-plus-item__plus-service-text d-none">{{ text.plus_service }}: </span>
+                                        <span class="cart-plus-item__plus-service-name-and-qty-wrap" data-qty="{{ product.qty }} {{ product.unit }}">{{ product.name }}</span>
+                                    </div>
+                                    <div class="cart-item__qty-col col-auto text-md-center align-self-center">
+                                        <div class="cart-item__qty-wrap qty-text col-gap-5">
+                                            {% if product.no_stock_disp %}
+                                            <div class="cart-item__not-on-stock btn-square-sm icon--exclamation" tabindex="0" data-tippy="{{ text.product_not_enough_qty_on_stock_warning }}"></div>
+                                            {% endif %}
+                                            <div class="cart-item__qty d-flex align-items-baseline justify-content-md-center" data-text="{{ text.quantity }}">
+                                                <span class="cart-item__qty-value font-weight-bold cart-item__service-qty">{{ product.qty }}</span>
+                                                <span class="cart-item__qty-unit font-s pl-1">{{ product.unit }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-2 cart-item-sum-col ml-auto d-flex align-items-center">
+                                        <div class="cart-item__sum-prices text-right ml-auto" data-text="{{ text.total_amount }}">
+                                            {% if price_net_disp %}
+                                                <div class="cart-item__sum-price-net product-price--base price-net-format" data-text="{{ text.net }}">
+                                                {{ product.total_price_net }}
+                                            </div>
+                                            {% endif %}
+                                            <div class="cart-item__sum-price-gross product-price--base price-gross-format" data-text="{{ text.gross }}">
+                                                {{ product.total_price_gross }}
+                                            </div>
+                                        </div>
+                                        {% if deleteCol == true %}
+                                            {% if product.button_delete_disp %}
+                                                <div class="cart-item-del-wrap">
+                                                <button class="cart-item-del-btn btn icon--trash btn-square-sm" onclick="{{ product.button_delete_onclick_value }}" type="button" aria-label="{{ text.delete }}"></button>
+                                            </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="col-auto d-none d-md-block">
+                                <div class="cart-plus-item__discount-holder"></div>
+                            </div>
+                            <div class="col position-static">
+                                <div class="row gutters-5 gutters-sm-10 gutters-xl-20 flex-nowrap align-items-center h-100">
+                                    <div class="col position-static">
+                                        <div class="cart-plus-item__plus-discount cart-plus-item__wrapper d-flex align-items-center">
+                                            <span class="cart-plus-item__discount-icon mr-3 {% if product.type == 'gift' %}icon--gift{% else %}icon--percent{% endif %}"></span>
+                                            {% if product.variant_1_disp %}
+                                                <div class="cart-plus-item__name d-none">{{ product.name }}</div>
+                                                <div class="cart-plus-item__discount">
+                                                    {% if product.type == "gift" %}
+                                                        <span class="cart-plus-item__discount-type">{{ product.variant_1_title }}</span>
+                                                        <span class="cart-plus-item__discount-for-sku ml-1 d-none">{{ product.variant_1_value }}</span>
+                                                    {% else %}
+                                                        <span class="cart-plus-item__discount-value">
+                                                <span class="plus-item-coupon-text pr-1">{{ text.coupon_code }}:</span>
+                                                <span class="plus-item-coupon-value">{{ product.variant_1_value }}</span>
+                                            </span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="cart-item-plus__qty-and-unit d-none">
+                                                    <span class="cart-item-plus__qty">{{ product.qty }}</span>
+                                                    <span class="cart-item-plus__unit">{{ product.unit }}</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-auto col-md-2 cart-item-sum-col ml-auto d-flex flex-column align-items-end flex-sm-row align-items-sm-center">
+                                        {% if deleteCol == true %}
+                                        <div class="cart-item-del-wrap order-sm-2{% if product.type == "gift" or product.type == "discount" %} need-gutter{% endif %}">
+                                            {% if product.button_delete_disp %}
+                                            <button class="cart-item-del-btn btn icon--trash btn-square-sm" onclick="{{ product.button_delete_onclick_value }}" type="button" aria-label="{{ text.delete }}"></button>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        <div class="cart-item__sum-prices text-right ml-auto order-sm-1" data-text="{{ text.total_amount }}">
+                                            {% if price_net_disp %}
+                                            <div class="cart-item-plus__price-net product-price--base price-net-format" data-text="{{ text.net }}">
+                                                {{ product.total_price_net }}
+                                            </div>
+                                            {% endif %}
+                                            <div class="cart-item-plus__service-price-gross font-weight-bold product-price--base price-gross-format" data-text="{{ text.gross }}">
+                                                {{ product.total_price_gross }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </span>
+        {% else %}
+            {% if not loop.first %}
+            </div>
+            {% endif %}
+
+            {% if product.type == "package_offer" %}
+            <div class="cart-package-offer-wrapper" role="listitem">
+            {% endif %}
+
+            <div class="cart-item{% if product.no_stock_disp %} no-stock{% endif %}
+                 {%- if product.error_disp %} is-invalid{% endif %}{% if not product.plus_item and not product.variant_1_disp and not product.params_disp %} has-no-plus-data{% endif %}
+                 {%- if product.type == "package_offer" %} cart-package-offer{% endif %}
+                 {%- if product.plus_item and product.type != "package_offer" %} cart-plus-item{% if product.type == "service_plus" %} service-plus-item{% elseif product.type == "discount" %} discount-item{% endif %}{% elseif not product.is_package_offer_item %} cart-product-item{% endif %}
+                 {%- if product.is_package_offer_item %} cart-package-offer-item{% endif %}" data-sku="{{ product.sku }}" role="listitem"
+            >
+                <div class="cart-item__inner cart-product-item">
+                    <div class="row gutters-5 gutters-sm-10 gutters-xl-20{% if product.plus_item %} align-items-center{% else %} align-items-md-center{% endif %}">
+                        <div class="col-auto">
+                            {% if product.type != "package_offer" and not product.is_radio_plus_service %}
+                            <div class="cart-item__pic-outer product-img-wrapper spacer-3">
+                                <a class="cart-item__pic-url" href="{{ product.url }}" tabindex="-1">
+                                    <img class="cart-item__pic product-img lazyload" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ product.img_url }}"{% if product.img_retina_exists %} data-srcset="{{ product.img_retina_url }} {{ product.img_retina_size }}"{% endif %} alt="{{ product.img_alt }}" title="{{ product.img_alt }}" width="{{ backvar.img_maxwidth }}" height="{{ backvar.img_maxheight }}" />
+                                    <div class="loading-spinner"></div>
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            {% if product.is_radio_plus_service %}
+                                <div class="cart-item__plus-service font-xxxxl icon--plus-circle d-flex justify-content-center align-items-center"></div>
+                            {% endif %}
+
+                            {% if product.type == "package_offer" %}
+                                <div class="cart-plus-item__package-offer-icon font-xxxxl icon--box d-flex justify-content-center"></div>
+                            {% endif %}
+                        </div>
+                        <div class="col{% if product.is_package_offer_item %} position-static{% endif %}">
+                            <div class="row gutters-5 gutters-sm-10 gutters-xl-20 align-items-center h-100">
+                                <div class="cart-item__name-variant-param col-sm mb-3 mb-sm-0{% if product.is_package_offer_item %} position-static{% endif %}">
+                                    <div class="cart-item__name-wrap {% if deleteCol == true %} has-del-btn{% endif %}"
+                                         id="label-cart-{{ product.type == "package_offer" ? product.package_offer_id : product.sku }}"
+                                    >
+
+                                        {% if product.type != "package_offer" and not product.is_radio_plus_service %}<a class="cart-item__name-link" href="{{ product.url }}">{% endif %}
+                                        {{ product.name }}
+                                        {% if product.type != "package_offer" and not product.is_radio_plus_service %}</a>{% endif %}
+
+                                        <span class="cart-item__sku" hidden>({{ product.sku }})</span>
+                                    </div>
+
+                                    {% if product.variant_1_disp %}{#it has variant(s)#}
+                                    <div class="cart-item__variants mt-3 font-s line-height-12">
+                                        {% set variantCount = 1 %}
+
+                                        {% if product.variant_3_disp %}
+                                            {% set variantCount = 3 %}
+                                        {% elseif product.variant_2_disp %}
+                                            {% set variantCount = 2 %}
+                                        {% endif %}
+
+                                        {% for index in 1..variantCount %}
+                                        <div class="cart-item__variant cart-item__variant-{{ index }}">
+                                            <span class="cart-item__variant-title">{{ attribute(product,"variant_"~ index ~ "_title") }}:</span>
+                                            <span class="cart-item__variant-value">{{ attribute(product,"variant_"~ index ~ "_value") }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if product.params_disp %}
+                                    <div class="cart-item__params mt-3 font-s">
+                                        {% for param in product.params %}
+                                        <div class="cart-item__param row no-gutters align-items-center cart-item__param-{{ param.id }}">
+                                            <span class="cart-item__param-name col-auto pr-2">{{ param.name }}:</span>
+                                            <span class="cart-item__param-value col">
+                                                {% if param.type == "color_text" %}
+                                                    <span class="d-inline-flex align-items-center">
+                                                        <span class="param_type_color mr-2" style="{% if param.color_code == "#ffffff" %}color:#dddddd{% else %}color:{{ param.color_code }}{% endif %};background-color:{{ param.color_code }};"></span>
+                                                        {{ param.color_text }}
+                                                    </span>
+                                                {% else %}
+                                                    {{ param.value }}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if product.subscription_period_disp %}
+                                    <div class="cart-item__subscription mt-3 font-s row no-gutters align-items-center cart-item__subscription-period">
+                                        <span class="cart-item__subscription-name col-auto pr-2">{{ text.chosen_period }}</span>
+                                        <span class="cart-item__subscription-value col">{{ product.subscription_period }} {{ text.daily }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if cart_reserving_system_on %}
+                                    <div class="cart-item__counter js-cart_counter font-s py-2">
+                                        {{ text.in_cart_time|replace({'[time]':"<span class='cart-item__clock js-clock' id='"~ product.sku ~"_"~ loop.length ~"'></span>"}) }}
+                                        <span class="js-expiration-time" hidden>{{ product.expiration_time }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="cart-item__qty-col col-auto text-sm-center align-self-center">
+                                    {% block qtyInput %}
+                                        {% if product.is_package_offer_item %}
+                                            <div class="cart-item__qty font-m d-flex align-items-baseline justify-content-md-center" data-text="{{ text.quantity }}">
+                                                <input aria-label="{{ text.quantity }}" readonly name="db[]" type="number"
+                                                       class="cart-item__input bg-transparent text-right js-cart-item-qty-value-{{ product.package_offer_item_id }} cart-item__qty-unit--package-offer-item page_qty_input page_cart_db_input{% if product.cart_input_error_disp %} has-warning{% endif %}"
+                                                       value="{{ product.qty }}" min="{{ product.cart_input_data_min }}" data-min="{{ product.cart_input_data_min }}"
+                                                       max="{{ product.cart_input_data_max }}" data-max="{{ product.cart_input_data_max }}"
+                                                       step="{{ product.cart_input_data_step }}" data-step="{{ product.cart_input_data_step }}"
+                                                >
+                                                <span class="pl-1 font-s">{{ product.unit }}</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="cart-item__qty-wrap col-gap-5">
+                                                {% if product.no_stock_disp %}
+                                                <div class="cart-item__not-on-stock btn-square-sm icon--exclamation" tabindex="0" data-tippy="{{ text.product_not_enough_qty_on_stock_warning }}"></div>
+                                                {% endif %}
+                                                <div class="cart-item__input-wrap cart-input-wrap page_qty_input_outer">
+                                                    <input {% if product.type == "package_offer" %} data-package-offer-id="{{ product.package_offer_item_id }}"{% endif %}
+                                                           name="{% if product.type == "package_offer" %}package_offer_quantity[{{ product.package_offer_item_id_raw }}]{% else %}db[]{% endif %}"
+                                                           type="number" value="{{ product.qty }}" aria-label="{{ text.quantity }}"
+                                                           class="cart-item__input page_qty_input page_cart_db_input form-control{% if product.cart_input_error_disp %} has-warning{% endif %}"
+                                                           min="{{ product.cart_input_data_min }}" data-min="{{ product.cart_input_data_min }}"
+                                                           max="{{ product.cart_input_data_max }}" data-max="{{ product.cart_input_data_max }}"
+                                                           step="{{ product.cart_input_data_step }}" data-step="{{ product.cart_input_data_step }}"
+                                                    >
+                                                    <div class="product__qty-buttons">
+                                                        <button type="button" class="qtyplus_common" aria-label="{{ text.plus }}"></button>
+                                                        <button type="button" class="qtyminus_common qty_disable" aria-label="{{ text.minus }}"></button>
+                                                    </div>
+                                                    {% if unit_disp %}<div class="cart-item__qty-unit">{{ product.unit }}</div>{% endif %}
+                                                </div>
+                                                <button class="cart-item__qty-refresh-btn btn icon--refresh btn-square-sm" onclick="modify();" aria-label="{{ text.button_modify }}"></button>
+                                            </div>
+                                        {% endif %}
+                                    {% endblock %}
+
+                                    {% block qtyText %}
+                                    <div class="cart-item__qty-wrap qty-text col-gap-5">
+                                        {% if product.no_stock_disp %}
+                                        <div class="cart-item__not-on-stock btn-square-sm icon--exclamation" tabindex="0" data-tippy="{{ text.product_not_enough_qty_on_stock_warning }}"></div>
+                                        {% endif %}
+                                        <div class="cart-item__qty d-flex align-items-baseline justify-content-md-center" data-text="{{ text.quantity }}">
+                                            <span class="cart-item__qty-value font-weight-bold">{{ product.qty }}</span>
+                                            <span class="cart-item__qty-unit font-s pl-1">{{ product.unit }}</span>
+                                        </div>
+                                    </div>
+                                    {% endblock %}
+                                </div>
+                                <div class="col-auto col-md-2 cart-item-sum-col ml-auto d-flex align-items-center">
+                                    <div class="cart-item__sum-prices text-right ml-auto" data-text="{{ text.total_amount }}">
+                                        {% if price_net_disp %}
+                                        <div class="cart-item__sum-price-net product-price--base price-net-format" data-text="{{ text.net }}">
+                                            {{ product.total_price_net }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="cart-item__sum-price-gross product-price--base price-gross-format" data-text="{{ text.gross }}">
+                                            {{ product.total_price_gross }}
+                                        </div>
+                                    </div>
+                                    {% if deleteCol == true %}
+                                        {% if product.button_delete_disp or product.type == "package_offer" %}
+                                        <div class="cart-item-del-wrap{% if product.is_package_offer_item %} need-gutter{% endif %}">
+                                            {% if not product.is_package_offer_item %}
+                                            <button class="cart-item-del-btn btn icon--trash btn-square-sm" onclick="{{ product.button_delete_onclick_value }}" type="button"
+                                                    aria-label="{{ text.delete }}" aria-describedby="label-cart-{{ product.type == "package_offer" ? product.package_offer_id : product.sku }}"></button>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                {% if product.info_disp %}
+                                    <div class="col-12">
+                                        <div class="product-infos font-xs font-md-s mt-2">
+                                            {% for item_status in product.item_statuses %}
+                                            <div class="item-status">
+                                                <span class="item-status__title">{{ item_status.title }}:</span>
+                                                <span class="item-status__value">{{ item_status.value }}</span>
+                                            </div>
+                                            {% endfor %}
+                                            {% if product.online_content_disp %}
+                                            <div class="product-online-content d-flex flex-wrap gap-10 align-items-center font-s mt-2">
+                                                <div class="product-online-content__title mb-2">{{ text.downloadable_content }}:</div>
+                                                <button onclick="location.href='{{ product.online_content_url }}'" name="button_download"  type="button" value="{{ text.button_download }}" class="btn btn-primary font-xs py-2 px-3">{{ text.button_download }}</button>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        {% endif %}
+        {% if loop.last %}
+        </div>
+        {% endif %}
+
+        {% if product.is_package_offer_item and product.is_last_item_in_package_offer %}
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% if cart_reserving_system_on %}
+    <script type="text/javascript">
+        $(".js-cart_counter").each(function () {
+            var _this=$(this);
+            var expiration_time = $(_this).find(".js-expiration-time").text();
+
+            $(_this).find(".js-clock").countdown(expiration_time, function(event) {
+                var _this=$(this);
+                $(_this).text( event.strftime('%H:%M:%S') );
+            }).on('finish.countdown', function() {
+                location.href='shop_cart.php'
+            });
+        });
+    </script>
+{% endif %}

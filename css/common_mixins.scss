@@ -1,0 +1,360 @@
+$xs_container-width: map-get($container-max-widths, xs);
+$sm_container-width: map-get($container-max-widths, sm);
+$md_container-width: map-get($container-max-widths, md);
+$lg_container-width: map-get($container-max-widths, lg);
+$xl_container-width: map-get($container-max-widths, xl);
+$xxl_container-width: map-get($container-max-widths, xxl);
+$xxxl_container-width: map-get($container-max-widths, xxxl);
+
+/* FLUID TYPO */
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+@mixin fluid-type($min-vw, $max-vw, $min-font-size, $max-font-size) {
+  $u1: unit($min-vw);
+  $u2: unit($max-vw);
+  $u3: unit($min-font-size);
+  $u4: unit($max-font-size);
+
+  @if $u1 == $u2 and $u1 == $u3 and $u1 == $u4 {
+    & {
+      font-size: $min-font-size;
+      @media screen and (min-width: $min-vw) {
+        font-size: calc(#{$min-font-size} + #{strip-unit($max-font-size - $min-font-size)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+      }
+      @media screen and (min-width: $max-vw) {
+        font-size: $max-font-size;
+      }
+    }
+  }
+}
+
+/* FLICKITY carousel cell width function */
+@function calcWidthPercent($colNum, $gap) {
+  $colPercent: percentage(1/$colNum);
+  $gapNum: $colNum - 1;
+  $string: "calc("+$colPercent+" - ("+$gap+"px / "+$colNum+") * "+$gapNum+")";
+  @return unquote($string);
+}
+
+@mixin caret-right($width: $caret-width, $spacing: $caret-spacing, $color: currentColor) {
+  content: "";
+  z-index: 1;
+  line-height: 1;
+  pointer-events: none;
+  border-top: $width solid transparent;
+  border-right: 0;
+  border-left: $width solid $color;
+  border-bottom: $width solid transparent;
+  border-radius: 0;
+  margin-left: $spacing;
+}
+@mixin caret-down($width: $caret-width, $spacing: $caret-spacing, $color: currentColor) {
+  content: "";
+  z-index: 1;
+  line-height: 1;
+  pointer-events: none;
+  border-top: $width solid $color;
+  border-right: $width solid transparent;
+  border-bottom: 0;
+  border-left: $width solid transparent;
+  border-radius: 0;
+  margin-left: $spacing;
+}
+@mixin btn-close(){
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: $btn-close-color;
+  border: $btn-close-border-width $btn-close-border;
+  border-radius: $btn-close-border-radius;
+  width: $btn-close-width;
+  height: $btn-close-height;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: $btn-close-margin;
+  text-align: center;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 1;
+  padding: 0;
+  transition: color .4s, background-color .4s, border-color .4s;
+
+  &::before {
+    content: "\f00d";
+    font-family: $icon-font-family;
+    font-weight: $icon-font-weight;
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  &:hover {
+    border-color: $body-color;
+  }
+}
+
+@mixin custom-gradient-bg($size: 2px, $bg: $primary, $bg-opacity: $custom-gradient-bg-opacity, $selectors...) {
+  padding: 0 $size;
+  margin: 0 -$size;
+  transition: background ease .3s;
+  background-position-y: 0;
+  background-size: 100% 200%;
+
+  @if length($selectors) == 0 {
+    @include hover-focus(){
+      background-image: linear-gradient(0deg, rgba($bg, $bg-opacity) 0%, rgba($bg, $bg-opacity) 0.6em, transparentize(#ffffff, 1) 0.6em);
+      background-position-y: 100%;
+    }
+  } @else {
+    @for $i from 0 to length($selectors) {
+      #{nth($selectors, $i + 1)} & {
+        background-image: linear-gradient(0deg, rgba($bg, $bg-opacity) 0%, rgba($bg, $bg-opacity) 0.6em, transparentize(#ffffff, 1) 0.6em);
+        background-position-y: 100%;
+      }
+    }
+  }
+}
+
+@mixin placeholder-pseudo {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+  &:-ms-input-placeholder {
+    @content;
+  }
+  &::-ms-input-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &::placeholder {
+    @content;
+  }
+}
+@mixin btn-text {
+  border: 0;
+  border-radius: 0;
+  text-transform: none;
+  background-color: transparent;
+  text-align: left;
+  padding: 0;
+}
+@mixin bubble() {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: $bubble-width;
+  height: $bubble-height;
+  border-radius: $bubble-border-radius;
+  font-size: $bubble-font-size;
+  font-weight: $bubble-font-weight;
+  border: $bubble-border;
+  background: $bubble-bg;
+  color: $bubble-font-color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 10px rgba($primary, 0.4);
+}
+@mixin scrollbar_thin( $thumb-color: $gray-400, $thumb-hover-color: $gray-500, $track-bg: $white ) {
+  $bar-width: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: $thumb-color $track-bg;
+
+  &::-webkit-scrollbar {
+    width: $bar-width;
+    height: $bar-width;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border: $bar-width / 2 solid $thumb-color;
+    border-radius: $bar-width / 2;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: $thumb-hover-color;
+    border: $bar-width / 2 solid $thumb-hover-color;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: $track-bg;
+  }
+}
+@mixin column-gap($size) {
+  column-gap: $size;
+}
+@mixin row-gap($size) {
+  row-gap: $size;
+}
+@mixin gutters($size) {
+  margin-right: unquote(-$size + 'px');
+  margin-left: unquote(-$size + 'px');
+
+  & > .col,
+  & > [class*="col-"] {
+    padding-right: unquote($size + 'px');
+    padding-left: unquote($size + 'px');
+  }
+}
+@mixin position_sticky() {
+  position: -webkit-sticky;
+  position: sticky;
+}
+@mixin input_select_active_format {
+  padding-top: $floating_input_active_padding_top;
+  padding-bottom: $floating_input_active_padding_bottom;
+
+  &.form-control-sm {
+    padding-top: $floating_input_active_padding_top-sm;
+    padding-bottom: $floating_input_active_padding_bottom-sm;
+  }
+  &.form-control-lg {
+    padding-top: $floating_input_active_padding_top-lg;
+    padding-bottom: $floating_input_active_padding_bottom-lg;
+  }
+  & + label:not(.custom-file-label) {
+    padding-top: $floating_label_active_padding_top;
+    padding-bottom: $floating_label_active_padding_bottom;
+    font-size: $floating_label_active_font_size;
+    height: $floating_label_active_height;
+    color: $floating_label_active_color;
+    top: $floating_label_active_height / 2 * -1;
+    background-color: $input-bg;
+    font-weight: 700;
+  }
+}
+@mixin textarea_active_format {
+  padding-top: $floating_input_active_padding_top;
+  padding-bottom: $floating_input_active_padding_bottom;
+
+  & + label {
+    padding-top: $floating_label_active_padding_top;
+    padding-bottom: $floating_label_active_padding_bottom;
+    padding-left: $floating_label_padding_x;
+    padding-right: $floating_label_padding_x;
+    font-size: $floating_label_active_font_size;
+    height: $floating_label_active_height;
+    color: $floating_label_active_color;
+    top: $floating_label_active_height / 2 * -1;
+    background-color: $input-bg;
+  }
+}
+@mixin abs-element () {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+}
+@mixin col-custom-5 {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 20%;
+  flex: 0 0 20%;
+  max-width: 20%;
+}
+@mixin col-custom-8 {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 12.5%;
+  flex: 0 0 12.5%;
+  max-width: 12.5%;
+}
+@mixin line-clamp($row-count, $line-height: $line-height-base, $global:true) {
+  -webkit-line-clamp: $row-count;
+  line-height: $line-height;
+  max-height: unquote($row-count * $line-height + 'em');
+  @if $global == true {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+}
+/* accessible-color() function and helpers */
+// Bootstrap-style tint and shade functions
+@function tint($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+@function shade($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+// Custom SASS functions for contrast calculation
+@function pow($base, $exponent) {
+  @if $exponent == 0 { @return 1; }
+  @if $exponent == 1 { @return $base; }
+  @if $base == 0 { @return 0; }
+  @if $base == 1 { @return 1; }
+  
+  // Handle common decimal exponents with Taylor series approximation
+  @if $exponent == 2.4 {
+    // Use (x^2) * (x^0.4) approximation
+    $squared: $base * $base;
+    $fractional: 1 + 0.4 * ($base - 1) + 0.08 * ($base - 1) * ($base - 1);
+    @return $squared * $fractional;
+  }
+  
+  // For other decimals, use logarithmic approximation (very basic)
+  $integer-part: floor($exponent);
+  $decimal-part: $exponent - $integer-part;
+  
+  $result: 1;
+  @for $i from 1 through $integer-part {
+    $result: $result * $base;
+  }
+  
+  // Rough approximation for decimal part
+  @if $decimal-part > 0 {
+    $result: $result * (1 + $decimal-part * ($base - 1));
+  }
+  
+  @return $result;
+}
+
+@function luminance($color) {
+  $red: red($color) / 255;
+  $green: green($color) / 255;
+  $blue: blue($color) / 255;
+  
+  $red: if($red <= 0.03928, $red / 12.92, pow(($red + 0.055) / 1.055, 2.4));
+  $green: if($green <= 0.03928, $green / 12.92, pow(($green + 0.055) / 1.055, 2.4));
+  $blue: if($blue <= 0.03928, $blue / 12.92, pow(($blue + 0.055) / 1.055, 2.4));
+  
+  @return 0.2126 * $red + 0.7152 * $green + 0.0722 * $blue;
+}
+
+@function contrast-ratio($color1, $color2) {
+  $lum1: luminance($color1);
+  $lum2: luminance($color2);
+  $lighter: max($lum1, $lum2);
+  $darker: min($lum1, $lum2);
+  
+  @return ($lighter + 0.05) / ($darker + 0.05);
+}
+
+@function accessible-color($original-color, $background, $target-ratio: 4.5) {
+  @if contrast-ratio($original-color, $background) >= $target-ratio {
+    @return $original-color;
+  }
+  
+  // Try progressively more shaded versions (mixing with black)
+  @for $i from 1 through 100 {
+    $shaded: shade($original-color, $i * 1%);
+    @if contrast-ratio($shaded, $background) >= $target-ratio {
+      @return $shaded;
+    }
+  }
+  
+  // Try progressively more tinted versions (mixing with white)
+  @for $i from 1 through 100 {
+    $tinted: tint($original-color, $i * 1%);
+    @if contrast-ratio($tinted, $background) >= $target-ratio {
+      @return $tinted;
+    }
+  }
+  
+  // Fallback to black or white
+  @if contrast-ratio(#000, $background) >= $target-ratio {
+    @return #000;
+  } @else {
+    @return #fff;
+  }
+}

@@ -1,0 +1,17 @@
+{% extends "main.html" %}
+
+{% block content %}
+<main class="main main--with-boxes">
+    {% block breadcrumb %}[[ breadcrumb ]]{% endblock %}
+    <div class="container">
+        <div class="row">
+            [[ tempBoxFilter ]]
+            <div class="rest-content-col col px-0">
+                [[ title ]]
+                [[ content ]]
+            </div>
+        </div>
+    </div>
+</main>
+[[ box|name:product_last;piece:8; ]]
+{% endblock %}

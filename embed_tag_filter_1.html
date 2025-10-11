@@ -1,0 +1,41 @@
+<div class="tag-filtering__tags{% if tag_include_type != "own_tags" %} tag-filtering--section js-tags{% endif %}" role="group" aria-label="{{ text.label ~ ' ' ~ text.filter }}">
+    {% if tag_array is not defined %}
+        {% set tag_array = tags %}
+    {% endif %}
+    {% for tag in tag_array %}
+        {% if tag_include_type != "own_tags" %}
+            <div class="tag-filtering__tag js-filter-by-tag{% if tag.is_active %} js-active-filter{% endif %}" role="button" tabindex="0"
+                 data-filter="js-filterable-{{ tag.id }}" aria-label="{{ tag.name ~ ' ' ~ text.label }}"
+                 aria-pressed="{{ tag.is_active ? 'true' : 'false' }}"
+            >
+                <div class="tag-filtering__tag-inner">{{ tag.name }}</div>
+            </div>
+            {% if loop.last %}
+            <div class="tag-filtering__tag tag-filtering__tag--clear js-clear-tag-filter{% if not clear_tag_disp %} d-none{% endif %}" data-filter="clear-all" role="button" tabindex="0">
+                <div class="tag-filtering__tag-inner icon--b-close">{{ text.delete_filter }}</div>
+            </div>
+            {% endif %}
+        {% else %}
+        <a class="tag-filtering__tag" href="{{ tag.filter_tag_url }}" aria-label="{{ tag.name ~ ' ' ~ text.label }}">
+            <div class="tag-filtering__tag-inner">{{ tag.name }}</div>
+        </a>
+        {% endif %}
+    {% endfor %}
+</div>
+{% if tag_include_type != "own_tags" %}
+<script>
+    var tagFilter = new filterByTag({type:"{{ tag_include_type }}"});
+    {% if tag_include_type =="category" %}
+        tagFilter.filterInit();
+        tagFilter.clearFilterInit();
+    {% else %}
+        {% if not blog_details_disp %}
+            tagFilter.filterInitAJAX();
+        {% endif %}
+        tagFilter.clearFilterInit();
+        {% if not blog_details_disp %}
+            tagFilter.filterInitTagsInList();
+        {% endif %}
+    {% endif %}
+</script>
+{% endif %}

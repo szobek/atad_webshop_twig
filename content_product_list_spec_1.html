@@ -1,0 +1,38 @@
+<div id="page_art_content" class="page_content">
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    [% if filterExists == "1" and filter_button_position_with_three_settings == "2" %]
+    {% embed common_vars.layout_urls.embed_filter_bar_1 %}{% endembed %}
+    [% endif %]
+
+    [% set inner_content %]
+        {% if no_product %}
+        <div class="product-list-wrapper"> {# product-list-wrapper - ebbe tölt bele az ajax #}
+            <div class="container">
+                <div class="no-product alert alert-info icon--b-info" role="alert">{{ text.no_product }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {{ product_list }}
+    [% endset %]
+
+    [% if filterExists != '1' %]
+        [[ inner_content ]]
+    [% else %]
+        [% if filter_box_in_sidebar == "0" %]
+         [[ inner_content ]]
+        [% else %]
+            {% embed common_vars.layout_urls.embed_filter_sidebar_1 %}
+                {% block rest_content %}[[ inner_content ]]{% endblock %}
+            {% endembed %}
+        [% endif %]
+    [% endif %]
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>
+<script>
+    $(document).ready(function(){
+        $(".js-nav-item-{{ list_spec_id }}").addClass("active");
+    });
+</script>

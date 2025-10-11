@@ -1,0 +1,209 @@
+<div id="page_cart_content" class="page_content">
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    {{ start_script }}
+
+    {% if cart_disp %}
+    <div id="page_cart_main" class="mt-md-4">
+        <div class="container">
+            <div class="row gutters-10">
+                <div class="order-left-content">
+                    {% if stock_alert_disp or shipping_free_alert_box_disp or discount_value_calc_alert_box_disp %}
+                    <div class="cart-alerts mb-4">
+                        {% if stock_alert_disp %}
+                        <div class="cart-stock-alert alert alert-warning icon--b-exclamation d-none" role="alert" id="cart-stock-alert" aria-describedby="cart-stock-alert sum-box-total-price">{{ text.stock_alert }}</div>
+                        {% endif %}
+
+                        {% if shipping_free_alert_box_disp %}
+                            {% if shipping_not_free_disp %}
+                            <div class="cart-shipping-alert alert alert-info icon--b-truck" role="alert" id="cart-shipping-alert" aria-describedby="cart-shipping-alert sum-box-total-price">{{ shipping_free_text }}</div>
+                            {% else %}
+                            <div class="cart-shipping-alert alert alert-success icon--b-truck" role="alert" id="cart-shipping-alert" aria-describedby="cart-shipping-alert sum-box-total-price">{{ shipping_free_text }}</div>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if discount_value_calc_alert_box_disp %}
+                        <div class="cart-discount-alert alert alert-info icon--b-tags" role="alert" id="cart-discount-alert" aria-describedby="cart-discount-alert sum-box-total-price">{{ discount_value_calc_value }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="cart-block main-block" aria-label="{{ text.ordered_products }}" role="region">
+                        {{ form_start }}
+                        {% set deleteCol = true %}
+
+                        {% embed common_vars.layout_urls.embed_cart_content_1 %}
+                            {% block qtyText %}{% endblock %}
+                        {% endembed %}
+
+                        {% if weight_disp %}
+                        <div class="cart__weight" id="page_cart_weight">{{ weight_text }}</div>
+                        {% endif %}
+
+                        <div class="cart__buttons d-flex flex-wrap align-items-baseline">
+                            <button class="cart__btn-back btn btn--back" type="button" onclick="back();">{{ text.button_back }}</button>
+                            {% if offer_disp %}
+                            <a class="cart__btn-offer btn icon--a-print btn-secondary" href="{{ offer_url }}">{{ text.print_bid }}</a>
+                            {% endif %}
+                            <button class="cart__btn-modify btn icon--a-refresh btn-secondary" type="button" onclick="modify();">{{ text.button_modify }}</button>
+                            {% if store_all_disp %}
+                                {% if store_disp %}
+                                <a class="cart__btn-save-cart btn icon--a-save btn-secondary" href="{{ store_url }}" data-tippy="{{ text.cart_store_text }}">{{ text.button_cart_store }}</a>
+                                {% endif %}
+                                {% if restore_disp %}
+                                <a class="cart__btn-restore btn icon--a-trash-restore btn-secondary" href="{{ restore_url }}" data-tippy="{{ text.cart_restore_text }}">{{ text.button_cart_restore }}</a>
+                                {% endif %}
+                            {% endif %}
+                            <button class="cart__btn-delete-all btn icon--a-trash btn-secondary" type="button" onclick="empty();">{{ text.button_cart_empty }}</button>
+                        </div>
+                        {{ form_end }}
+                    </div>
+
+                    {% if cetelem_disp or cofidis_disp %}
+                    <div class="cart-credits main-block">
+                        <div class="cart-credits__inner">
+                            {% if cetelem_disp %}
+                            <div class="cart-credit cart-credit-cetelem">
+                                <div class="cart-credit__title" id="page_artdet_credit_head">{{ text.credit_calculator }}</div>
+                                <div class="cart-credit__content" id="page_cart_credit">
+                                    {{ cetelem_content }}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if cofidis_disp %}
+                            <div class="cart-credit cart-credit-cofidis">
+                                <div class="cart-credit__title" id="page_artdet_cofidis_credit_head">{{ text.credit_calculator }}</div>
+                                <div class="cart-credit__content" id="page_cart_cofidis_credit">
+                                    {{ cofidis_content }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <script type="text/javascript">
+                            $(function () {
+                                $(".cart-credit__title").click(function () {
+                                    let $thisTitle = $(this);
+                                    $thisTitle.toggleClass('is-active');
+                                    $thisTitle.next('.cart-credit__content').stop().slideToggle("100", function () {
+                                        $(this).toggleClass('is-opened');
+                                    });
+                                });
+                            });
+                        </script>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="order-right-content">
+                    {% embed common_vars.layout_urls.embed_summary_box_1 %}
+                        {% block usedCouponItem %}{% endblock %}
+                        {% block commentInputs %}{% endblock %}
+                        {% block comment %}{% endblock %}
+                        {% block nextStepOnMethods %}{% endblock %}
+                        {% block nextStepOnVerification %}{% endblock %}
+                        {% block scriptMods %}{% endblock %}
+                    {% endembed %}
+                </div>
+            </div>
+        </div>
+        {% if marketing_gift_disp %}
+        <div id="page_gift_content" class="cart-gift-products cart-gift-products--{{ product_details_layout_num }} js-cart-gift-products d-none">
+            <script>
+                let elCartGift =  $(".js-cart-gift-products");
+
+                $.ajax({
+                    type: 'GET',
+                    url: '{{ gift_script_ajax_url }}&unas_page_forced={{ product_details_layout_num }}',
+                    beforeSend:function(){
+                        elCartGift.addClass('ajax-loading');
+                    },
+                    success:function(data){
+                        if (data !== '') {
+                            elCartGift.removeClass('d-none ajax-loading').addClass('ajax-loaded').html(data);
+                            $(document).trigger('cartGiftHasContent');
+                        } else  {
+                            elCartGift.remove();
+                            $(document).trigger('cartGiftHasNoContent');
+                        }
+                    },
+                    error:function(){
+                        elCartGift.html('Hiba történt a lekerés folyamán...').addClass('ajax-error');
+                    }
+                });
+            </script>
+        </div>
+        {% endif %}
+
+        {% if marketing_up_disp %}
+        <div id="page_cart_attach_up" class="cart-up-sale js-cart-up-sale d-none">
+            <div class="cart-up-sale__title main-title d-none">
+                <div class="container">{{ text.up_sale_text }}</div>
+            </div>
+            <div id="page_up_content" class="cart-up-sale__inner main-block"></div>
+            <script>
+                let elCartUpSale =  $(".js-cart-up-sale");
+
+                $.ajax({
+                    type: 'GET',
+                    url: '{{ up_script_ajax_url }}&unas_page_forced={{ product_details_layout_num }}',
+                    beforeSend:function(){
+                        elCartUpSale.addClass('ajax-loading');
+                    },
+                    success:function(data){
+                        if (data !== '') {
+                            elCartUpSale.removeClass('d-none ajax-loading').addClass('ajax-loaded');
+                            elCartUpSale.find('.cart-up-sale__inner').html(data);
+                        }
+                    }
+                });
+            </script>
+        </div>
+        {% endif %}
+
+        {% if marketing_cross_disp %}
+        <div id="page_cart_attach_cross" class="cart-cross-sale js-cart-cross-sale d-none">
+            <div id="page_cross_content">
+                <div class="cart-cross-sale__title main-title d-none">
+                    <div class="container">{{ text.cross_sale_text }}</div>
+                </div>
+                <div class="cart-cross-sale__inner main-block">{# page_cross_content ID kell a remove script miatt #}</div>
+                <script>
+                    let elCartCrossSale =  $(".js-cart-cross-sale");
+
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ cross_script_ajax_url }}&unas_page_forced={{ product_details_layout_num }}',
+                        beforeSend:function(){
+                            elCartCrossSale.addClass('ajax-loading');
+                        },
+                        success:function(data){
+                            if (data !== '') {
+                                elCartCrossSale.removeClass('d-none ajax-loading').addClass('ajax-loaded');
+                                elCartCrossSale.find('.cart-cross-sale__inner').html(data);
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="page_cart_empty">
+        <div class="container">
+            <div class="cart__empty alert alert-info d-inline-block">
+                <div class="cart__empty-text icon--b-info" role="alert">{{ text.no_product_in_cart }}</div>
+            </div>
+            <div class="cart__to-purchase-btn mb-4">
+                <a class="btn-link page_cart_to_products_link text-primary" href="{{ main_cat_url }}">{{ text.click_here_to_purchase }}</a>
+            </div>
+            {% if store_all_disp and restore_disp %}
+            <div class="cart__restore-text mb-4 icon--b-info text-info" role="alert">{{ text.cart_restore_text }}</div>
+            <a class="cart__btn-restore btn btn-primary icon--a-trash-restore mb-4" href="{{ restore_url }}">{{ text.button_cart_restore }}</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>

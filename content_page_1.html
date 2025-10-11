@@ -1,0 +1,548 @@
+{% if (gallery_exists or blog_details_disp) and not async_load %}
+<link rel="preload" href="[unas_service_url_base]/!common_packages/jquery/plugins/photoswipe/css/default-skin.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="[unas_service_url_base]/!common_packages/jquery/plugins/photoswipe/css/photoswipe.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<script defer src="[unas_service_url_base]/!common_packages/jquery/plugins/photoswipe/photoswipe.min.js" type="text/javascript"></script>
+<script defer src="[unas_service_url_base]/!common_packages/jquery/plugins/photoswipe/photoswipe-ui-default.min.js" type="text/javascript"></script>
+<script>
+    var initPhotoSwipeFromDOMGallery = function(datas) {
+        var $pswp = $(".pswp")[0];
+        var $psDatas = $(datas);
+
+        $psDatas.each( function() {
+            var $pics     = $(this),
+                getItems = function() {
+                    var items = [];
+                    $pics.find("a").each(function() {
+                        var $this = $(this);
+                        var $href   = $this.attr("href"),
+                            $size   = $this.data("size").split("x"),
+                            $width  = $size[0],
+                            $height = $size[1],
+                            $title = $this.data("caption")
+
+                        var item = {
+                            src : $href,
+                            w   : $width,
+                            h   : $height,
+                            title: $title
+                        };
+
+                        items.push(item);
+                    });
+                    return items;
+                };
+
+            var items = getItems();
+
+            $(".gallery__img-link", $pics).on('click', function(event) {
+                event.preventDefault();
+
+                var $index = $(this).index();
+                var options = {
+                    index: $index,
+                    history: false,
+                    bgOpacity: 1,
+                    preventHide: true,
+                    shareEl: false,
+                    showHideOpacity: true,
+                    getDoubleTapZoom: function(isMouseClick, item) {
+                        if(isMouseClick) {
+                            return 1;
+                        } else {
+                            return item.initialZoomLevel < 0.7 ? 1 : 1.5;
+                        }
+                    },
+                    addCaptionHTMLFn: function(item, captionEl, isFake) {
+                        if(!item.title) {
+                            captionEl.children[0].innerText = "";
+                            return false;
+                        }
+                        captionEl.children[0].innerHTML = item.title;
+                        return true;
+                    }
+                };
+
+                var photoSwipe = new PhotoSwipe($pswp, PhotoSwipeUI_Default, items, options);
+                photoSwipe.listen('close', () => {
+                    if (UNAS.design.active_element) {
+                        UNAS.design.active_element.focus();
+                        UNAS.design.active_element = '';
+                    }
+                });
+                photoSwipe.listen('initialZoomIn', () => {
+                    UNAS.design.active_element = document.activeElement;
+                });
+                photoSwipe.init();
+            });
+
+        });
+
+    };
+</script>
+<div class="pswp pswp--gallery" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="pswp__bg"></div>
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close"></button>
+                <button class="pswp__button pswp__button--fs"></button>
+                <button class="pswp__button pswp__button--zoom"></button>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+            <button class="pswp__button pswp__button--arrow--left"></button>
+            <button class="pswp__button pswp__button--arrow--right"></button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+            <div class="pswp__preloader">
+                <div class="pswp__preloader__icn">
+                    <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if not async_load %}
+<div id="page_page_content">
+    {% if tags_disp and not blog_details_disp %}
+    <section class="tag-filtering">
+        <div class="container">
+        {% set tag_include_type = "content" %}
+        {% include common_vars.layout_urls.embed_tag_filter_1 %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if not blog_details_disp %}
+    <div class="container">
+    {% endif %}
+        {% if scroll_script_disp %}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var target_offset = $("#{{ scroll_script_selector }}").offset();
+                var target_top = target_offset.top-50;
+                $("html, body").animate({scrollTop:target_top}, 500);
+            });
+        </script>
+        {% endif %}
+
+        {% if subpages_disp and not blog_details_disp %}
+        <div class="page-subpages text-center">
+            {% for subpage in subpages %}
+            <a class="page-subpage" href="{{ subpage.url }}" target="{{ subpage.target }}">{{ subpage.name }}</a>
+            {% endfor %}
+        </div>
+        {% if content_exists %}<div class="line-separator"></div>{% endif %}
+        {% endif %}
+{% endif %}
+
+        {% set classes = "page_content page_content_item" %}
+
+        {% set grid_row_class = "row" %}
+        {% set grid_row_class_blog = "row gutters-5 gutters-md-10 gutters-xxl-20" %}
+
+        {% set blog_count = 0 %}
+        {% for page_content in page_contents %}
+            {% if page_content.type == "blog" %}{% set blog_count = blog_count + 1%}{% endif %}
+        {% endfor %}
+
+        {% if blog_count == page_contents|length %}
+            {% set grid_row_class = grid_row_class_blog %}
+        {% endif %}
+
+        {% if not async_load and not blog_details_disp %}
+        <section class="page_content {{ grid_row_class }} justify-content-center js-filterable-elements-wrapper">
+        {% endif %}
+            {% for page_content in page_contents %}
+                {% if page_content.disp %}
+                    {% set grid = "col-" ~ page_content.default ~ " col-xs-" ~ page_content.xs ~ " col-sm-" ~ page_content.sm ~ " col-md-" ~ page_content.md ~ " col-lg-" ~ page_content.lg ~ " col-xl-" ~ page_content.xl ~ " col-xxl-" ~ page_content.xxl %}
+
+                    {% if page_content.type == "normal" %}
+					{{page_content.title}}
+                    <article id="page_content_{{ page_content.id }}" class="{{ classes }} {{ grid }} page_content--normal">
+                        <div class="page_txt type_normal">{{ page_content.normal_content }}</div>
+                    </article>
+                    {% endif %}
+
+                    {% if page_content.type == "blog" %}
+                        {% if page_content.blog_details_disp %}
+                        <article class="page_content--blog-details{% if page_content.blog_details_intro_img_exists %} has-details-img{% else %} has-no-details-img{% endif %}" id="page_content_{{ page_content.id }}">
+                            <div class="blog-details__back-btn-wrap mb-4">
+                                <div class="container">
+                                    <a class="blog-details__back-btn btn btn--back" href="{{ page_content.back_url }}">{{ text.button_back }}</a>
+                                </div>
+                            </div>
+
+                            {% if page_content.blog_details_intro_img_exists %}
+                                <div class="blog-details__intro-img-wrap">
+                                    <div class="container">
+                                        <div class="blog-details__intro-img-wrap-inner text-center">
+                                            <picture>
+                                            {% if page_content.blog_details_intro_img_small_disp %}
+                                            <source width="{{ page_content.blog_details_intro_img_small_width }}" height="{{ page_content.blog_details_intro_img_small_height }}" media="(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)"
+                                                    srcset="{{ page_content.blog_details_intro_img_small_url }} 1x{% if page_content.blog_details_intro_img_small_retina_disp %}, {{ page_content.blog_details_intro_img_small_retina_url }} 2x{% endif %}"
+                                            />
+                                            {% endif %}
+                                            {% if page_content.blog_details_intro_img_medium_disp %}
+                                            <source width="{{ page_content.blog_details_intro_img_medium_width }}" height="{{ page_content.blog_details_intro_img_medium_height }}" media="(max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px)"
+                                                    srcset="{{ page_content.blog_details_intro_img_medium_url }} 1x{% if page_content.blog_details_intro_img_medium_retina_disp %}, {{ page_content.blog_details_intro_img_medium_retina_url }} 2x{% endif %}"
+                                            />
+                                            {% endif %}
+                                            {% if page_content.blog_details_intro_img_large_disp %}
+                                            <source width="{{ page_content.blog_details_intro_img_large_width }}" height="{{ page_content.blog_details_intro_img_large_height }}" media="(max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px)"
+                                                    srcset="{{ page_content.blog_details_intro_img_large_url }} 1x{% if page_content.blog_details_intro_img_large_retina_disp %}, {{ page_content.blog_details_intro_img_large_retina_url }} 2x{% endif %}"
+                                            />
+                                            {% endif %}
+                                            <source width="{{ page_content.blog_details_intro_img_default_width }}" height="{{ page_content.blog_details_intro_img_default_height }}"
+                                                    srcset="{{ page_content.blog_details_intro_img_default_url }} 1x{% if page_content.blog_details_intro_img_default_retina_exists %}, {{ page_content.blog_details_intro_img_default_retina_url }} 2x{% endif %}"
+                                            />
+                                            <img class="blog-details__intro-img" width="{{ page_content.blog_details_intro_img_default_width }}" height="{{ page_content.blog_details_intro_img_default_height }}"
+                                                 src="{{ page_content.blog_details_intro_img_default_url }}" alt="{{ page_content.blog_title }}"
+                                            />
+                                        </picture>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="blog-details__header mb-4">
+                                    <div class="container">
+                                        <div class="blog-details__header-inner">
+                                            <h1 class="blog-details__title mb-4">{{ page_content.blog_title }}</h1>
+                                            <div class="blog-details__intro-text font-md-l{% if page_content.tags_disp %} mb-4{% endif %}">{{ page_content.blog_intro }}</div>
+                                            {% if page_content.tags_disp %}
+                                            <div class="blog-details__tags mb-4">
+                                                {% set tag_include_type = "own_tags" %}
+                                                {% set tag_array = page_content.tags %}
+                                                {% include common_vars.layout_urls.embed_tag_filter_1 %}
+                                            </div>
+                                            {% endif %}
+                                            <div class="blog-details__author-and-social">
+                                                <div class="row gutters-10 row-gap-10">
+                                                    <div class="col-auto">
+                                                        <div class="row gutters-5 flex-nowrap align-items-center">
+                                                            <div class="page__blog-author-and-date line-height-12 col-auto text-muted">
+                                                                {% if page_content.date_disp %}
+                                                                    <span class="page__blog-date-and-time">
+                                                                    <span class="page__blog-date">{{ page_content.blog_date }}</span>
+                                                                    <span class="page__blog-time d-none">{{ page_content.blog_time }}</span>
+                                                                </span>
+                                                                {% endif %}
+
+                                                                {% if page_content.blog_author_disp %}
+                                                                <span class="page__blog-author-name">{{ page_content.blog_author_name }}</span>
+                                                                {% endif %}
+                                                            </div>
+                                                            {% if page_content.blog_author_img_disp %}
+                                                            <div class="page__blog-author-img col-auto">
+                                                                <div class="page__blog-author-img-wrap">
+                                                                    <img width="{{ page_content.blog_author_img_width }}" height="{{ page_content.blog_author_img_height }}" src="{{ page_content.blog_author_img_url }}" alt="{{ page_content.blog_author_name }}" />
+                                                                </div>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    {% if page_content.social_media_disp %}
+                                                    <div class="social-medias col-auto flex-grow-0 ml-auto">
+                                                        {% for type in page_content.social_shares if page_content.social_share_disp %}
+                                                        <button class="social-media social-media--{{ type.name }}" type="button" aria-label="{{ type.name }}" data-tippy="{{ type.name }}" onclick='{{ type.onclick_value }}'></button>
+                                                        {% endfor %}
+                                                        {% if page_content.facebook_like_disp %}
+                                                        <div class="social-media social-media--fb-like d-flex">{{ page_content.facebook_like_content|replace({'<iframe': '<iframe title="facebook like"'}) }}</div>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %} {# there is no details image exists #}
+                                <div class="blog-details__top mb-4 mb-lg-5">
+                                    <div class="container">
+                                        <div class="blog-details__top-inner">
+                                            <div class="row row-gap-20">
+                                                {% if page_content.blog_list_intro_img_disp %}
+                                                <div class="col-12 blog-details__intro-img-col">
+                                                    <div class="blog-details__intro-img-outer" style="width: {{ page_content.blog_list_intro_img_width }}px;">
+                                                        <div class="blog-details__intro-img-wrap" style="padding-top: {{ page_content.blog_list_intro_img_height / page_content.blog_list_intro_img_width * 100 }}%;">
+                                                            <img class="blog-details__intro-img lazy-img lazyload" width="{{ page_content.blog_list_intro_img_width }}" height="{{ page_content.blog_list_intro_img_height }}" src="{{ page_content.blog_list_intro_img_url }}" alt="{{ page_content.blog_title }}" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                <div class="blog-details__blog-infos-col col-lg">
+                                                    <div class="blog-details__blog-infos">
+                                                        <h1 class="blog-details__title mb-4">{{ page_content.blog_title }}</h1>
+                                                        <div class="blog-details__intro-text font-md-l mb-4">{{ page_content.blog_intro }}</div>
+                                                        {% if page_content.tags_disp %}
+                                                        <div class="blog-details__tags mb-4">
+                                                            {% set tag_include_type = "own_tags" %}
+                                                            {% set tag_array = page_content.tags %}
+                                                            {% include common_vars.layout_urls.embed_tag_filter_1 %}
+                                                        </div>
+                                                        {% endif %}
+                                                        <div class="blog-details__author-and-social">
+                                                            <div class="row gutters-10 row-gap-10">
+                                                                <div class="col-auto">
+                                                                    <div class="row gutters-5 flex-nowrap align-items-center">
+                                                                        <div class="page__blog-author-and-date line-height-12 col-auto text-muted">
+                                                                            {% if page_content.date_disp %}
+                                                                                <span class="page__blog-date-and-time">
+                                                                                    <span class="page__blog-date">{{ page_content.blog_date }}</span>
+                                                                                    <span class="page__blog-time d-none">{{ page_content.blog_time }}</span>
+                                                                                </span>
+                                                                            {% endif %}
+
+                                                                            {% if page_content.blog_author_disp %}
+                                                                            <span class="page__blog-author-name">{{ page_content.blog_author_name }}</span>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                        {% if page_content.blog_author_img_disp %}
+                                                                        <div class="page__blog-author-img col-auto">
+                                                                            <div class="page__blog-author-img-wrap">
+                                                                                <img width="{{ page_content.blog_author_img_width }}" height="{{ page_content.blog_author_img_height }}" src="{{ page_content.blog_author_img_url }}" alt="{{ page_content.blog_author_name }}" />
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                                {% if page_content.social_media_disp %}
+                                                                <div class="social-medias col-auto flex-grow-0 ml-auto">
+                                                                    {% for type in page_content.social_shares if page_content.social_share_disp %}
+                                                                    <button class="social-media social-media--{{ type.name }}" type="button" aria-label="{{ type.name }}" data-tippy="{{ type.name }}" onclick='{{ type.onclick_value }}'></button>
+                                                                    {% endfor %}
+                                                                    {% if page_content.facebook_like_disp %}
+                                                                    <div class="social-media social-media--fb-like d-flex">{{ page_content.facebook_like_content|replace({'<iframe': '<iframe title="facebook like"'}) }}</div>
+                                                                    {% endif %}
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="blog-details__text mb-4 mb-lg-5">
+                                <div class="container">
+                                    {{ page_content.blog_details }}
+                                </div>
+                            </div>
+                            {% if page_content.blog_included_content_disp %}
+                            <div class="blog-details__included-content">
+                                <div class="container">
+                                    <div class="{{ grid_row_class }}">
+                                        {{ page_content.blog_included_content }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif%}
+                            <div class="blog-details__back-btn-wrap">
+                                <div class="container">
+                                    <a class="blog-details__back-btn btn btn--back" href="{{ page_content.back_url }}">{{ text.button_back }}</a>
+                                </div>
+                            </div>
+                        </article>
+                        {% else %}
+                            {% embed common_vars.layout_urls.embed_blog_card_1 %}{% endembed %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if page_content.type == "gallery" %}
+                    <section id="page_content_{{ page_content.id }}" class="{{ classes }} {{ grid }} page_content--gallery">
+                        {% if page_content.gallery_type == "1" %}
+                        <div class="gallery gallery--type-1">
+                            <div class="gallery__carousel" id="gallery--{{ page_content.id }}-{{ loop.index }}">
+                                {% for gallery_image in page_content.gallery_images %}
+                                <a class="gallery__img-link has-img" href="{{ gallery_image.url }}"
+                                    data-size="{{ gallery_image.width }}x{{ gallery_image.height }}" title="{{ gallery_image.alt }}"
+                                    {% if gallery_image.text_disp %} data-caption="{{ gallery_image.text }}"{% endif %} target="_blank">
+                                    <img class="gallery__img" loading="lazy" width="{{ gallery_image.width }}" height="{{ gallery_image.height }}"
+                                         style="height:{{ gallery_image.height }}px;" src="{{ gallery_image.url }}"
+                                         {%- if gallery_image.text_disp %} alt="{{ gallery_image.alt }}"{% endif -%}
+                                    >
+                                </a>
+                                {% endfor %}
+                            </div>
+                            <script type="text/javascript">
+                                window.addEventListener("DOMContentLoaded", function() {
+                                    var $flkty_{{ page_content.id }}_{{ loop.index }}_options = {
+                                        cellAlign: "left",
+                                        groupCells: true,
+                                        contain: true,
+                                        pageDots: false,
+                                        lazyLoad: 1,
+                                        autoPlay: 5000
+                                    }
+                                    if ( matchMedia('screen and (min-width: 1200px)').matches ) {
+                                        $flkty_{{ page_content.id }}_{{ loop.index }}_options.draggable = false;
+                                    }
+                                    $('#gallery--{{ page_content.id }}-{{ loop.index }}').flickity($flkty_{{ page_content.id }}_{{ loop.index }}_options);
+                                });
+                            </script>
+                        </div>
+                        {% endif %}
+
+                        {% if page_content.gallery_type == "2" %}
+                        <div class="gallery gallery--type-2">
+                            <div class="d-flex flex-wrap justify-content-center justify-content-sm-start align-items-center gallery__container" id="gallery--{{ page_content.id }}-{{ loop.index }}">
+                                {% for gallery_image in page_content.gallery_images %}
+                                <a class="gallery__img-link has-img" href="{{ gallery_image.url }}" data-size="{{ gallery_image.width }}x{{ gallery_image.height }}"
+                                    {% if gallery_image.text_disp %} data-caption="{{ gallery_image.text }}"{% endif %} title="{{ gallery_image.alt }}" target="_blank">
+                                    <img class="gallery__img" width="{{ gallery_image.width }}" height="{{ gallery_image.height }}"
+                                         style="height:{{ gallery_image.height }}px;" src="{{ gallery_image.url }}" loading="lazy"
+                                         {% if gallery_image.text_disp %}alt="{{ gallery_image.alt }}"{% endif %}
+                                    />
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        <script>
+                            $(document).ready(function() {
+                                initPhotoSwipeFromDOMGallery("#gallery--{{ page_content.id }}-{{ loop.index }}");
+                            });
+                        </script>
+                    </section>
+                    {% endif %}
+
+                    {% if page_content.type == "form" %}
+                    <section id="page_content_{{ page_content.id }}" class="{{ classes }} {{ grid }} page_content--form js-validation">
+                        {% if page_content.form_disp %}
+                        <div class="page_content__form-inner">
+                            <div class="page_content_with_form_type container-max-md px-0">
+                                {{ page_content.form_start }}
+                                {% for form_element in page_content.form_elements %}
+                                    {% if form_element.type == "text" %}
+                                        <div class="form-group">
+                                            <label for="{{ form_element.name }}">{{ form_element.label }}{% if form_element.desc_disp %}&nbsp;<span class="icon--info" data-tippy="{{ form_element.desc|escape }}"></span>{% endif %}</label>
+                                            <input class="form-control{% if form_element.error_disp %} is-invalid{% endif %}" name="{{ form_element.name }}" id="{{ form_element.name }}" placeholder="{{ form_element.label }}" type="text" value="{{ form_element.value }}" />
+                                            <div class="invalid-feedback">{{ form_element.error_text }}</div>
+                                        </div>
+                                    {% elseif form_element.type == "email" %}
+                                        <div class="form-group">
+                                            <label for="{{ form_element.name }}">{{ form_element.label }}{% if form_element.desc_disp %}&nbsp;<span class="icon--info" data-tippy="{{ form_element.desc|escape }}"></span>{% endif %}</label>
+                                            <input class="form-control{% if form_element.error_disp %} is-invalid{% endif %}" name="{{ form_element.name }}" id="{{ form_element.name }}" placeholder="{{ form_element.label }}" type="email" value="{{ form_element.value }}" />
+                                            <div class="invalid-feedback">{{ form_element.error_text }}</div>
+                                        </div>
+                                    {% elseif form_element.type == "textarea" %}
+                                        <div class="form-group">
+                                            <label for="{{ form_element.name }}">{{ form_element.label }}{% if form_element.desc_disp %}&nbsp;<span class="icon--info" data-tippy="{{ form_element.desc|escape }}"></span>{% endif %}</label>
+                                            <textarea class="form-control{% if form_element.error_disp %} is-invalid{% endif %}" name="{{ form_element.name }}" id="{{ form_element.name }}" placeholder="{{ form_element.label }}" rows="7">{{ form_element.value }}</textarea>
+                                            <div class="invalid-feedback">{{ form_element.error_text }}</div>
+                                        </div>
+                                    {% elseif form_element.type == "radio" %}
+                                        <fieldset class="form-group">
+                                            <legend>{{ form_element.label }}{% if form_element.desc_disp %}&nbsp;<span class="icon--info" data-tippy="{{ form_element.desc|escape }}"></span>{% endif %}</legend>
+                                            {% for option in form_element.radio_options %}
+                                                <div class="custom-control custom-radio">
+                                                    <input class="custom-control-input{% if form_element.error_disp %} is-invalid{% endif %}" type="radio" id="{{ option.name }}_{{ loop.index }}" name="{{ option.name }}" value="{{ option.value }}" {% if option.checked %}checked{% endif %}/>
+                                                    <label class="custom-control-label" for="{{ option.name }}_{{ loop.index }}">{{ option.text }}</label>
+                                                    {% if loop.last %}<div class="invalid-feedback">{{ form_element.error_text }}</div>{% endif %}
+                                                </div>
+                                            {% endfor %}
+
+                                        </fieldset>
+                                    {% elseif form_element.type == "checkbox" %}
+                                        <fieldset class="form-group">
+                                            <legend>{{ form_element.label }}{% if form_element.desc_disp %}&nbsp;<span class="icon--info" data-tippy="{{ form_element.desc|escape }}"></span>{% endif %}</legend>
+                                            {% for option in form_element.checkbox_options %}
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input{% if form_element.error_disp %} is-invalid{% endif %}" name="{{ option.name }}" id="{{ option.name }}" type="checkbox" value="{{ option.value }}" {% if option.checked %}checked{% endif %} />
+                                                    <label class="custom-control-label" for="{{ option.name }}">{{ option.text }}</label>
+                                                    {% if loop.last %}<div class="invalid-feedback">{{ form_element.error_text }}</div>{% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </fieldset>
+                                    {% elseif form_element.type == "select" %}
+                                        <div class="form-group">
+                                            <label for="{{ form_element.name }}">{{ form_element.label }}{% if form_element.desc_disp %}&nbsp;<span class="icon--info" data-tippy="{{ form_element.desc|escape }}"></span>{% endif %}</label>
+                                            <div class="form-select-group">
+                                                <select class="form-control{% if form_element.error_disp %} is-invalid{% endif %}" name="{{ form_element.name }}" id="{{ form_element.name }}">
+                                                    <option selected disabled value="">{{ text.please_select }}</option>
+                                                    {% for option in form_element.select_options %}
+                                                        <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.text }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="invalid-feedback">{{ form_element.error_text }}</div>
+                                            </div>
+                                        </div>
+                                    {% elseif form_element.type == "file" %}
+                                        <div class="form-group">
+                                            <label class="custom-file-label-inline" for="{{ form_element.id }}"{% if form_element.desc_disp %} data-tippy="{{ form_element.desc|escape }}"{% endif %}>{{ form_element.label }}{% if form_element.desc_disp %}&nbsp;<span class="icon--info"></span>{% endif %}</label>
+                                            <div class="custom-file">
+                                                <input class="custom-file-input custom-file-input--2{% if form_element.required %} required{% endif %}{% if form_element.error_disp %} is-invalid{% endif %}" name="{{ form_element.name }}" id="{{ form_element.name }}" onchange="file_input_filname_change(this);" type="file">
+                                                <label class="custom-file-label custom-file-label--2" for="{{ form_element.name }}">
+                                                    <div class="custom-file-name" data-text="{{ text.no_file_selected }}">{{ text.no_file_selected }}</div>
+                                                    <div class="custom-file-choose-btn">{{ text.select_file }}</div>
+                                                </label>
+                                                <div class="invalid-feedback">{{ form_element.error_text }}</div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <div class="page-form-item__btn-wrap text-center">
+                                    {% if page_content.recaptcha_disp %}
+                                        {{ page_content.recaptcha_script }}
+                                        <button class="g-recaptcha btn btn-primary mt-4" {{ page_content.recaptcha_attributes }}>{{ text.button_send }}</button>
+                                    {% else %}
+                                        <button name="form_page_content_submit" class="btn btn-primary mt-4">{{ text.button_send }}</button>
+                                    {% endif %}
+                                </div>
+                                {{ page_content.form_end }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </section>
+                    {% endif %}
+
+                    {% if page_content.type == "product" %}
+                    <section id="page_content_{{ page_content.id }}" class="{{ classes }} {{ grid }} page_content--product">
+                        {{ page_content.product_list }}
+                        {% if page_content.button_caption != '' and page_content.button_url != '' %}
+                            <div class="page_content_product_list_button container">
+                                <a href="{{ page_content.button_url }}" class="btn btn-primary">{{ page_content.button_caption }}</a>
+                            </div>
+                        {% endif %}
+                    </section>
+                    {% endif %}
+                {% endif %}
+
+                {% if page_content.facebook_comments_disp %}
+                <section id="page_content_{{ page_content.id }}_comment" class="col-12 page_content--comment mt-5">
+                    {{ page_content.facebook_comments }}
+                </section>
+                {% endif %}
+            {% endfor %}
+            {% if paging_disp %}
+            <nav class="news-paging col-12 d-flex align-items-center justify-content-center my-4 py-3 border-top" aria-label="pagination">
+                {{ paging_content }}
+            </nav>
+            {% endif %}
+
+        {% if not async_load and not blog_details_disp %}
+        </section>
+        <div class="loading-spinner__wrap col-12">
+            <div class="loading-spinner"></div>
+        </div>
+        {% endif %}
+{% if not async_load %}
+    {% if not blog_details_disp %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}

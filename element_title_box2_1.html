@@ -1,0 +1,13 @@
+{% if element_disp %}
+[% set {{ name }} %]
+<div id="{{ name }}" class="js-element {{ name }}{% if class != '' %} {{ class }}{% endif %}" data-element-name="{{ name }}">
+    <div class="{{ name }}__container{% if container_class != '' %} {{ container_class }}{% endif %}">
+    {% for slide in slides %}
+        {% if slide.html_disp %}
+        <div class="{{ name }}__html">{{ slide.html }}</div>
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>
+[% endset %]
+{% endif %}

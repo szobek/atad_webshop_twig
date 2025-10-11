@@ -1,0 +1,295 @@
+{% if element_disp %}
+    {% set carousel_arrows = backvar.custom_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_carousel_nums %}
+    {% set carousel_dots = backvar.custom_carousel_dots %}
+
+    {% if transition_effect_fade_disp %}
+    <script src="[unas_shop_url]/!common_packages/jquery/plugins/flickity/v3/flickity-fade.min.js" async></script>
+    <link rel="stylesheet" href="[unas_shop_url]/!common_packages/jquery/plugins/flickity/v3/flickity-fade.css" media="print" onload="this.media='all';">
+    {% endif %}
+
+     {# LOOP FOR CLS STYLING #}
+    {% for slide in slides|slice(0,1) %}
+        {% if slide.img_default_disp %}
+            <style>
+                .carousel-{{ name }} .carousel-cell {
+                    padding-top: {{ (slide.img_default_height / slide.img_default_width * 100) }}%;
+                }
+                {% if slide.img_large_disp %}
+                @media (max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px){
+                    .carousel-{{ name }} .carousel-cell {
+                        padding-top: {{ (slide.img_large_height / slide.img_large_width * 100) }}%;
+                    }
+                }
+                {% endif %}
+                {% if slide.img_medium_disp %}
+                @media (max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px){
+                    .carousel-{{ name }} .carousel-cell {
+                        padding-top: {{ (slide.img_medium_height / slide.img_medium_width * 100) }}%;
+                    }
+                }
+                {% endif %}
+                {% if slide.img_small_disp %}
+                @media (max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px){
+                    .carousel-{{ name }} .carousel-cell {
+                        padding-top: {{ (slide.img_small_height / slide.img_small_width * 100) }}%;
+                    }
+                }
+                {% endif %}
+            </style>
+
+            {# create preload tags #}
+
+            {# create an array for breakpoints that can be used to skip a given URL if it is equal to the previous URL #}
+            {% set bp_skip = {
+                'sm' : [slide.img_md_url, slide.img_lg_url, slide.img_default_url],
+                'md' : [slide.img_lg_url, slide.img_default_url],
+                'lg' : [slide.img_default_url]
+            } %}
+
+            {% set bp_array = [] %}
+
+            {%- for bp, value in common_vars.grid_breakpoints|reverse %}
+                {% set url = attribute(slide, "img_" ~ bp ~ "_url") %}
+                {% set disp = attribute(slide, "img_" ~ bp ~ "_disp") %}
+                {% set retina_disp = attribute(slide, "img_" ~ bp ~ "_retina_disp") %}
+                {% set retina_url = attribute(slide, "img_" ~ bp ~ "_retina_url") %}
+                {% set retina_ratio = _context[bp ~ "_retina_ratio"] ?? '2' %}
+
+                {% if disp and (bp_skip[bp] is not defined or url not in bp_skip[bp]) %}
+                    <link rel="preload"
+                          media="{% if bp_array is not empty %}(min-width:{{ common_vars.grid_breakpoints[bp_array|last] }}px) and {% endif %}(max-width:{{ value - 0.02 }}px)"
+                          imagesrcset="{{ url }} 1x{% if retina_disp %}, {{ retina_url }} {{ retina_ratio }}x{% endif %}"
+                          href="{{ url }}"
+                          as="image"
+                          fetchpriority="high"
+                    >
+                    {% set bp_array = bp_array|merge([bp]) %}
+                {% endif %}
+            {% endfor -%}
+            <link rel="preload"{% if bp_array is not empty %} media="(min-width: {{ common_vars.grid_breakpoints[bp_array|last] }}px)"{% endif %} imagesrcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} {{ default_retina_ratio ?? '2' }}x{% endif %}"
+                href="{{ slide.img_default_url }}" as="image" fetchpriority="high"
+            >
+        {% endif %}
+    {% endfor %}
+
+    {# LOOP FOR TEXT LAYER STYLING #}
+    {% for slide in slides %}
+        {% if loop.first %}<style>{% endif %}
+            {# SET default font color #}
+            {% set firstFontColor = false %}
+            {% for text in slide.texts %}
+                {% set tempTextContent = "" %}
+                {% set tempTextContent %}
+                    {% if text.font_color_disp %}color:{{ text.font_color }};{% endif %}
+                    {% if text.bg_color_disp %}background-color:{{ text.bg_color }}; background:{{ text.bg_color }};{% endif %}
+                    {% if text.border_color_disp %}border-color:{{ text.border_color }};{% endif %}
+                    {% if text.border_style_disp and text.border_style !="none" %}border-style:{{ text.border_style }};{% endif %}
+                    {% if text.border_width_disp %}border-width:{{ text.border_width }};{% endif %}
+                {% endset %}
+                {% if tempTextContent|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+                    #{{ name }}_{{ text.id }} { {{ tempTextContent }} }
+                {% endif %}
+                {% if text.hover_disp %}
+                    #{{ name }}_{{ text.id }}:hover {
+                        {% if text.bg_color_hover_disp %}
+                            background-color:{{ text.bg_color_hover }};
+                            background:{{ text.bg_color_hover }};
+                        {% endif %}
+                        {% if text.font_color_hover_disp %}
+                            color:{{ text.font_color_hover }};
+                        {% endif %}
+                    }
+                {% endif %}
+            {% endfor %}
+        {% if loop.last %}</style>{% endif %}
+    {% endfor %}
+
+    [% set {{ name }} %]
+    <div class="js-element {{ name }}{% if class != '' %} {{ class }}{% endif %}" data-element-name="{{ name }}"
+        {% if animation_on_scroll == 1 and backvar.custom_aos != '0' %}
+            {% set temp_aos %}
+                {% if backvar.custom_aos != '' %}
+                    {{ backvar.custom_aos }}
+                {% else %}
+                    {{ animation_on_scroll_type }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            {% if backvar.custom_aos_duration != '' %}
+            data-aos-duration="{{ backvar.custom_aos_duration }}"
+            {% endif %}
+            {% if backvar.custom_aos_offset != '' %}
+            data-aos-offset="{{ backvar.custom_aos_offset }}"
+            {% endif %}
+            {% if backvar.custom_aos_delay != '' %}
+            data-aos-delay="{{ backvar.custom_aos_delay }}"
+            {% endif %}
+        {% endif %}
+    >
+        <div class="{{ name }}__container carousel__container js-carousel-block{% if container_class != '' %} {{ container_class }}{% endif %}">
+            <div class="carousel-{{ name }} carousel{% if carousel_dots and slides|length > 1 %} has-dots{% endif %}" tabindex="0">
+                {% for slide in slides %}
+                <div class="carousel-cell" role="group" aria-label="Slide {{ loop.index }} of {{ loop.length }}">
+                    {% if slide.img_default_disp %}
+                        {% if slide.img_link_disp %}
+                        <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                        {% endif %}
+                        <picture>
+                            {# create an array for breakpoints that can be used to skip a given URL if it is equal to the previous URL #}
+                            {% set bp_skip = {
+                                'sm' : [slide.img_md_url, slide.img_lg_url, slide.img_default_url],
+                                'md' : [slide.img_lg_url, slide.img_default_url],
+                                'lg' : [slide.img_default_url]
+                            } %}
+
+                            {% set bp_array = [] %}
+
+                            {%- for bp, value in common_vars.grid_breakpoints|reverse %}
+                                {% set width = attribute(slide, "img_" ~ bp ~ "_width") %}
+                                {% set height = attribute(slide, "img_" ~ bp ~ "_height") %}
+                                {% set url = attribute(slide, "img_" ~ bp ~ "_url") %}
+                                {% set disp = attribute(slide, "img_" ~ bp ~ "_disp") %}
+                                {% set retina_disp = attribute(slide, "img_" ~ bp ~ "_retina_disp") %}
+                                {% set retina_url = attribute(slide, "img_" ~ bp ~ "_retina_url") %}
+                                {% set retina_ratio = _context[bp ~ "_retina_ratio"] ?? '2' %}
+
+                                {% if disp and (bp_skip[bp] is not defined or url not in bp_skip[bp]) %}
+                                    <source width="{{ width }}" height="{{ height }}"
+                                          media="{% if bp_array is not empty %}(min-width:{{ common_vars.grid_breakpoints[bp_array|last] }}px) and {% endif %}(max-width:{{ value - 0.02 }}px)"
+                                          srcset="{{ url }} 1x{% if retina_disp %}, {{ retina_url }} {{ retina_ratio }}x{% endif %}"
+                                    >
+                                    {% set bp_array = bp_array|merge([bp]) %}
+                                {% endif %}
+                            {% endfor -%}
+                            <source{% if bp_array is not empty %} media="(min-width: {{ common_vars.grid_breakpoints[bp_array|last] }}px)"{% endif %} width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} {{ default_retina_ratio ?? '2' }}x{% endif %}">
+                            <img class="lazy-img {{ name }}{{ loop.index }}"{% if loop.index > 1 %} loading="lazy"{% else %} decoding="async" fetchpriority="high"{% endif %} src="{{ slide.img_default_url }}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}">
+                        </picture>
+                        {% if slide.img_link_disp %}</a>{% endif %}
+                    {% endif %}
+                    {% if slide.texts or slide.html_disp %}
+                    <div class="carousel-cell-texts texts--layer" id="{{ name }}-text-layer-{{ loop.index }}">
+                        <div class="texts__container">
+                            {% if slide.html_disp %}
+                                <div class="html-text">{{ slide.html }}</div>
+                            {% endif %}
+
+                            {% for text in slide.texts %}
+                                {% if text.font_size == 'button' %}
+                                    {% if text.link_disp %}
+                                        <a class="carousel-cell-text btn btn-primary btn-lg text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}" href="{{ text.url }}" {% if text.target_blank %} target="_blank"{% endif %}>{{ text.value }}</a>
+                                    {% else %}
+                                        <div class="carousel-cell-text btn btn-primary btn-lg text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}">{{ text.value }}</div>
+                                    {% endif %}
+                                {% else %}
+                                <div class="carousel-cell-text text text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}">
+                                    {% if text.link_disp %}<a href="{{ text.url }}" {% if text.target_blank %} target="_blank"{% endif %}>{% endif %}
+                                        {{ text.value }}
+                                    {% if text.link_disp %}</a>{% endif %}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if carousel_arrows or carousel_nums %}
+            <div class="carousel__nav carousel__nav--{{ name }}{% if carousel_nums %} has-nums{% endif %}">
+                {% if carousel_arrows %}
+                <div class="carousel__buttons carousel__buttons-{{ name }}">
+                    <button type="button" class="carousel__prev-btn carousel__prev-next-btn btn" aria-label="{{ text.previous }}"></button>
+                    <button type="button" class="carousel__next-btn carousel__prev-next-btn btn" aria-label="{{ text.next }}"></button>
+                </div>
+                {% endif %}
+                {% if carousel_nums %}
+                <div class="carousel__nums carousel__nums-{{ name }}">
+                    <div class="carousel__num-actual">1</div>
+                    <div class="carousel__num-all">1</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <script type="text/javascript">
+
+            {% set flkty_options = {} %}
+            {% if autoplay_enabled %}
+                {% set flkty_options = flkty_options|merge({ "autoPlay": delay }) %}
+            {% endif %}
+            {% if not carousel_dots %}
+                {% set flkty_options = flkty_options|merge({ "pageDots": false }) %}
+            {% endif %}
+            {% if transition_effect_fade_disp %}
+                {% set flkty_options = flkty_options|merge({ "fade": true }) %}
+            {% endif %}
+            {% set flkty_options = flkty_options|merge({ "prevNextButtons": false }) %}
+            {% set flkty_options = flkty_options|merge({ "dragThreshold": 10 }) %}
+
+            let $flkty_{{ name }}_options = {{ flkty_options|json_encode(constant('JSON_PRETTY_PRINT')) }}
+            {% if autoplay_enabled %}
+            $flkty_{{ name }}_options.autoPlay = parseInt($flkty_{{ name }}_options.autoPlay);
+            {% endif %}
+
+            let $flkty_{{ name }}_options_on = {
+                on: {
+                    ready: function() {
+                        $(this.element).addClass('ready');
+                        $(this.element).closest('.js-carousel-block').addClass('ready');
+                        if (this.slides.length > 1) {
+                            $(this.element).parent().find('.carousel__nav').addClass('active');
+                        }
+                        let $thisHeight = this.maxCellHeight;
+                        $('#dropdown-cat').css('height', $thisHeight + 'px');
+
+                        {% if carousel_nums %}
+                        let $thisNav = $(this.element).parent().find('.carousel__nav');
+                        let slidesLength = this.slides.length;
+                        let $navAll = $thisNav.find('.carousel__num-all');
+
+                        $navAll.html(slidesLength);
+                        {% endif %}
+                    },
+                    change: function( index ) {
+                        {% if carousel_nums %}
+                        let $thisNav = $(this.element).parent().find('.carousel__nav');
+                        let $navActual = $thisNav.find('.carousel__num-actual');
+                        let $index = index + 1;
+
+                        $navActual.html($index);
+                        {% endif %}
+                    },
+                    resize: function() {
+                        {% if carousel_arrows %}
+                        let $thisButtons = $(this.element).parent().find('.carousel__buttons');
+
+                        if (this.slides.length == 1) {
+                            $thisButtons.removeClass('active');
+                        } else {
+                            $thisButtons.addClass('active');
+                        }
+                        {% endif %}
+                    }
+                }
+            }
+            $.extend( $flkty_{{ name }}_options, $flkty_{{ name }}_options_on );
+
+            window.addEventListener('DOMContentLoaded', function() {
+                var $flkty_{{ name }} = $( '.carousel-{{ name }}' ).flickity($flkty_{{ name }}_options);
+
+                {% if carousel_arrows %}
+                $('.carousel__buttons-{{ name }} .carousel__prev-btn').on( 'click', function() {
+                    $flkty_{{ name }}.flickity('previous', true);
+                });
+                $('.carousel__buttons-{{ name }} .carousel__next-btn').on( 'click', function() {
+                    $flkty_{{ name }}.flickity( 'next', true );
+                });
+                {% endif %}
+            });
+            </script>
+        </div>
+    </div>
+    [% endset %]
+{% endif %}

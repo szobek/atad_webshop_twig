@@ -1,0 +1,50 @@
+{% if recommend_disp %}
+<section class="recommend up-block">
+    <div class="recommend__title-wrap up-block__title-wrap">
+        <div class="recommend__title up-block__title">{{ text.recommend_to_someone }}</div>
+        <div class="up-block__title-sub">{{ text.recommend_text }}</div>
+    </div>
+    <div class="up-block__content" id="page_recommend_content">
+        {{ recaptcha_script }}
+
+        {{ form_start }}
+        <div class="recommend__form-inner mb-4">
+            <div class="form-group recommend_label_input">
+                <label for="recommend_friends_email">{{ text.recipient_email }}</label>
+                <input type="email" name="recommend_friends_email" placeholder="{{ text.recipient_email }}" class="form-control" id="recommend_friends_email" />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group recommend_label_input">
+                <label for="recommend_my_name">{{ text.name }}</label>
+                <input type="text" name="recommend_my_name" placeholder="{{ text.name }}" class="form-control" id="recommend_my_name" value="{{ recommend_sender_name }}" />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group recommend_label_input">
+                <label for="recommend_my_email">{{ text.email }}</label>
+                <input type="text" name="recommend_my_email" placeholder="{{ text.email }}" class="form-control" id="recommend_my_email" value="{{ recommend_sender_email }}" />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group recommend_label_input">
+                <label for="recommend_comment">{{ text.message }}</label>
+                <textarea name="recommend_comment" rows="4" placeholder="{{ text.message }}" class="form-control" id="recommend_comment"></textarea>
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group">
+                <div class="custom-control custom-checkbox recommend_label_input font-xs" id="recommend_label_privacy_policy">
+                    <input class="custom-control-input" name="recommend_privacy_policy" id="recommend_privacy_policy" type="checkbox" value="1" />
+                    <label class="custom-control-label recommend_label" for="recommend_privacy_policy">{{ text.accept_privacy_policy }}</label>
+                    <div class="invalid-feedback">{{ text.error_privacy_policy }}</div>
+                </div>
+            </div>
+            <div class="recommend__status alert alert-success icon--b-check" id="recommend_error_msg" style="display: none;" role="alert">{{ text.mail_sent }}</div>
+            <div class="recommend__send-btn-wrap text-center">
+                <button class="recommend__send-btn btn btn-primary icon--a-mail" id="recommend_send_button" title="{{ text.button_send_recommend }}">{{ text.button_send_recommend }}</button>
+            </div>
+        </div>
+        {{ form_end }}
+    </div>
+    <div class="recommend__product-list-wrapper">
+        {{ product_list }}
+    </div>
+</section>
+{% endif %}

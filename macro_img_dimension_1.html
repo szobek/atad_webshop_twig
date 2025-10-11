@@ -1,0 +1,41 @@
+{% macro img_dimension(orig_width, orig_height, req_width, req_height ) %}
+    {# ha VAN orig méret #}
+    {% if orig_width matches '/^\\d+$/' and orig_height matches '/^\\d+$/' %}
+
+        {# nem éri el az erdeti képméret a kért méretet #}
+        {% if orig_width <= req_width and orig_height <= req_height %}
+            data-phase="1" width="{{ orig_width }}" height="{{ orig_height }}"
+            style="width:{{ orig_width }}px;"
+        {% endif %}
+
+        {# szélessége nagyobb mint a kért, de a magassága kisebb #}
+        {% if orig_width > req_width and orig_height <= req_height %}
+            data-phase="2" width="{{ req_width }}" height="{{ (orig_height / (orig_width / req_width))|round(0, 'floor') }}"
+            style="width:{{ req_width }}px;"
+        {% endif %}
+
+        {# szélessége kisebb mint a kért, de a magassága nagyobb #}
+        {% if orig_width <= req_width and orig_height > req_height %}
+            data-phase="3" width="{{ (orig_width / (orig_height / req_height))|round(0, 'floor') }}" height="{{ req_height }}"
+            style="width:{{ (orig_width / (orig_height / req_height))|round(0, 'floor') }}px; height:{{ req_height }}px;"
+        {% endif %}
+
+        {# ha nagyobb a kért méretnél az eredeti kép #}
+        {% if orig_width > req_width and orig_height > req_height %}
+            {% if orig_width > orig_height %} {# fekvő kép #}
+                data-phase="4" width="{{ req_width }}" height="{{ (orig_height / (orig_width / req_width))|round(0, 'floor') }}"
+                style="width:{{ req_width }}px;"
+            {% endif %}
+            {% if orig_width < orig_height %} {# álló kép #}
+                data-phase="5" width="{{ (orig_width / (orig_height / req_height))|round() }}" height="{{ req_height }}"
+            {% endif %}
+            {% if orig_width == orig_height %} {# négyzetes kép #}
+                data-phase="6" width="{{ req_width }}" height="{{ req_height }}"
+                style="width:{{ req_width }}px;"
+            {% endif %}
+        {% endif %}
+    {% else %}
+        data-phase="7" width="{{ req_width }}" height="{{ req_height }}"
+        style="width:{{ req_width }}px; height:{{ req_height }}px;"
+    {% endif %}
+{% endmacro %}

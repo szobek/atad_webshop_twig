@@ -1,0 +1,102 @@
+<div class="cookie-alert cookie-alert-popup cookie_alert_4 overlay_common{% if close %} cookie-alert-closed{% endif %}" id="overlay_cookie_alert"
+     role="dialog" tabindex="-1" aria-modal="true" aria-label="{{ text.cookie_consent_settings }}" aria-describedby="cookie_alert_description" style="display:none;"
+>
+    <div class="cookie-alert__inner py-4">
+        <div class="container text-left">
+            <div>
+                <div id="cookie_alert_title" class="cookie-alert__title font-weight-bold">{{ text.cookie_consent_settings }}</div>
+                <div id="cookie_alert_description" class="cookie-alert__text font-s">{{ text.cookie_consent_text_1 }}</div>
+            </div>
+            <div class="py-3 px-md-4">
+                <div class="cookie-alert__checkboxes" role="radiogroup" aria-labelledby="cookie_alert_title" style="display: none">
+                    <div class="custom-control form-check custom-checkbox mb-2">
+                        <input aria-describedby="checkbox_working_description" class="custom-control-input form-check-input" type="checkbox" id="cookie_alert_checkbox_working" checked="checked" disabled="disabled" />
+                        <label for="cookie_alert_checkbox_working" class="custom-control-label form-check-label font-weight-bold">{{ text.functional_cookies }}</label>
+                        <div id="checkbox_working_description" class="font-s">{{ text.functional_cookies_details }}</div>
+                    </div>
+                    <div class="custom-control form-check custom-checkbox mb-2">
+                        <input aria-describedby="checkbox_market_description" class="custom-control-input form-check-input" type="checkbox" id="cookie_alert_checkbox_marketing"{% if checkbox_marketing_checked %} checked="checked"{% endif %} value="1" />
+                        <label for="cookie_alert_checkbox_marketing" class="custom-control-label form-check-label font-weight-bold">{{ text.marketing_cookies }}</label>
+                        <div id="checkbox_market_description" class="font-s">{{ text.marketing_cookies_details }}</div>
+                    </div>
+                    <div class="custom-control form-check custom-checkbox mb-2">
+                        <input aria-describedby="checkbox_stats_description" class="custom-control-input form-check-input" type="checkbox" id="cookie_alert_checkbox_statistics"{% if checkbox_statistics_checked %} checked="checked"{% endif %} value="1" />
+                        <label for="cookie_alert_checkbox_statistics" class="custom-control-label form-check-label font-weight-bold">{{ text.statistics_cookies }}</label>
+                        <div id="checkbox_stats_description" class="font-s">{{ text.statistics_cookies_details }}</div>
+                    </div>
+                    <div class="custom-control form-check custom-checkbox">
+                        <input aria-describedby="checkbox_personalize_description" class="custom-control-input form-check-input" type="checkbox" id="cookie_alert_checkbox_personalization"{% if checkbox_personalization_checked %} checked="checked"{% endif %} value="1" />
+                        <label for="cookie_alert_checkbox_personalization" class="custom-control-label form-check-label font-weight-bold">{{ text.personalization_cookies }}</label>
+                        <div id="checkbox_personalize_description" class="font-s">{{ text.personalization_cookies_details }}</div>
+                    </div>
+                    {% if consent_date %}
+                    <div class="cookie-alert__consent-data mt-3">
+                        {% if consent_date %}<div>{{ text.cookie_consent_date }}: <b>{{ consent_date }}</b></div>{% endif %}
+                        {% if consent_id %}<div>{{ text.cookie_consent_id }}: <b>{{ consent_id }}</b></div>{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="cookie-alert__btn-set-wrap text-center">
+                <button class="cookie-alert__btn-config btn btn-secondary icon--a-edit m-2" type="button" aria-expanded="false">{{ text.button_settings }}</button>
+                <button class="cookie-alert__btn-set btn btn-primary icon--a-check m-2" type="button" onclick="$('#overlay_cookie_alert').overlay().close();cookie_alert_action(1,(($('#cookie_alert_checkbox_marketing').prop('checked')==true)?1:0),(($('#cookie_alert_checkbox_statistics').prop('checked')==true)?1:0),(($('#cookie_alert_checkbox_personalization').prop('checked')==true)?1:0));">{{ text.button_set }}</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        {% if not close %}
+        $(document).on("overlayInited", function (e, response) {
+            if (response.id == 'cookie_alert') {
+                cookie_alert_overlay();
+            }
+        });
+        {% endif %}
+
+        $(document).ready(function(){
+            overlay_init("cookie_alert",{});
+
+            {% if config_default_open %}
+            $('.cookie-alert__btn-config').css('display','none');
+            $('.cookie-alert__checkboxes').css("display","block");
+            {% endif %}
+
+            $(".cookie-alert__btn-open").show();
+            $(".cookie-alert__btn-open").on("click",function(){
+                $('.cookie-alert__btn-config').css('display','none');
+                $('.cookie-alert__checkboxes').css("display","block");
+
+                cookie_alert_overlay();
+            });
+
+            $(".cookie-alert__btn-config").on("click", function() {
+                const $this = $(this);
+                $this.attr('aria-expanded', (_, attr) => (attr == 'false' ? 'true' : 'false'));
+                $('.cookie-alert__checkboxes').slideToggle(300, function() {
+                    $this.trigger('openCookieConfig');
+                });
+            }).on('openCookieConfig', function() {
+                const $overlayCookieSetting = $('.cookie-alert__checkboxes');
+                const $focusableElements = $overlayCookieSetting.find('button, input:not([disabled]), a[href]:not([href="#"]):not(.close)');
+
+                if ($focusableElements.length === 0) {
+                    return;
+                }
+
+                window.manageFocus?.("#overlay_cookie_alert", {
+                    focusTo: $focusableElements.first(),
+                });
+            });
+
+            $(document).on("closeConsent", function () {
+                window.announceToScreenReader?.('modalClose',{'label': `{{ text.cookie_consent_settings }}`});
+            });
+            $(document).on("grantConsent", function () {
+                window.announceToScreenReader?.('grantConsent');
+            });
+            $(document).on("rejectConsent", function () {
+                window.announceToScreenReader?.('rejectConsent');
+            });
+        });
+    </script>
+</div>
+{% block close_btn %}{% endblock %}

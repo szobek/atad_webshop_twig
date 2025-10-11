@@ -1,0 +1,293 @@
+<div class="order-details-content page_content" id="page_order_track_det_content">
+    {{ script }}
+    <div class="main__title">
+        <div class="container">
+            <div class="main-title-wrapper d-flex flex-wrap align-items-center">
+                <h1 class="mb-0 mr-3"><span class="main-title">{{ text.profile }}</span></h1>
+                {% if tabs_disp %}<a class="reg__logout-btn btn btn-primary ml-auto" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# TABS NEW #}
+    {% if tabs_disp %}
+    <div id="nav-tab-accordion-1" class="nav-tabs-accordion">
+        <div class="nav-tabs-container nav-tabs-outer--2 container">
+            <ul class="nav nav-tabs reg-tabs" role="tablist">
+                {% if tab_orders_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-orders" rel="orders" href="{{ tab_orders_url }}">{{ text.orders }}</a></li>
+                {% endif %}
+
+                {% if tab_subscriptions_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-subscriptions" rel="subscriptions" href="{{ tab_subscriptions_url }}">{{ text.subscriptions }}</a></li>
+                {% endif %}
+
+                {% if tab_discount_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-discount" rel="discount" href="{{ tab_discount_url }}">{{ text.discounts }}</a></li>
+                {% endif %}
+
+                {% if tab_favourites_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-favourites" rel="favourites" href="{{ tab_favourites_url }}">{{ text.favourites }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_filters_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_filters" rel="saved_filters" href="{{ tab_saved_filters_url }}">{{ text.saved_filters }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_cards_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_cards" rel="saved_cards" href="{{ tab_saved_cards_url }}">{{ text.saved_cards }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_delivery_points_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_delivery_points" rel="saved_delivery_points" href="{{ tab_saved_delivery_points_url }}">{{ text.saved_delivery_points }}</a></li>
+                {% endif %}
+
+                {% if tab_customer_addresses_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-customer_addresses" rel="customer_addresses" href="{{ tab_customer_addresses_url }}">{{ text.customer_addresses }}</a></li>
+                {% endif %}
+
+                {% if tab_modify_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" aria-selected="true" id="tab-reg" rel="reg" href="{{ tab_modify_url }}">{{ text.data_modify }}</a></li>
+                {% endif %}
+
+                <li class="nav-item d-none" role="presentation"><a class="nav-link" role="tab" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a></li>
+            </ul>
+        </div>
+        <div class="tab-panes pane-accordion container">
+            {% if tab_orders_disp %}
+            <div class="pane-header" id="pane-header-orders">
+                <a id="accordion-btn-orders" href="{{ tab_orders_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-orders">
+                    {{ text.orders }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_subscriptions_disp %}
+            <div class="pane-header" id="pane-header-subscriptions">
+                <a id="accordion-btn-subscriptions" href="{{ tab_subscriptions_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-subscriptions">
+                    {{ text.subscriptions }}
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="tab-pane fades order-data active show" id="pane-order-data" role="tabpanel" aria-labelledby="pane-header-order-data">
+                <div class="tab-pane__container container order-data__content mb-5">
+                    {% endif %}
+                    {% if not tabs_disp %}
+                    <div class="container">
+                        {% endif %}
+                        <div class="row gutters-10">
+                            <div class="order-left-content">
+                                <div class="row gutters-5">
+                                    <div class="col-12 order-control-section__col">
+                                        <div class="order-control-section__wrapper">
+                                            <section class="order-details__order-datas">
+                                                <div class="order-main-title">{{ text.order_data }}</div>
+                                                {% if order_status_text_disp %}
+                                                    <div class="order-details__order-status-text alert alert-info icon--b-info mb-4">{{ order_status_text }}</div>
+                                                {% endif %}
+
+                                                {% if payment_status_disp %}
+                                                    {% if payment_status == "not_enough" %}
+                                                        <div class="payment-status payment-status--not-enough alert alert-danger mb-4">
+                                                            <span class="payment-status__title icon--b-exclamation"><span class="order-data-title font-weight-bold">{{ text.payment_status }}:</span>{{ payment_status_title }}</span>
+                                                            <span class="payment-status__data">({{ payment_status_amount }})</span>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if payment_status == "payback" %}
+                                                        <div class="payment-status payment-status--payback alert alert-warning mb-4">
+                                                            <span class="payment-status__title icon--b-money-hand"><span class="order-data-title font-weight-bold">{{ text.payment_status }}:</span>{{ payment_status_title }}:</span>
+                                                            <span class="payment-status__data">({{ payment_status_amount }})</span>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if payment_status == "pending" %}
+                                                        <div class="payment-status payment-status--pending alert alert-warning mb-4">
+                                                            <span class="payment-status__title icon--b-pending"><span class="order-data-title font-weight-bold">{{ text.payment_status }}:</span>{{ payment_status_title }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if payment_status == "completed" %}
+                                                        <div class="payment-status payment-status--completed alert alert-success mb-4">
+                                                            <span class="payment-status__title icon--b-check"><span class="order-data-title font-weight-bold">{{ text.payment_status }}:</span>{{ payment_status_title }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                {% elseif payment_method_pay_disp %} {#nincs státusza, de online fizetést választott, csak nem indította még el#}
+                                                    <div class="payment-status status--{{ payment_status }} alert alert-danger mb-4">
+                                                        <span class="payment-status__title icon--b-exclamation"><span class="order-data-title font-weight-bold">{{ text.payment_status }}:</span>{{ text.not_paid }}</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                <div class="order-control-datas">
+                                                    <div class="order-control-data order-details__order-key">
+                                                        <div class="order-control-title">{{ text.order_key }}:</div>
+                                                        <div class="order-control-value">{{ order_key }}</div>
+                                                    </div>
+                                                    <div class="order-control-data order-details__order-status">
+                                                        <div class="order-control-title">{{ text.order_status }}:</div>
+                                                        <div class="order-control-value d-inline-block">
+                                                            {{ order_status }}
+                                                            {% set page = "order_details" %}
+                                                            {% include common_vars.layout_urls.embed_status_history_1 %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="order-control-data order-details__order-date">
+                                                        <div class="order-control-title">{{ text.order_date }}:</div>
+                                                        <div class="order-control-value">{{ order_date }}</div>
+                                                    </div>
+                                                    <div class="order-control-data order-details__invoice-number">
+                                                        <div class="order-control-title">{{ text.invoice_num }}:</div>
+                                                        <div class="order-control-value{% if invoice_pdf_url_disp %} d-flex flex-column gap-5 align-items-start{% endif %}">
+                                                            {% if invoice_number_disp %}
+                                                                {{ invoice_number }}
+                                                                {% if invoice_pdf_url_disp %}
+                                                                    <button type="button" class="btn btn-primary btn-sm px-3 py-2 font-xs icon--b-file" onclick="window.open('{{ invoice_pdf_url }}');">{{ text.view_invoice }}</button>
+                                                                {% endif %}
+                                                            {% else %} -
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    {% if package_number_disp %}
+                                                        <div class="order-control-data order-details__package-number">
+                                                            <div class="order-control-title">{{ text.package_number }}:</div>
+                                                            <div class="order-control-value{% if package_number_url_disp %} d-flex flex-column gap-5 align-items-start{% endif %}">
+                                                                {{ package_number }}
+                                                                {% if package_number_url_disp %}
+                                                                    <button type="button" class="btn btn-primary btn-sm px-3 py-2 font-xs icon--b-truck" onclick="window.open('{{ package_number_url }}');">{{ text.button_package_tracking }}</button>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if tracking_info_url_disp %}
+                                                        <div class="order-control-data order-details__tracking-info">
+                                                            <div class="order-control-title">{{ text.tracking_info }}:</div>
+                                                            <div class="order-control-value" id="tracking_info_content">
+                                                                <div class="row no-gutters">
+                                                                    <div class="loading-spinner__wrap col-12 pt-2">
+                                                                        <div class="loading-spinner--small"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <script>
+                                                                $(document).ready(function () {
+                                                                    $("#tracking_info_content").load("{{ tracking_info_url }}");
+                                                                });
+                                                            </script>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if comment_disp %}
+                                                        <div class="order-control-data order-details__comment">
+                                                            <div class="order-control-title">{{ text.note }}:</div>
+                                                            <div class="order-control-value">{{ comment }}</div>
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if shipping_comment_disp %}
+                                                        <div class="order-control-data order-details__shipping-comment">
+                                                            <div class="order-control-title">{{ text.note_for_shipping }}:</div>
+                                                            <div class="order-control-value">{{ shipping_comment }}</div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </div>
+                                    {% embed common_vars.layout_urls.embed_order_content_1 %}{% endembed %}
+                                </div>
+
+                                <div class="order-details__cart mb-4">
+                                    <div class="contact-title py-3 d-none">{{ text.ordered_products }}</div>
+                                    {% embed common_vars.layout_urls.embed_cart_content_1 %}
+                                        {% block qtyInput %}{% endblock %}
+                                    {% endembed %}
+                                </div>
+                                <div class="order-details__buttons mb-4">
+                                    <button class="btn order-details__main-btn my-2 mr-3 icon--b-cart" type="button" onclick="{{ button_restore_onclick }}">{{ text.button_cart_restore_from_order }}</button>
+                                    <button class="btn btn-secondary my-2 mr-3 icon--b-print" type="button" onclick="{{ button_print_onclick }}">{{ text.printable_version }}</button>
+                                    {% if button_return_disp %}
+                                        <button id="button_return" class="btn btn-secondary my-2 mr-3 icon--b-restore" type="button" onclick="{{ button_return_onclick }}">{{ text.button_order_return }}</button>
+                                    {% endif %}
+                                    {% if button_delete_disp %}
+                                        <button id="button_order_delete" class="btn btn-secondary my-2 mr-3 icon--b-trash" type="button" onclick="{{ button_delete_onclick }}">{{ text.order_delete }}</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="order-right-content">
+                                {% embed common_vars.layout_urls.embed_summary_box_1 %}
+                                    {% block nextStepOnCart %}{% endblock %}
+                                    {% block nextStepOnMethods %}{% endblock %}
+                                    {% block nextStepOnVerification %}{% endblock %}
+                                    {% block commentInputs %}{% endblock %}
+                                    {% block comment %}{% endblock %}
+                                    {% block usedCouponItem %}{% endblock %}
+                                    {% block coupon %}{% endblock %}
+                                {% endembed %}
+                            </div>
+                        </div>
+                        {% if tab_orders_disp %}
+                            <div class="order-details__btn-back-wrap mb-5" href="{{ tab_orders_url }}">
+                                <a class="order-details__btn-back btn btn--back" href="{{ tab_orders_url }}">{{ text.button_back }}</a>
+                            </div>
+                        {% endif %}
+                        {% if not tabs_disp %}
+                    </div>
+                    {% endif %}
+                    {% if tabs_disp %}
+                </div>
+            </div>
+
+            {% if tab_discount_disp %}
+            <div class="pane-header" id="pane-header-discount">
+                <a id="accordion-btn-discount" href="{{ tab_discount_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-discount">
+                    {{ text.discounts }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_favourites_disp %}
+            <div class="pane-header" id="pane-header-favourites">
+                <a id="accordion-btn-favourites" href="{{ tab_favourites_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-favourites">
+                    {{ text.favourites }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_filters_disp %}
+            <div class="pane-header" id="pane-header-saved_filters">
+                <a id="accordion-btn-saved_filters" href="{{ tab_saved_filters_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_filters">
+                    {{ text.saved_filters }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_cards_disp %}
+            <div class="pane-header" id="pane-header-saved_cards">
+                <a id="accordion-btn-saved_cards" href="{{ tab_saved_cards_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_cards">
+                    {{ text.saved_cards }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_delivery_points_disp %}
+            <div class="pane-header" id="pane-header-saved_delivery_points">
+                <a id="accordion-btn-saved_delivery_points" href="{{ tab_saved_delivery_points_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_delivery_points">
+                    {{ text.saved_delivery_points }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_customer_addresses_disp %}
+            <div class="pane-header" id="pane-header-customer_addresses">
+                <a id="accordion-btn-customer_addresses" href="{{ tab_customer_addresses_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-customer_addresses">
+                    {{ text.customer_addresses }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_modify_disp %}
+            <div class="pane-header" id="pane-header-reg">
+                <a id="accordion-btn-reg" href="{{ tab_modify_url }}" class="pane-header-btn btn">{{ text.data_modify }}</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    {{ form_print }}
+</div>

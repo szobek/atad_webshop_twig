@@ -1,0 +1,98 @@
+{% if fixed_cart_behavior_on_product_details in ["0","1"] %}
+    {% if cart_disp and can_add_to_cart_disp %}
+    <div class="fixed-cart js-fixed-cart" id="artdet__fixed-cart">
+        <div class="container">
+            <div class="row gutters-5 gutters-md-10 row-gap-10 align-items-center py-2">
+                {% if img_exists %}
+                <div class="col-auto fixer-cart__img-col">
+                    <img class="fixed-cart__img" width="40" height="40" src="{{ img_thumbnail_url|resize(40,40) }}"{% if img_thumbnail_retina_exists %} srcset="{{ img_thumbnail_retina_url|resize(80,80) }} {{ img_thumbnail_retina_size }}"{% endif %} alt="{{ img_alt }}" />
+                </div>
+                {% endif %}
+                <div class="col">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center">
+                        <div class="fixed-cart__name line-clamp--1-12">{{ name }}</div>
+                        {% if prices_disp %}
+                        <div class="fixed-cart__prices row no-gutters align-items-center ml-md-auto{% if price_sale_disp %} has-price-sale{% endif %}">
+                            {% if sale_disp %}
+                            <div class="col-auto align-self-stretch">
+                                <div class="badge badge--sale mb-0">
+                                    <span class="js-sale-percent-{{ sku_id }}" data-percent="%">{{ sale_percent }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="col d-flex flex-wrap col-gap-5 align-items-baseline flex-md-column">
+                                {% if price_disp %}
+                                <span class="fixed-cart__price fixed-cart__price--base product-price--base"{% if price_normal_info_text_disp %} tabindex="0" data-tippy="{{ price_normal_info_text }}"{% endif %}>
+                                    {{ price_normal_text }}<span class="fixed-cart__price-base-value{% if price_line_through and sale_disp %} text-line-through{% endif %}">{{ price }}</span>{% if price_normal_info_text_disp %}&nbsp;<span class="icon--info"></span>{% endif %}
+                                </span>
+                                {% endif %}
+
+                                {% if price_sale_disp %}
+                                <div class="fixed-cart__price fixed-cart__price-discount product-price--sale">
+                                    {{ price_discounted_text }}
+                                    {{ price_sale }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button class="fixed-cart__btn btn icon--b-cart" type="button" aria-label="{{ text.button_add_to_cart }}"
+                            title="{{ text.button_add_to_cart }}" onclick="$('.artdet__cart-btn').trigger('click');" {{ cart_target }} {{ cart_analytics_event }}>
+                        {{ text.button_add_to_cart }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        {% if fixed_cart_behavior_on_product_details == "0" %}
+        $(document).ready(function () {
+            const $itemVisibilityCheck = $(".js-main-cart-btn");
+            const $stickyCart = $(".js-fixed-cart");
+
+            const cartObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        $stickyCart.removeClass('is-visible');
+                    } else {
+                        $stickyCart.addClass('is-visible');
+                    }
+                });
+            }, {});
+
+            cartObserver.observe($itemVisibilityCheck[0]);
+
+            $(window).on('scroll',function () {
+                cartObserver.observe($itemVisibilityCheck[0]);
+            });
+        });
+        {% endif %}
+        {% if fixed_cart_behavior_on_product_details == "1" %}
+        $(document).ready(function () {
+            const $itemVisibilityCheck = $(".js-main-cart-btn");
+            const $stickyCart = $(".js-fixed-cart");
+
+            if ($(this).scrollTop() > $itemVisibilityCheck.offset().top) {
+                $stickyCart.addClass('is-visible');
+            } else {
+                $stickyCart.removeClass('is-visible');
+            }
+
+            $(window).on('scroll',
+                throttle(function () {
+                    if ($(this).scrollTop() > $itemVisibilityCheck.offset().top) {
+                        $stickyCart.addClass('is-visible');
+                    } else {
+                        $stickyCart.removeClass('is-visible');
+                    }
+                }, 150)
+            );
+        });
+        {% endif %}
+    </script>
+    {% endif %}
+{% endif %}

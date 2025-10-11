@@ -1,0 +1,221 @@
+{# CSOMAGBAN OLCSÓBB - bundle_products #}
+{# AJÁNDÉK TERMÉK - gift_page (by_cart_total/by_product/on_product_details) #}
+{# CROSS PAGE (ezt is kérem) - cross_page (artdet/cart) #}
+{# UP PAGE (inkább ezt kérem) - up_page (cart) #}
+
+{% if products_disp %}
+    {# GLOBAL settings START #}
+        {% set listMainType = "page_pagelist_" %}
+        {% set listItemType = "page_pagelist_item" %}
+        {% set redirectToDetails = "popup_redirect_to_details" %}
+        {% set cartOnClick = "popup_cart_onclick" %}
+        {% set cartBtnText = "popup_cart_text" %}
+        {% if marketing_type_cart_disp %}
+            {% set page_type = "cart" %}
+        {% elseif marketing_type_artdet_disp %}
+            {% set page_type = "artdet" %}
+        {% else %}
+            {% set page_type = "unknown" %}
+        {% endif %}
+    {# GLOBAL settings END #}
+
+    {# CSOMAGBAN OLCSÓBB - bundle_products #}
+    {% if product_list_type == "bundle_products" %}
+        {% set img_width = backvar.bundle_products_img_maxwidth %}
+        {% set img_height = backvar.bundle_products_img_maxheight %}
+        {% set carousel_enabled = backvar.custom_bundle_carousel_enabled %}
+        {% set carousel_arrows = backvar.custom_bundle_carousel_arrows %}
+        {% set carousel_nums = backvar.custom_bundle_carousel_nums %}
+        {% set carousel_dots = backvar.custom_bundle_carousel_dots %}
+        {% set prod_recomm_title = text.cheaper_in_bundle %}
+        {% set prod_recomm_title_sub = text.cheaper_in_these_bundles %}
+        {% set prod_recomm_title_class = "up-block__title" %}
+        {% set grid_col = "col-6 col-md-4" %}
+
+        <section class="bundle-products up-block" id="page_artpack_content">
+            {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+                {% block embed_card %}
+                    {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                        {% block functions %}{% endblock %}
+                    {% endembed %}
+                {% endblock %}
+            {% endembed %}
+
+            <script>
+                $(document).on('removeBundleItem', function () {
+                    overlay_close("overlay_script");
+                });
+            </script>
+        </section>
+    {% endif %}
+
+    {# GIFT #}
+    {% if product_list_type == "gift_page" %}
+        {% set img_width = backvar.gift_page_img_maxwidth %}
+        {% set img_height = backvar.gift_page_img_maxheight %}
+
+        <section class="gift-products gift--{{ gift_type }}" id="page_gift_content_{{ gift_id }}">
+            {% if gift_type == 'by_cart_total' %}
+            <div class="gift-products__inner main-block">
+            {% set carousel_enabled = backvar.custom_gift_by_cart_total_carousel_enabled %}
+            {% set carousel_arrows = backvar.custom_gift_by_cart_total_carousel_arrows %}
+            {% set carousel_nums = backvar.custom_gift_by_cart_total_carousel_nums %}
+            {% set carousel_dots = backvar.custom_gift_by_cart_total_carousel_dots %}
+            {% set prod_recomm_title = text.choose_gift %}
+            {% set prod_recomm_title_class = "gift-products__title main-title" %}
+
+            {% set grid_col = "col-6 col-sm-4 col-lg-3 col-xl-2" %}
+
+            {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+                {% block embed_card %}
+                    {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                        {% block sale %}{% endblock %}
+                        {% block new %}{% endblock %}
+                        {% block custom_badges %}{% endblock %}
+                        {% block gift_badge %}<div class="product__badge-gift badge badge--gift" title="{{ text.gift }}"><span class="icon--gift"></span></div>{% endblock %}
+                        {% block review %}{% endblock %}
+                        {% block functions %}{% endblock %}
+                        {% block params %}{% endblock %}
+                        {% block price_unit %}{% endblock %}
+                        {% block stock %}{% endblock %}
+                        {% block price %}{% endblock %}
+                    {% endembed %}
+                {% endblock %}
+            {% endembed %}
+            </div>
+            {% endif %}
+
+            {% if gift_type == 'by_product' %}
+            <div class="gift-products__inner main-block">
+            {% set carousel_enabled = backvar.custom_gift_by_product_carousel_enabled %}
+            {% set carousel_arrows = backvar.custom_gift_by_product_carousel_arrows %}
+            {% set carousel_nums = backvar.custom_gift_by_product_carousel_nums %}
+            {% set carousel_dots = backvar.custom_gift_by_product_carousel_dots %}
+            {% set title_box = backvar.custom_gift_by_product_title_box %}
+            {% set title_box_theme = backvar.custom_gift_by_product_title_box_theme %}
+
+            {% set temp_title %}
+            <div class="gift__title">
+                <span class="gift__base-title mr-2">{{ text.choose_gift_for_product }}</span>
+                <span class="gift__base-product-name">{{ gift_base_product_name }}</span>
+            </div>
+            {% endset %}
+            {% set prod_recomm_title = temp_title %}
+            {% set prod_recomm_title_class = "gift-products__title main-title" %}
+            {% set grid_col = "col-6 col-sm-4 col-lg-3 col-xl-2" %}
+
+            {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+                {% block embed_card %}
+                    {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                        {% block sale %}{% endblock %}
+                        {% block new %}{% endblock %}
+                        {% block custom_badges %}{% endblock %}
+                        {% block gift_badge %}<div class="product__badge-gift badge badge--gift" title="{{ text.gift }}"><span class="icon--gift"></span></div>{% endblock %}
+                        {% block review %}{% endblock %}
+                        {% block functions %}{% endblock %}
+                        {% block params %}{% endblock %}
+                        {% block price_unit %}{% endblock %}
+                        {% block stock %}{% endblock %}
+                        {% block price %}{% endblock %}
+                    {% endembed %}
+                {% endblock %}
+            {% endembed %}
+            </div>
+            {% endif %}
+
+            {% if gift_type == 'on_product_details' %}
+            <div class="gift-products__inner">
+            {% set carousel_enabled = backvar.custom_gift_on_product_details_carousel_enabled %}
+            {% set carousel_arrows = backvar.custom_gift_on_product_details_carousel_arrows %}
+            {% set carousel_nums = backvar.custom_gift_on_product_details_carousel_nums %}
+            {% set carousel_dots = backvar.custom_gift_on_product_details_carousel_dots %}
+            {% set title_box = backvar.custom_gift_on_product_details_title_box %}
+            {% set title_box_theme = backvar.custom_gift_on_product_details_title_box_theme %}
+            {% set prod_recomm_title = text.gift_for_this_product %}
+            {% set prod_recomm_title_class = "gift-products__title main-title2" %}
+            {% set grid_col = "col-6 col-sm-4 col-lg-6 col-xl-4" %}
+
+            {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+                {% block embed_card %}
+                    {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                        {% block sale %}{% endblock %}
+                        {% block new %}{% endblock %}
+                        {% block custom_badges %}{% endblock %}
+                        {% block gift_badge %}<div class="product__badge-gift badge badge--gift" title="{{ text.gift }}"><span class="icon--gift"></span></div>{% endblock %}
+                        {% block cart %}{% endblock %}
+                        {% block review %}{% endblock %}
+                        {% block functions %}{% endblock %}
+                        {% block params %}{% endblock %}
+                        {% block price_unit %}{% endblock %}
+                        {% block stock %}{% endblock %}
+                        {% block price %}{% endblock %}
+                    {% endembed %}
+                {% endblock %}
+            {% endembed %}
+            </div>
+            {% endif %}
+        </section>
+    {% endif %}
+    {# ENDGIFT #}
+
+    {# CROSS PAGE - Ezt is kérem #}
+    {% if product_list_type == "cross_page" %}
+        {% if marketing_type_artdet_disp %}
+            {% set img_width = backvar.main_img_maxwidth %}
+            {% set img_height = backvar.main_img_maxheight %}
+            {% set carousel_enabled = backvar.custom_cross_artdet_carousel_enabled %}
+            {% set carousel_arrows = backvar.custom_cross_artdet_carousel_arrows %}
+            {% set carousel_nums = backvar.custom_cross_artdet_carousel_nums %}
+            {% set carousel_dots = backvar.custom_cross_artdet_carousel_dots %}
+            {% set title_box = backvar.custom_cross_artdet_title_box %}
+            {% set title_box_theme = backvar.custom_cross_artdet_title_box_theme %}
+            {% set prod_recomm_title = text.cross_sale_text %}
+
+            {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}{% endembed %}
+        {% endif %}
+        {% if marketing_type_cart_disp %}
+            {% set img_width = backvar.main_img_maxwidth %}
+            {% set img_height = backvar.main_img_maxheight %}
+            {% set carousel_enabled = backvar.custom_cross_cart_carousel_enabled %}
+            {% set carousel_arrows = backvar.custom_cross_cart_carousel_arrows %}
+            {% set carousel_nums = backvar.custom_cross_cart_carousel_nums %}
+            {% set carousel_dots = backvar.custom_cross_cart_carousel_dots %}
+            {% set title_box = backvar.custom_cross_cart_title_box %}
+            {% set title_box_theme = backvar.custom_cross_cart_title_box_theme %}
+            {% set prod_recomm_title = text.cross_sale_text %}
+
+            {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}{% endembed %}
+        {% endif %}
+    {% endif %}
+    {# END CROSS PAGE #}
+
+    {# UP PAGE - Inkább ezt kérem (CART) #}
+    {% if product_list_type == "up_page" %}
+        {% set img_width = backvar.main_img_maxwidth %}
+        {% set img_height = backvar.main_img_maxheight %}
+        {% set carousel_enabled = backvar.custom_cross_up_carousel_enabled %}
+        {% set carousel_arrows = backvar.custom_cross_up_carousel_arrows %}
+        {% set carousel_nums = backvar.custom_cross_up_carousel_nums %}
+        {% set carousel_dots = backvar.custom_cross_up_carousel_dots %}
+        {% set title_box = backvar.custom_cross_up_title_box %}
+        {% set title_box_theme = backvar.custom_cross_up_title_box_theme %}
+        {% set prod_recomm_title = text.up_sale_text %}
+
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+            {% block embed_card %}
+                {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                    {% block cartInput %}{% endblock %}
+                {% endembed %}
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+    {# END CROSS PAGE #}
+
+    {{ start_script }}
+
+    <script>
+        $(document).ready(function() {
+            initTippy();
+        });
+    </script>
+{% endif %}

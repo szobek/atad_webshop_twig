@@ -1,0 +1,30 @@
+<div id="saved-card__card-{{ saved_card.id }}" class="saved-card__card js-saved-card-card">
+    <div class="saved-card__card-inner position-relative overflow-hidden">
+        <img width="322" height="204" src="[unas_shop_url]/main_pic/space.gif" class="lazyload" data-src="{{ card_bg_url }}" data-srcset="{{ card_bg_retina_url }} 2x" alt="saved_card_bg" />
+
+        {% if saved_card.card_expired %}
+            <div class="saved-card__expired">
+                {{ text.expired_card }}
+            </div>
+        {% endif %}
+
+        <div class="saved-card__mod-name">{{ saved_card.payment_name }}</div>
+
+        {% if saved_card.card_number_exists %}
+        <div class="saved-card__card-number">
+            <span class="saved-card__dots">&#8226;&#8226;&#8226;&#8226;</span>
+            <span class="saved-card__dots">&#8226;&#8226;&#8226;&#8226;</span>
+            <span class="saved-card__dots">&#8226;&#8226;&#8226;&#8226;</span>
+            <span>{{ saved_card.card_number }}</span>
+        </div>
+        {% endif %}
+
+        <div class="saved-card__expiry-date">
+            <span class="font-s">{{ text.valid }}</span>&nbsp;{{ saved_card.card_expiry }}
+        </div>
+
+        <div class="saved-card__buttons">
+            <button class="saved-card__delete-button icon--trash" type="button" title="{{ text.delete }}" aria-label="{{ text.delete }}" onclick="saved_card_delete_overlay('{{ saved_card.id }}');"></button>
+        </div>
+    </div>
+</div>

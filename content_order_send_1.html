@@ -1,0 +1,147 @@
+<div id="page_order_send_content" class="page_content shipping_method_{{ shipping_method_id }} payment_method_{{ payment_method_id }}{% if payment_spec_redir %} js-payment-redirection{% if not postsale_script_disp%} payment-redirection--countdown-popup{% endif %}{% endif %}">
+    {{ start_script }}
+    <div class="payment-redirection__mask">
+        <div class="loading-spinner-with-text">
+            <div class="loading-indicator"></div>
+            <div class="loading-text">{{ text.redirect_in_progress }}</div>
+        </div>
+    </div>
+
+    <div class="container">{{ orderflow }}</div>
+
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    <div class="container mb-5">
+        <div class="row row-gap-20">
+            <div class="col-lg">
+                <div class="order-send__container text-center order-send__make-this-to-popup">
+                    <div class="order-send__title-wrap">
+                        <div class="thanks-order">
+                            <div class="text-center py-2 font-weight-bold font-xxxl">{{ text.thanks_for_order }}</div>
+                        </div>
+                        {% if need_customer_confirm_disp %}
+                        <div class="customer-confirm">
+                            <div class="page_text_common">{{ need_customer_confirm_text }}</div>
+                        </div>
+                        {% endif %}
+
+                        <div class="page_order_send_key_outer{% if order_send_text_disp and not payment_spec_redir or payment_spec_disp%} mb-4{% endif %}">
+                            <div class="page_order_send_key text-center">
+                                {{ text.your_order_key }}
+                                <span class="order_send_key_code">{{ order_key }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-send__wrap{% if payment_spec_disp %} position-relative{% endif %}">
+                        {% if order_send_text_disp and not payment_spec_redir %}
+                        <div class="order-send__title alert alert-info icon--b-info font-weight-bold d-inline-block">{{ order_send_text }}</div>
+                        {% endif %}
+
+                        {% if payment_spec_disp %}
+                        <div class="order-send__payment-spec{% if payment_spec_type == "sponsorem_hu" %} payment--sponsorem{% endif %}" id="payment_{{ payment_method_id }}">
+                                {% if payment_spec_redir %}
+                                <div class="order-send__redirect mb-4">
+                                    <span class="order-send__redirect-sec js-countdown-redirection-sec">{{ payment_spec_redir_sec }}</span>
+                                    <span class="order-send__redirect-text">{{ redirect_text }}</span>
+                                </div>
+                                {% endif %}
+
+                                {% if payment_spec_img_disp %}
+                                <div class="payment_logos{% if not payment_spec_redir %} mb-4{% endif %}">
+                                    <img src="{{ payment_spec_img_url }}" alt="{{ payment_spec_img_alt }}" title="{{ payment_spec_img_title }}" />
+                                </div>
+                                {% endif %}
+                                <div class="payment_method">
+                                    {% if payment_spec_type == "cib" %}
+                                    <div class="page_order_send_data_text form-group">{{ payment_spec_cib_text }}</div>
+                                    {% endif %}
+
+                                    {% if not payment_spec_redir %}
+                                        <div class="order-send__pay-btn-wrap">
+                                            <button class="order-send__pay-btn orderflow-main-btn btn btn-primary btn-lg my-4 mx-3" type="button" id="button_pay" {% if button_pay_disabled %}disabled="disabled"{% endif %} onclick="{{ button_pay_onclick }}">{{ button_pay_text }}</button>
+                                        </div>
+                                        {% if checkout_change %}
+                                        <button class="order-send__change-payment-method-btn btn btn-secondary my-2 mx-3" id="button_prev" type="button" onclick="{{ button_change_onclick }}">{{ text.other_payment_method }}</button>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if postreg_disp %}
+                {% set page = 'send' %}
+                <div class="col-lg">
+                {% embed common_vars.layout_urls.embed_subsequent_registration_1 %}{% endembed %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if loveallhelpall_disp %}
+    <div id="page_order_send_loveallhelpall" class="my-4 text-center">
+        <div class="container">
+            {{ loveallhelpall_content }}
+        </div>
+    </div>
+    {% endif %}
+
+    {% for plus_content in plus_contents %}
+    <div class="plus-content mb-5">
+        <div class="container">
+            {{ plus_content.content }}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if trustedshops_disp %}
+        <div id="page_order_send_trustedshops" class="my-4 text-center">
+            <div class="container">
+                {% if trustedshops_rate_section_disp %}
+                    <div class="text-justify mb-3">
+                        {{ text.rate_order }}
+                    </div>
+                    <div class="row gutters-10 align-items-center justify-content-center">
+                        <div class="col-auto">
+                            <button class="col-auto btn btn-primary mt-2" name='button_rate_later' type='button' onclick='location.href="{{ trustedshops_rate_later_url }}"'>{{ text.button_rate_later }}</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="col-auto btn btn-primary mt-2" name='button_rate_now' type='button' onclick='location.href="{{ trustedshops_rate_now_url }}"'>{{ text.button_rate_now }}</button>
+                        </div>
+                    </div>
+                {% endif %}
+                {{ trustedshops_content }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+
+    {% if retargeting_div_order_send_disp %}
+        {{ retargeting_div_order_send }}
+    {% endif %}
+
+    {% if ref_disp %}
+    <div class="page_product_list_ref">
+        {{ ref_product_list }}
+    </div>
+    {% endif %}
+
+    {% if postsale_script_disp %}
+    <script>
+        $(document).ready(function() {
+            order_checkout_init_postsale({{ postsale_delay }},".js-payment-redirection",{{ order_key_without_shop_id }}{% if payment_spec_redir %},"{{ button_pay_onclick }}"{% endif %}{% if popup_pay %},1{% else %},0{% endif %},{{ payment_spec_redir_sec }});
+        });
+    </script>
+    {% endif %}
+
+    {% if payment_spec_disp and payment_spec_redir and not postsale_script_disp %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            order_checkout_init_countdown_redirection({{ payment_spec_redir_sec }},".js-payment-redirection",".js-countdown-redirection-sec","{{ button_pay_onclick }}"{% if popup_pay %},1{% endif %});
+        });
+    </script>
+    {% endif %}
+</div>

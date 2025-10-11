@@ -1,0 +1,13 @@
+{% for cert in certs %}
+<div class="certificate__item">
+    {% if cert.ssl_disp %}
+    <img class="box-cert-ssl lazyload" width="{{ cert.ssl_img_width }}" height="{{ cert.ssl_img_height }}"
+         src="[unas_shop_url]/main_pic/space.gif" data-src="{{ cert.ssl_img_url }}" data-srcset="{{ cert.ssl_img_retina_url }} 2x"
+         style="width:{{ cert.ssl_img_width }}px;max-height:{{ cert.ssl_img_height }}px;"
+         alt="SSL Certificate" title="SSL Certificate"
+    >
+    {% else %}
+    {{ cert.content }}
+    {% endif %}
+</div>
+{% endfor %}

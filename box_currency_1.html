@@ -1,0 +1,34 @@
+{% if select_disp %}
+<div class="currency-box-mobile">
+    {{ form_start }}
+    <div class="currency-select-group form-group form-select-group form-select-group-sm mb-0">
+        <select class="form-control form-control-sm border-0 money-select" aria-label="{{ text.currency_change }}" name="session_money_select" id="session_money_select" onchange="{{ on_change }}">
+            <option value="-1"{% if base_currency_selected %} selected="selected"{% endif %}>{{ base_currency_name }}</option>
+            {% for currency in currencies %}
+            <option value="{{ currency.value }}"{% if currency.selected %} selected="selected"{% endif %}>{{ currency.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {{ form_end }}
+</div>
+{% endif %}
+
+{% if button_disp %}
+<div class="currency-box currency-box--button-style flex-fill">
+    {{ form_start }}
+    <div class="currency-box__title">{{ text.currency_change }}</div>
+    <ul class="currency-box__list">
+        <li class="currency custom-control custom-radio no-input">
+            <input class="custom-control-input currency__radio" id="-1" type="radio" name="session_money_select" value="-1"{% if not base_currency_selected %} onclick="{{ on_change }}"{% endif %}{% if base_currency_selected %} checked{% endif %}>
+            <label class="custom-control-label currency__label" for="-1">{{ base_currency_name }}</label>
+        </li>
+        {% for currency in currencies %}
+        <li class="currency custom-control custom-radio no-input">
+            <input class="custom-control-input currency__radio" id="{{ currency.value }}"{% if not currency.selected %} onclick="{{ on_change }}"{% endif %} type="radio" name="session_money_select" value="{{ currency.value }}"{% if currency.selected %} checked {% endif %}>
+            <label class="custom-control-label currency__label" for="{{ currency.value }}">{{ currency.name }}</label>
+        </li>
+        {% endfor %}
+    </ul>
+    {{ form_end }}
+</div>
+{% endif %}

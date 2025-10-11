@@ -1,0 +1,70 @@
+{% if not cat_main %}
+<nav id="breadcrumb" aria-label="{{ text.breadcrumb }}">
+    [% if 'page_shop_artdet' not in page_id %]
+    <div class="container">
+    [% endif %]
+        {% if type == 'page' %}{% set home_text = text.main_page %}{% else %}{% set home_text = text.main_category %}{% endif %}
+        <ol class="breadcrumb breadcrumb--mobile level-{% for cat_sub in cat_sub_list %}{% if loop.index == 1 %}{{ loop.length }}{% endif %}{% endfor %}">
+            <li class="breadcrumb-item">
+                {% if not cat_main %}
+                <a class="breadcrumb--home" href="{{ cat_main_url }}" aria-label="{{ home_text }}" title="{{ home_text }}"></a>
+                {% else %}
+                <span class="breadcrumb--home" aria-current="page" aria-label="{{ home_text }}" title="{{ home_text }}"></span>
+                {% endif %}
+            </li>
+            {% set cat_sub_url = "" %}
+            {% set cat_sub_target = "" %}
+            {% set cat_sub_name = "" %}
+
+            {% for cat_sub in cat_sub_list if cat_sub.url_disp %}
+                {% set cat_sub_url = cat_sub.url %}
+                {% set cat_sub_target = cat_sub.target %}
+                {% set cat_sub_name = cat_sub.name %}
+            {% endfor %}
+            {% if cat_sub_url != "" %}
+            <li class="breadcrumb-item">
+                <a href="{{ cat_sub_url }}" target="{{ cat_sub_target }}">{{ cat_sub_name }}</a>
+            </li>
+            {% endif %}
+        </ol>
+
+        <ol class="breadcrumb breadcrumb--desktop level-{% for cat_sub in cat_sub_list %}{% if loop.index == 1 %}{{ loop.length }}{% endif %}{% endfor %}">
+            <li class="breadcrumb-item{% if cat_main %} active{% endif %}">
+                {% if not cat_main %}
+                <a class="breadcrumb--home" href="{{ cat_main_url }}" aria-label="{{ home_text }}" title="{{ home_text }}"></a>
+                {% else %}
+                <span class="breadcrumb--home" aria-current="page" aria-label="{{ home_text }}" title="{{ home_text }}"></span>
+                {% endif %}
+            </li>
+            {% for cat_sub in cat_sub_list %}
+            <li class="breadcrumb-item{% if not cat_sub.url_disp %} active{% endif %}">
+                {% if cat_sub.url_disp %}
+                <a href="{{ cat_sub.url }}" target="{{ cat_sub.target }}">{{ cat_sub.name }}</a>
+                {% else %}
+                <span aria-current="page">{{ cat_sub.name }}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ol>
+        <script type="text/javascript_load">
+            function markActiveNavItems() {
+                {% for cat_sub in cat_sub_list %}
+                    {% if cat_sub.url_disp %}
+                    $(".js-nav-item-{{ cat_sub.id }}").addClass("has-active");
+                    {% else %}
+                    $(".js-nav-item-{{ cat_sub.id }}").addClass("active");
+                    {% endif %}
+                {% endfor %}
+            }
+            $(document).ready(function(){
+                markActiveNavItems();
+            });
+            $(document).on("ajaxCatSubLoaded",function(){
+                markActiveNavItems();
+            });
+        </script>
+    [% if 'page_shop_artdet' not in page_id %]
+    </div>
+    [% endif %]
+</nav>
+{% endif %}

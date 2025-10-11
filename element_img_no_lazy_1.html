@@ -1,0 +1,28 @@
+{% if element_disp %}
+    <div id="{{ name }}_img{{ suffix }}" class="js-element {{ name }}{% if class != '' %} {{ class }}{% endif %}" data-element-name="{{ name }}">
+        <div class="{{ name }}-img-container">
+            <div class="{{ name }}-img-wrapper">
+            {% for slide in slides %}
+                {% if slide.img_default_disp %}
+                    {% if slide.img_link_disp %}<a class="has-img" href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>{% endif %}
+                    <picture>
+                        {% if slide.img_small_disp and slide.img_small_url not in [slide.img_default_url] %}
+                        <source width="{{ slide.img_small_width }}" height="{{ slide.img_small_height }}" media="(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)" srcset="{{ slide.img_small_url }} {{ slide.img_small_width }}w{% if slide.img_small_retina_disp %}, {{ slide.img_small_retina_url }} {{ slide.img_small_retina_width }}w{% endif %}" sizes="{{ slide.img_small_width }}px"/>
+                        {% endif %}
+                        <source srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} 2x{% endif %}" />
+                        <img {% if slide.img_small_disp and slide.img_small_url in [slide.img_default_url] %}
+                             width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}"
+                             {% endif %}
+                             src="{{ slide.img_default_url }}"                             
+                             alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}
+                        "/>
+                    </picture>
+                    {% if slide.img_link_disp %}</a>{% endif %}
+                {% else %}
+                    {{ slide.html }}
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}

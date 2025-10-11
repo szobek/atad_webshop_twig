@@ -1,0 +1,120 @@
+{% if element_disp %}
+    {% set carousel_arrows = backvar.custom_carousel_arrows %}
+    {% set carousel_gap = backvar.custom_carousel_gap %}
+
+    {% set tempCss %}
+        {% for slide in slides %}
+            {% if slide.img_disp %}
+                .{{ name }}-{{ loop.index }}{
+                    width:{{ slide.img_default_width }}px;
+                    height:{{ slide.img_default_height }}px;
+                    margin-right: {{ carousel_gap }};
+                }
+                {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                    @media (max-width:{{ common_vars.grid_breakpoints.lg - 0.02 }}px){.{{ name }}-{{ loop.index }}{width:{{ slide.img_large_width }}px;height:{{ slide.img_large_height }}px;}}
+                {% endif %}
+                {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width:{{ common_vars.grid_breakpoints.md - 0.02 }}px){.{{ name }}-{{ loop.index }}{width:{{ slide.img_medium_width }}px;height:{{ slide.img_medium_height }}px;}}
+                {% endif %}
+                {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width:{{ common_vars.grid_breakpoints.sm - 0.02 }}px){.{{ name }}-{{ loop.index }}{width:{{ slide.img_small_width }}px;height:{{ slide.img_small_height }}px;}}
+                {% endif %}
+            {% else %}
+                .{{ name }}-{{ loop.index }}{
+                    width: auto;
+                    margin-right: {{ carousel_gap }};
+                }
+            {% endif %}
+        {% endfor %}
+    {% endset %}
+    {% if tempCss|replace({' ': ''}) != "" %}
+        <style>{{ tempCss }}</style>
+    {% endif %}
+
+    [% set {{ name }} %]
+    <div class="js-element {{ name }}{% if class != '' %} {{ class }}{% endif %}" data-element-name="{{ name }}"
+        {% if animation_on_scroll == 1 and backvar.custom_aos != '0' %}
+            {% set temp_aos %}
+                {% if backvar.custom_aos != '' %}
+                    {{ backvar.custom_aos }}
+                {% else %}
+                    {{ animation_on_scroll_type }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            {% if backvar.custom_aos_duration != '' %}
+            data-aos-duration="{{ backvar.custom_aos_duration }}"
+            {% endif %}
+            {% if backvar.custom_aos_offset != '' %}
+            data-aos-offset="{{ backvar.custom_aos_offset }}"
+            {% endif %}
+            {% if backvar.custom_aos_delay != '' %}
+            data-aos-delay="{{ backvar.custom_aos_delay }}"
+            {% endif %}
+        {% endif %}
+        {%- if main_title_disp %} role="region" aria-label="{{ main_title }}" aria-roledescription="carousel"{% endif %}
+    >
+        <div class="{{ name }}__container carousel__container{% if container_class != '' %} {{ container_class }}{% endif %}">
+            {% if main_title_disp %}
+            <div class="{{ name }}__main-title main-title">{{ main_title }}</div>
+            {% endif %}
+            <div class="{{ name }}__carousel carousel{% if carousel_arrows %} carousel--indent{% endif %}" tabindex="0">
+                {% for slide in slides %}
+                <div class="carousel-cell {{ name }}-{{ loop.index }}" role="group" aria-label="Slide {{ loop.index }} of {{ loop.length }}">
+                    {% if slide.img_disp %}
+                        {% if slide.img_link_disp %}
+                        <a class="has-img" href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                        {% endif %}
+                        <picture>
+                            {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                            <source srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{% if slide.img_xxsmall_disp %}{{ slide.img_xxsmall_url }} {{ slide.img_xxsmall_width }}w{% if slide.img_xxsmall_retina_disp %}, {{ slide.img_xxsmall_retina_url }} {{ slide.img_xxsmall_retina_width }}w{% endif %}{% endif %}
+    {% if slide.img_xsmall_disp %}, {{ slide.img_xsmall_url }} {{ slide.img_xsmall_width }}w{% if slide.img_xsmall_retina_disp %}, {{ slide.img_xsmall_retina_url }} {{ slide.img_xsmall_retina_width }}w, {% endif %}{% endif %}
+    {{ slide.img_small_url }} {{ slide.img_small_width }}w{% if slide.img_small_retina_disp %}, {{ slide.img_small_retina_url }} {{ slide.img_small_retina_width }}w{% endif %}"
+                                    width="{{ slide.img_small_width }}" height="{{ slide.img_small_height }}" media="(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)" />
+                            {% endif %}
+                            {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                            <source srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_medium_url }} {{ slide.img_medium_width }}w{% if slide.img_medium_retina_disp %}, {{ slide.img_medium_retina_url }} {{ slide.img_medium_retina_width }}w{% endif %}"
+                                    width="{{ slide.img_medium_width }}" height="{{ slide.img_medium_height }}" media="(max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px)" />
+                            {% endif %}
+                            {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                            <source srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_large_url }} {{ slide.img_large_width }}w{% if slide.img_large_retina_disp %}, {{ slide.img_large_retina_url }} {{ slide.img_large_retina_width }}w{% endif %}"
+                                    width="{{ slide.img_large_width }}" height="{{ slide.img_large_height }}" media="(max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px)" />
+                            {% endif %}
+                            <source width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{% if slide.img_xlarge_disp %}{{ slide.img_xlarge_url }} {{ slide.img_xlarge_width }}w{% if slide.img_xlarge_retina_disp %}, {{ slide.img_xlarge_retina_url }} {{ slide.img_xlarge_retina_width }}w{% endif %}{% endif %}
+        {% if slide.img_xxlarge_disp %}, {{ slide.img_xxlarge_url }} {{ slide.img_xxlarge_width }}w{% if slide.img_xxlarge_retina_disp %}, {{ slide.img_xxlarge_retina_url }} {{ slide.img_xxlarge_retina_width }}w, {% endif %}{% endif %}
+        {{ slide.img_default_url }} {{ slide.img_default_width }}w{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} {{ slide.img_default_retina_width }}w{% endif %}" />
+                            <img height="{{ slide.img_default_height }}" width="{{ slide.img_default_width }}" class="{{ name }}{{ loop.index }} lazyload" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ slide.img_default_url }}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}"/>
+                        </picture>
+                        {% if slide.img_link_disp %}</a>{% endif %}
+                    {% endif %}
+                    {{ slide.html }}
+                </div>
+                {% endfor %}
+            </div>
+            <script>
+            {% set flkty_options = {} %}
+            {% if autoplay_enabled %}
+                {% set flkty_options = flkty_options|merge({ "autoPlay": delay }) %}
+            {% endif %}
+
+            {% if not carousel_arrows %}
+                {% set flkty_options = flkty_options|merge({ "prevNextButtons": false }) %}
+            {% endif %}
+
+            {% set flkty_options = flkty_options|merge({ "pageDots": false }) %}
+            {% set flkty_options = flkty_options|merge({ "wrapAround": true }) %}
+            {% set flkty_options = flkty_options|merge({ "cellAlign": "center" }) %}
+
+            let $flkty_{{ name }}_options = {{ flkty_options|json_encode(constant('JSON_PRETTY_PRINT')) }}
+            {% if autoplay_enabled %}
+            $flkty_{{ name }}_options.autoPlay = parseInt($flkty_{{ name }}_options.autoPlay);
+            {% endif %}
+
+            document.addEventListener('DOMContentLoaded', function() {
+                let $flkty_{{ name }} = $('.{{ name }}__carousel').flickity($flkty_{{ name }}_options);
+            });
+            </script>
+        </div>
+    </div>
+    [% endset %]
+{% endif %}

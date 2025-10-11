@@ -1,0 +1,34 @@
+{% if products_disp %}
+    {# START - Beállítások #}
+    {% set listMainType = "box_prod_last_" %}
+    {% set productListId = "box_prod_last" %}
+    {% set product_measure_class = "product_link_promo" %}
+    {% set grid_col = "col-6 col-xs-4 col-sm-3 col-lg-2 col-xl-custom-8" %}
+    {% set grid_row = "row no-gutters" %}
+    {% set img_width = backvar.img_maxwidth %}
+    {% set img_height = backvar.img_maxheight %}
+    {% set carousel_enabled = backvar.custom_carousel_enabled %}
+    {% set carousel_arrows = backvar.custom_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_carousel_nums %}
+    {% set carousel_dots = backvar.custom_carousel_dots %}
+    {% set prod_recomm_title = title %}
+    {# END - beállítások #}
+
+    <div class="box-last__container container px-0">
+        <div class="box-last__title main-title d-none">{{ prod_recomm_title }}</div>
+
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+            {% block embed_card %}
+                {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                    {% block stock %}{% endblock %}
+                    {% block variant %}{% endblock %}
+                    {% block cart %}{% endblock %}
+                    {% block functions %}{% endblock %}
+                    {% block sale %}{% endblock %}
+                    {% block new %}{% endblock %}
+                    {% block price %}{% endblock %}
+                {% endembed %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+{% endif %}

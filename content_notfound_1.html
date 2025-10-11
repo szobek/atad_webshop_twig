@@ -1,0 +1,35 @@
+<div id="page_notfound_content" class="page_content">
+
+    <div class="not-found-block py-5">
+        <div class="container">
+            <div class="main__title text-center">
+                <div class="main-title text-center text-danger mb-4" id="page_notfound_title">{{ text.not_found }}</div>
+            </div>
+            <div class="block-404__outer text-center">
+                <div class="block-404__bg"></div>
+                <div class="block-404__bg2"></div>
+                <div class="block-404__wrapper">
+                    <div class="block-404__icon icon--shopping-cart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    {% if retargeting_div_notfound_disp %}
+    <section class="retargeting retargeting--not-found" id="retargeting">
+        <div class="container">
+            {{ retargeting_div_notfound }}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if ref_disp %}
+    <div class="page_product_list_ref pt-5 mt-5">
+        {{ ref_product_list }}
+    </div>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>

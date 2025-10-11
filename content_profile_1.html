@@ -1,0 +1,460 @@
+<div id="page_order_track_content" class="page_content">
+    <div class="main__title main__title--profile">
+        <div class="container">
+            <div class="main-title-wrapper d-flex flex-wrap align-items-center">
+                <h1 class="mb-0 mr-3"><span class="main-title main-title--profile">{{ text.profile }}</span></h1>
+                <a class="order-track__logout-btn btn btn-primary ml-auto" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a>
+            </div>
+        </div>
+    </div>
+
+    {% if tabs_disp %}
+
+        {# TAB SETTINGS #}
+        {% set GET_tab_name = '' %}
+        {% set default_tab_name = '' %}
+        {% set tab_names = [] %}
+
+        {% if tab_orders_disp %}
+            {% if default_tab_name == '' %}
+                {% set default_tab_name = "orders" %}
+            {% endif %}
+            {% set tab_names = tab_names|merge(["orders"]) %}
+        {% endif %}
+
+        {% if tab_discount_disp %}
+            {% if default_tab_name == '' %}
+                {% set default_tab_name = "discount" %}
+            {% endif %}
+            {% set tab_names = tab_names|merge(["discount"]) %}
+        {% endif %}
+
+        {% if tab_favourites_disp %}
+            {% if default_tab_name == '' %}
+                {% set default_tab_name = "favourites" %}
+            {% endif %}
+            {% set tab_names = tab_names|merge(["favourites"]) %}
+        {% endif %}
+
+        {% if tab_saved_filters_disp %}
+            {% if default_tab_name == '' %}
+                {% set default_tab_name = "saved_filters" %}
+            {% endif %}
+            {% set tab_names = tab_names|merge(["saved_filters"]) %}
+        {% endif %}
+
+        {# if GET param string found in tabs array, set it to default #}
+        {% if tab_default_disp and tab_default in tab_names %}
+            {% set default_tab_name = tab_default %}
+        {% endif %}
+
+    <div id="nav-tab-accordion-1" class="nav-tabs-accordion">
+        <div class="nav-tabs-container nav-tabs-outer--2 container">
+            <ul class="nav nav-tabs profile-tabs" role="tablist">
+                {% if tab_orders_disp %}
+                {% set this_name = 'orders' %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link{% if default_tab_name == this_name %} active{% endif %}"
+                       id="tab-{{ this_name }}" rel="{{ this_name }}" href="#" role="tab" aria-controls="pane-{{ this_name }}"
+                       {%- if default_tab_name == this_name %} aria-selected="true" aria-expanded="true"{% else %} aria-selected="false"{% endif -%}
+                    >{{ attribute(text,this_name) }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_subscriptions_disp %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" role="tab" id="tab-subscriptions" rel="subscriptions" href="{{ tab_subscriptions_url }}">{{ text.subscriptions }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_discount_disp %}
+                {% set this_name = 'discount' %}
+                {% set tab_name = 'discounts' %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link{% if default_tab_name == this_name %} active{% endif %}"
+                       id="tab-{{ this_name }}" rel="{{ this_name }}" href="#" role="tab" aria-controls="pane-{{ this_name }}"
+                       {%- if default_tab_name == this_name %} aria-selected="true" aria-expanded="true"{% else %} aria-selected="false"{% endif -%}
+                    >{{ attribute(text,tab_name) }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_favourites_disp %}
+                {% set this_name = 'favourites' %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link{% if default_tab_name == this_name %} active{% endif %}"
+                       id="tab-{{ this_name }}" rel="{{ this_name }}" href="#" role="tab" aria-controls="pane-{{ this_name }}"
+                       {%- if default_tab_name == this_name %} aria-selected="true" aria-expanded="true"{% else %} aria-selected="false"{% endif -%}
+                    >{{ attribute(text,this_name) }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_saved_filters_disp %}
+                {% set this_name = 'saved_filters' %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link{% if default_tab_name == this_name %} active{% endif %}"
+                       id="tab-{{ this_name }}" rel="{{ this_name }}" href="#" role="tab" aria-controls="pane-{{ this_name }}"
+                       {%- if default_tab_name == this_name %} aria-selected="true" aria-expanded="true"{% else %} aria-selected="false"{% endif -%}
+                    >{{ attribute(text,this_name) }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_saved_cards_disp %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" role="tab" id="tab-saved_cards" rel="saved_cards" href="{{ tab_saved_cards_url }}">{{ text.saved_cards }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_saved_delivery_points_disp %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" role="tab" id="tab-saved_delivery_points" rel="saved_delivery_points" href="{{ tab_saved_delivery_points_url }}">{{ text.saved_delivery_points }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_customer_addresses_disp %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" role="tab" id="tab-customer_addresses" rel="customer_addresses" href="{{ tab_customer_addresses_url }}">{{ text.customer_addresses }}</a>
+                </li>
+                {% endif %}
+
+                {% if tab_modify_disp %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" role="tab" id="tab-reg" rel="reg" href="{{ tab_modify_url }}">{{ text.data_modify }}</a>
+                </li>
+                {% endif %}
+
+                <li class="nav-item d-none" role="presentation">
+                    <a class="nav-link" role="tab"  id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-panes pane-accordion container">
+            {% if tab_orders_disp %}
+            {% set this_name = 'orders' %}
+            <div class="pane-header" id="pane-header-{{ this_name }}">
+                <a id="accordion-btn-{{ this_name }}" href="#" role="button" class="pane-header-btn btn{% if default_tab_name == this_name %} active{% endif %}"
+                    {%- if default_tab_name == this_name %} aria-expanded="true"{% endif %} aria-controls="pane-{{ this_name }}">
+                    {{ attribute(text,this_name) }}
+                </a>
+            </div>
+            <div class="tab-pane fades {{ this_name }}{% if default_tab_name == this_name %} active show{% endif %}" id="pane-{{ this_name }}" role="tabpanel" aria-labelledby="pane-header-{{ this_name }}"
+                 {%- if default_tab_name != this_name %} inert{% endif %}>
+                <div class="tab-pane__container container">
+                    {% if paging_disp %}
+                    <nav class="order-track-paging d-flex align-items-center justify-content-center my-2" aria-label="{{ text.pagination }}">
+                        {{ paging_content }}
+                    </nav>
+                    {% endif %}
+
+                    {% if orders_disp %}
+                        <div class="order-track__orders-table line-height-12 mt-3{% if payment_status_exists %} need-payment-status-col{% endif %}">
+                            <div class="order-track__orders-header font-weight-bold">
+                                <div class="row gutters-10 align-items-center">
+                                    <div class="col order-track__header-key-col">{{ text.order_key }}</div>
+                                    <div class="col order-track__header-date-col">{{ text.date }}</div>
+                                    <div class="col order-track__header-price-col">{{ text.amount_to_be_paid }}</div>
+                                    <div class="col order-track__header-statuses-col d-none d-xl-block">
+                                        <div class="row gutters-10 align-items-center">
+                                            {% if payment_status_exists %}
+                                            <div class="col order-track__header-payment-status-col">{{ text.payment_status }}</div>
+                                            {% endif %}
+                                            <div class="col order-track__header-order-status-col">{{ text.order_status }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto order-track__header-details-col d-none d-xl-block">
+                                        <button class="invisible order-track__order-details-btn btn btn-sm btn-primary">{{ text.button_details }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% for order in orders %}
+                            <div class="order-track__order">
+                                <div class="row gutters-10 row-gap-10 align-items-end align-items-xl-center">
+                                    <div class="col order-track__order-col order-track__order-key-col">
+                                        <div class="order-track__order-inner">
+                                            <div class="order-track__title">{{ text.order_key }}:</div>
+                                            <div class="order-track__value">{{ order.id }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col order-track__order-col order-track__order-date-col">
+                                        <div class="order-track__order-inner">
+                                            <div class="order-track__title">{{ text.date }}:</div>
+                                            <div class="order-track__value">{{ order.date }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col order-track__order-col order-track__order-price-col">
+                                        <div class="order-track__order-inner">
+                                            <div class="order-track__title">{{ text.amount_to_be_paid }}:</div>
+                                            <div class="order-track__value">
+                                                <span class="order-track__amount">{{ order.total_price }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col order-track__order-col order-track__order-statuses-col">
+                                        <div class="row gutters-10 row-gap-10 align-items-xl-center">
+                                            {% if payment_status_exists %}
+                                            <div class="order-track__order-payment-status-col col-lg{% if not order.payment_status_disp %} empty-payment-status{% endif %}">
+                                                <div class="order-track__order-inner align-items-center">
+                                                    <div class="order-track__title">{{ text.payment_status }}:</div>
+                                                    <div class="order-track__value">
+                                                        {% if order.payment_status_disp %}
+                                                        <span class="order-track__payment-status status--{{ order.payment_status }} alert
+                                                        {% if order.payment_status == 'completed' %} alert-success{%
+                                                            elseif order.payment_status == 'not_enough' %} alert-warning{%
+                                                            elseif order.payment_status == 'not_paid' %} alert-danger{%
+                                                            elseif order.payment_status == 'pending' %} alert-info{%
+                                                            elseif order.payment_status == 'payback' %} alert-info{%
+                                                            endif %}" data-status="{{ order.payment_status }}">{{ order.payment_status_title }}</span>
+                                                        {% else %}
+                                                        <span class="order-track__payment-status">-</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            <div class="order-track__order-status-col col-lg">
+                                                <div class="order-track__order-inner">
+                                                    <div class="order-track__title">{{ text.order_status }}:</div>
+                                                    <div class="order-track__value">
+                                                        {{ order.status }}&nbsp;{% set status_histories = order.status_histories %}{% set status_histories_disp = order.status_histories_disp %}{% include common_vars.layout_urls.embed_status_history_1 %}
+
+                                                        {% if order.online_content_disp %}
+                                                        <div class="order-track__order-online-content mt-1 icon--b-download-content font-s">{{ text.downloadable_content }}</div>
+                                                        {% endif %}
+
+                                                        {% if order.status_id_disp %}
+                                                        <div class="order-track__order-status-id">{{ order.status_id }}</div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto order-track__order-col order-track__order-details-col">
+                                        <div class="order-track__order-details-col-inner order-track__value">
+                                            <a class="order-track__order-details-btn btn btn-sm btn-primary" href="{{ order.url }}">{{ text.button_details }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="order-track__ordernum mb-3 mt-5">
+                            <div class="d-inline-flex align-items-baseline" id="page_order_track_ordernum">
+                                <div class="ordernum_title pr-3 font-weight-bold">{{ text.orders_total_count }}</div>
+                                <div class="ordernum_num">{{ order_count }} {{ text.pcs }}</div>
+                            </div>
+                        </div>
+                        <div class="order-track__orderfull mb-3">
+                            <div class="d-inline-flex align-items-baseline" id="page_order_track_orderfull">
+                                <div class="orderfull_title pr-3 font-weight-bold">{{ text.orders_total_price }}</div>
+                                <div class="orderfull_full">{{ total_price }}</div>
+                            </div>
+                        </div>
+                        {% if return_on and return_disp %}
+                            <div class="order-track__returnnum mb-3 mt-5">
+                                <div class="d-inline-flex align-items-baseline" id="page_order_track_returnnum">
+                                    <div class="order_returnnum_title pr-3 font-weight-bold">{{ text.return_total_count }}</div>
+                                    <div class="order_returnnum_num">{{ return_count }} {{ text.pcs }}</div>
+                                </div>
+                            </div>
+                            <div class="order-track__returnfull mb-3">
+                                <div class="d-inline-flex align-items-baseline" id="page_order_track_returnfull">
+                                    <div class="order_returnfull_title pr-3 font-weight-bold">{{ text.return_total_price }}</div>
+                                    <div class="order_returnfull_full">{{ total_return_price }}</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                    <div class="order-track__no-orders alert alert-info icon--b-info" role="alert">{{ text.no_orders }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# TAB: subscriptions #}
+            {% if tab_subscriptions_disp %}
+            <div class="pane-header" id="pane-header-subscriptions">
+                <a href="{{ tab_subscriptions_url }}" id="accordion-btn-subscriptions" class="pane-header-btn btn">
+                    {{ text.subscriptions }}
+                </a>
+            </div>
+            {% endif %}
+
+            {# TAB: discount #}
+            {% if tab_discount_disp %}
+            {% set this_name = 'discount' %}
+            <div class="pane-header" id="pane-header-{{ this_name }}">
+                <a id="accordion-btn-{{ this_name }}" href="#" role="button" class="pane-header-btn btn{% if default_tab_name == this_name %} active{% endif %}"
+                    {%- if default_tab_name == this_name %} aria-expanded="true"{% endif %} aria-controls="pane-{{ this_name }}">
+                    {{ attribute(text,this_name) }}
+                </a>
+            </div>
+            <div class="tab-pane fades {{ this_name }}{% if default_tab_name == this_name %} active show{% endif %}" id="pane-{{ this_name }}" role="tabpanel" aria-labelledby="pane-header-{{ this_name }}"
+                 {%- if default_tab_name != this_name %} inert{% endif %}>
+                <div class="tab-pane__container container">
+                    <div class="row row-gap-10">
+                        {% if discount_direct_disp %}
+                        <div class="col-md-6 order-track__discount order-track-discount--direct">
+                            <div class="order-track__discount-inner">
+                                <div class="order-track__discount-col" data-percent="%">{{ discount_direct_value }}</div>
+                                <div class="flex-grow-1" id="page_order_track_ordercust">
+                                    {{ text.product_direct_discount_text|replace({'[discount]' : '<span class="order-track__discount-direct">' ~ discount_direct_value ~ '%</span>'}) }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if discount_total_disp %}
+                        <div class="col-md-6 order-track__discount order-track-discount--total ">
+                            <div class="order-track__discount-inner">
+                                <div class="order-track__discount-col" data-percent="%">{{ discount_total_value }}</div>
+                                <div class="flex-grow-1" id="page_order_track_ordercust2">
+                                    {{ text.order_discount_text|replace({'[discount]' : '<span class="order-track__discount-total">' ~ discount_total_value ~ '%</span>'}) }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if point_disp %}
+                        <div class="col-md-6 order-track__discount order-track-discount--virtual-point">
+                            <div class="order-track__discount-inner">
+                                <div class="order-track__discount-col">{{ point }}</div>
+                                <div class="flex-grow-1" id="page_order_track_ordervirt">
+                                    {{ text.point_account_balance }} <span class="order-track__virtual-point">{{ point }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if comission_disp %}
+                        <div class="col-md-6 order-track__discount order-track-discount--affiliate">
+                            <div class="order-track__discount-inner">
+                                <div class="order-track__discount-col">{{ comission }}</div>
+                                <div class="flex-grow-1" id="page_order_track_affiliate_comission">
+                                    {{ text.affiliate_comission }} <span class="order-track__affiliate-comission">{{ comission }}</span>
+                                </div>
+                            </div>
+                            <div class="order-track__discount-inner">
+                                <div class="order-track__discount-col">{{ order_num }} {{ text.pcs }}</div>
+                                <div class="flex-grow-1" id="page_order_track_affiliate_order_num">
+                                    {{ text.affiliate_order_num }} <span class="order-track__affiliate-order-num">{{ order_num }} {{ text.pcs }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {# TAB: favourites #}
+            {% if tab_favourites_disp %}
+            {% set this_name = 'favourites' %}
+            <div class="pane-header" id="pane-header-{{ this_name }}">
+                <a id="accordion-btn-{{ this_name }}" href="#" role="button" class="pane-header-btn btn{% if default_tab_name == this_name %} active{% endif %}"
+                    {%- if default_tab_name == this_name %} aria-expanded="true"{% endif %} aria-controls="pane-{{ this_name }}">
+                    {{ attribute(text,this_name) }}
+                </a>
+            </div>
+            <div class="tab-pane fades {{ this_name }}{% if default_tab_name == this_name %} active show{% endif %}" id="pane-{{ this_name }}" role="tabpanel" aria-labelledby="pane-header-{{ this_name }}"
+                 {%- if default_tab_name != this_name %} inert{% endif %}>
+                <div class="tab-pane__container container">
+                    {% if favourites_list_disp %}
+                    <div class="no_favourites d-none alert alert-info icon--b-info" role="alert">{{ text.no_favourite_product }}</div>
+                    {{ favourites_product_list }}
+                    {% else %}
+                    <div class="no_favourites alert alert-info icon--b-info" role="alert">{{ text.no_favourite_product }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# TAB: saved_filters #}
+            {% if tab_saved_filters_disp %}
+            {% set this_name = 'saved_filters' %}
+            <div class="pane-header" id="pane-header-{{ this_name }}">
+                <a id="accordion-btn-{{ this_name }}" href="#" role="button" class="pane-header-btn btn{% if default_tab_name == this_name %} active{% endif %}"
+                    {%- if default_tab_name == this_name %} aria-expanded="true"{% endif %} aria-controls="pane-{{ this_name }}">
+                    {{ attribute(text,this_name) }}
+                </a>
+            </div>
+            <div class="tab-pane fades {{ this_name }}{% if default_tab_name == this_name %} active show{% endif %}" id="pane-{{ this_name }}" role="tabpanel" aria-labelledby="pane-header-{{ this_name }}"
+                 {%- if default_tab_name != this_name %} inert{% endif %}>
+                <div class="tab-pane__container container">
+                    {% if saved_filters_disp %}
+                    <div class="saved-filters-table" id="saved_filters_table">
+                        <div class="saved-filters-header p-3">
+                            <div class="row align-items-center font-weight-bold d-none d-xs-flex">
+                                <div class="col-4">{{ text.name }}</div>
+                                <div class="col-8">{{ text.page }}</div>
+                            </div>
+                        </div>
+                        {% for filter in saved_filters %}
+                        <div class="saved_filter_row row no-gutters p-3 align-items-center" id="saved_filter_row_{{ filter.row_id }}">
+                            <div class="col-12 col-xs-4 mb-2 mb-xs-0 order-track__filter-name">
+                                <a href="{{ filter.url }}">{{ filter.name }}</a>
+                            </div>
+                            <div class="col order-track__filter-breadcrumb">{{ filter.breadcrumb }}</div>
+                            <div class="col-auto">
+                                <button class="saved_filter_delete icon--trash btn btn-text btn-square-sm" onclick="{{ filter.button_delete_onclick }}" aria-label="{{ text.delete }}" data-tippy="{{ text.delete }}" type="button"></button>
+                                <a class="product-filter__btn-icon icon--filter btn btn-text btn-square-sm" href="{{ filter.url }}" aria-label="{{ text.button_filter }}" data-tippy="{{ text.button_filter }}"></a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="no_saved_filters d-none alert alert-info icon--b-info" role="alert">{{ text.no_saved_filters }}</div>
+                    {% else %}
+                    <div class="no_saved_filters alert alert-info icon--b-info" role="alert">{{ text.no_saved_filters }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# TAB: saved_cards #}
+            {% if tab_saved_cards_disp %}
+            <div class="pane-header" id="pane-header-saved_cards">
+                <a href="{{ tab_saved_cards_url }}" id="accordion-btn-saved_cards" class="pane-header-btn btn">
+                    {{ text.saved_cards }}
+                </a>
+            </div>
+            {% endif %}
+
+            {# TAB: saved_delivery_points #}
+            {% if tab_saved_delivery_points_disp %}
+            <div class="pane-header" id="pane-header-saved_delivery_points">
+                <a href="{{ tab_saved_delivery_points_url }}" id="accordion-btn-saved_delivery_points" class="pane-header-btn btn">
+                    {{ text.saved_delivery_points }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_customer_addresses_disp %}
+            <div class="pane-header" id="pane-header-customer_addresses">
+                <a href="{{ tab_customer_addresses_url }}" id="accordion-btn-customer_addresses" class="pane-header-btn btn">
+                    {{ text.customer_addresses }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_modify_disp %}
+            <div class="pane-header" id="pane-header-reg">
+                <a href="{{ tab_modify_url }}" id="accordion-btn-reg" class="pane-header-btn btn">
+                    {{ text.data_modify }}
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="pane-header d-none" id="pane-header-logout">
+                <a href="{{ tab_logout_url }}" id="accordion-btn-logout" class="pane-header-btn btn">
+                    {{ text.logout }}
+                </a>
+            </div>
+
+            {# EMBED TAB SCRIPT #}
+            {% embed common_vars.layout_urls.embed_tab_script_1 %}{% endembed %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>

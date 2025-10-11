@@ -1,0 +1,11 @@
+{% if remind_allow %}
+    {{ form_start }}
+        <div class='box_remind_field form-label-group'>
+            <input name="shop_user_login" id="remind_username" class="form-control" type="text" maxlength="100" placeholder='{{ username_title }}' />
+            <label for="remind_username">{{ username_title }}</label>
+        </div>
+        <div class='box_remind_button'>
+            <button name="Submit3" class="btn btn-primary">{{ text.request_password }}</button>
+        </div>
+    {{ form_end }}
+{% endif %}

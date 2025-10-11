@@ -1,0 +1,28 @@
+{% if package_offers|length > 0 %}
+    <div class="package-offers container js-package-offers" data-error-title="{{ text.package_offer_error_title }}" data-error-title-sub="{{ text.package_offer_error_title_sub }}">
+        {% for package_offer in package_offers %}
+            <div class="package-offer js-package-offer-{{ package_offer.id}} py-4 mb-3 d-flex flex-lg-row flex-column" data-name="{{ package_offer.name }}" data-id="{{ package_offer.id }}">
+                {{ _context["package_offer_items_" ~ package_offer.id] }}
+
+                <div class="package-offer-details-wrapper col-12 col-lg-5 col-xl-4 d-flex align-items-lg-center py-4 my-3 bg-white">
+                    <div class="package-offer__details text-center type--1 w-100">
+                        <div class="package-offer__name h2">{{ package_offer.name }}</div>
+                        <div class="package-offer__original-price js-package-offer-original-price font-l{% if price_line_through %} text-line-through{% endif %}"{% if not package_offer.original_price_disp %} style="display: none;"{% endif %} data-price="{{ package_offer.original_price }}" data-price-raw="{{ package_offer.original_price_raw }}"></div>
+                        <div class="package-offer__price d-flex align-items-center justify-content-center">
+                            <div class="package-offer__discount-percent js-package-offer-percent badge badge--sale mr-3"{% if not package_offer.original_price_disp %} style="display: none;"{% endif %} data-percent="%" data-percent-value="{{ package_offer.discount_percent }}"></div>
+                            <div class="package-offer__price-value js-package-offer-price font-xxxl" data-price-original="{{ package_offer.price_raw }}" data-price="{{ package_offer.price }}" data-price-raw="{{ package_offer.price_raw }}"></div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button class="product__main-btn btn btn-primary package-offer__cart-btn" onclick="addPackageOfferToCart({{ package_offer.id }});" type="button" aria-label="{{ text.button_to_cart }}">{{ text.button_to_cart }}</button>
+
+                            <div class="js-package-offer-add-to-cart-spinner package-offer-add-to-cart-spinner position-relative" style="display: none;">
+                                <div class="loading-spinner ml-5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+

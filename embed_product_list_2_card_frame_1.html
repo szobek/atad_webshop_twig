@@ -1,0 +1,329 @@
+{% import common_vars.layout_urls.macro_average_rating_1 as rating %}
+
+{#A list típusa, lehetséges értékei:
+  page_artlist_ (alapértelmezett)
+  page_popuplist_
+  page_pagelist_
+  box_prod_ref
+  box_prod_top
+#}
+{% if listMainType is not defined %}
+    {% set listMainType = "page_artlist_" %}
+{% endif %}
+
+{#A lista elem típusa, lehetséges értékei:
+  ÜRES (alapértelmezett)
+  page_pagelist_item (script)
+  page_popuplist_item (script)
+#}
+{% if listItemType is not defined %}
+    {% set listItemType = "" %}
+{% endif %}
+
+{#Alapértelmezett képméretek #}
+{#{% if img_width is not defined %}
+	{% set img_width = 308 %}
+{% endif %}
+{% if img_height is not defined %}
+	{% set img_height = 308 %}
+{% endif %}
+{% if thumbimg_width is not defined %}
+	{% set thumbimg_width= 96 %}
+{% endif %}
+{% if thumbimg_height is not defined %}
+	{% set thumbimg_height= 96 %}
+{% endif %}#}
+
+{#A termék beirányít-e a részletek oldalra, lehetséges értékei:
+  redirect_to_details (alapértelmezett)
+  popup_redirect_to_details
+#}
+{% if redirectToDetails is not defined %}
+    {% set redirectToDetails = "redirect_to_details" %}
+{% endif %}
+
+{#A kosár gomb onclick változójának neve, lehetséges értékei:
+  cart_onclick (alapértelmezett)
+  popup_cart_onclick
+#}
+{% if cartOnClick is not defined %}
+    {% set cartOnClick = "cart_onclick" %}
+{% endif %}
+
+{#A kosár gomb szöveg változójának neve, lehetséges értékei:
+  cart_text (alapértelmezett)
+  popup_cart_text
+#}
+{% if cartBtnText is not defined %}
+    {% set cartBtnText = "cart_text" %}
+{% endif %}
+
+{#Alapértelmezett mobile retina ratio #}
+{% set custom_mobile_retina_ratio = backvar.custom_img_width_retina_ratio|default(1.8) %}
+
+{#Alapértelmezett mobile retina méretek #}
+{% set custom_mobile_img_width = 266 %}
+{% set custom_mobile_img_height = 266 %}
+{% set custom_mobile_img_retina_width = (custom_mobile_img_width * custom_mobile_retina_ratio)|round(0, 'floor') %}
+{% set custom_mobile_img_retina_height = (custom_mobile_img_height * custom_mobile_retina_ratio)|round(0, 'floor') %}
+
+{#Alapértelmezett lazyload limit #}
+{% set custom_img_lazyload_limit = backvar.custom_img_lazyload_limit|default(0) %}
+
+{#Ha carousel-es a lista, akkor nem kell grid#}
+{% if carousel_enabled %}
+    {% set grid_row = "" %}
+    {% set grid_col = "carousel-cell" %}
+{% else %} {# Ha nem carousel-es, akkor alap grid beállítások #}
+    {% if grid_row is not defined %}{% set grid_row = "row gutters-10" %}{% endif %}
+    {% if grid_col is not defined %}{% set grid_col = "col-12" %}{% endif %}
+{% endif %}
+
+{#Ajándék esetén minden ajándék blokknak külön ID-ja van,
+  ezeknél ez lesz az lista azonosítója, minden más esetben a lista típusa,
+  vagy a részletek oldali típusok (kiegészítő, hasonló, csomag termék #}
+{% if productListId is not defined %}
+    {% if product_list_type == "gift_page" %}
+        {% set productListId = gift_id %}
+    {% else %}
+        {% set productListId = product_list_type %}
+    {% endif %}
+{% endif %}
+
+{#A termék linkre való kattintásokat mérjük, lehetséges értékei:
+  product_link_normal (def.)
+  product_link_promo (ajánlókban)
+#}
+{% if product_measure_class is not defined %}
+    {% set product_measure_class = "product_link_normal" %}
+{% endif %}
+
+{#A termékek tömbjének alapértelmezett neve, lehetséges értékei:
+  products (def.)
+  products_in_bundle (csomagtermék)
+  additional_products (kiegészítő termékek)
+  similar_products (hasonló termékek)
+#}
+{% if productsArray is not defined %}
+    {% set productsArray = "products" %}
+{% endif %}
+
+{#Alapértelmezetten lesz körülötte wrapper és container, tehát nem csak a termékeket adja vissza#}
+{% if only_products is not defined %}
+    {% set only_products = false %}
+{% endif %}
+
+{% set list_type = "type--2" %}
+{% set card_type = card_view %}
+
+{% if card_type == "" %}
+    {% set card_type = 1 %}
+{% endif %}
+
+{#Alapértelmezett class-ok a termékek szülőjén#}
+{% if products_classes is not defined %}
+    {% set products_classes = "products js-products " ~ list_type ~ " card--" ~ card_type %}
+{% endif %}
+
+{% set listId = boxId ~ productListId ~ page_content_id %}
+
+{% if carousel_enabled %}
+{% set carousel_block_classes %}
+    {% if carousel_nums %} carousel-block--with-nums
+        {% if carousel_nums == 1 %} carousel-block--top-nums{% endif %}
+        {% if carousel_nums == 2 %} carousel-block--bottom-nums{% endif %}
+    {% else %}
+     carousel-block--no-nums{% endif %}
+    {% if carousel_arrows %} carousel-block--with-arrows
+        {% if carousel_arrows == 1 %} carousel-block--top-arrows{% endif %}
+        {% if carousel_arrows == 2 %} carousel-block--center-arrows{% endif %}
+    {% else %}
+     carousel-block--no-arrows
+    {% endif %}
+     carousel-block-{{ listId }}
+{% endset %}
+<div class="carousel-block js-carousel-block {{ carousel_block_classes }}" id="carousel-block-{{ listId }}"
+    {%- if prod_recomm_title|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %} role="region" aria-label="{{ prod_recomm_title|striptags }}"{% endif -%}
+>
+    <div class="carousel__title-outer">
+        <div class="container">
+            <div class="carousel__title-wrap">
+                {% if prod_recomm_title|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+                <div class="carousel__title-inner">
+                    <div class="carousel__title {{ listId }}__title{% if prod_recomm_title_class %} {{ prod_recomm_title_class }}{% else %} main-title{% endif %}">{{ prod_recomm_title }}</div>
+                    {% if prod_recomm_title_sub|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+                    <div class="carousel__title-sub">{{ prod_recomm_title_sub }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if carousel_arrows == 1 or carousel_nums %}
+                <div class="carousel__nav js-carousel-nav carousel__nav-{{ listId }}{% if carousel_nums %} has-nums{% endif %}">
+                    {% if carousel_nums %}
+                    <div class="carousel__nums js-carousel-nums carousel__nums-{{ listId }}">
+                        <div class="carousel__num-actual js-carousel-num-actual">1</div>
+                        <div class="carousel__num-all js-carousel-num-all">1</div>
+                    </div>
+                    {% endif %}
+
+                    {% if carousel_arrows == 1 %}
+                    <div class="carousel__buttons carousel__buttons-{{ listId }}">
+                        <button type="button" class="carousel__prev-btn carousel__prev-next-btn btn" aria-label="{{ text.previous }}"></button>
+                        <button type="button" class="carousel__next-btn carousel__prev-next-btn btn" aria-label="{{ text.next }}"></button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="carousel__products">
+        <div class="container carousel__products-container">
+{% else %}
+            {% if prod_recomm_title|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+            <div class="product-recomm__title-outer">
+                <div class="container">
+                    <div class="product-recomm__title-wrap">
+                        <div class="product-recomm__title {{ listId }}__title{% if prod_recomm_title_class %} {{ prod_recomm_title_class }}{% else %} main-title{% endif %}">
+                            {{ prod_recomm_title }}
+                        </div>
+                        {% if prod_recomm_title_sub|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+                        <div class="product-recomm__title-sub">{{ prod_recomm_title_sub }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+{% endif %}
+
+            {% if not only_products %}
+                {% if not infinite_scroll_disp %}
+            {% if not carousel_enabled %}
+            <div class="products-outer">
+                <div class="container products-container">
+            {% endif %}
+                    <{{ subver >= 2 ? (carousel_enabled ? 'div role="group" aria-label="' ~ text.products ~ ' ' ~ text.list ~ ',' ~ _context[productsArray]|length ~ ' ' ~ text.product ~ '"' : 'div role="list"') : 'section' }} class="{{ grid_row }} {{ products_classes }}{% if carousel_enabled %} carousel carousel-{{ listId }}{% else %}{% endif %}" id="list-{{ listId }}">
+                {% endif %}
+            {% endif %}
+                {% if card_view == "" %}
+                    {% set card_view = 1 %}
+                {% endif %}
+
+                {% block embed_card %}
+                {% embed attribute(common_vars.layout_urls,"embed_product_list_2_card_" ~ card_view) %}{% endembed %}
+                {% endblock %}
+
+            {% if not only_products %}
+                {% if not infinite_scroll_disp %}
+                    </{{ subver >= 2 ? 'div' : 'section' }}>
+            {% if not carousel_enabled %}
+                    </div>
+                </div>
+            {% endif %}
+                {% endif %}
+            {% endif %}
+
+            <script type="text/javascript">
+            $(document).ready(function() {
+                initTippy();
+
+            {% if carousel_enabled %}
+                const $flkty_{{ listId }}_options = {
+                        dragThreshold: 10,
+                        cellAlign: 'left',
+                        freeScroll: true,
+                        groupCells: true,
+                        contain: true,
+                        {% if carousel_dots %}
+                        pageDots: true,
+                        {% else %}
+                        pageDots: false,
+                        {% endif %}
+                        prevNextButtons: false,
+                        on: {
+                            ready: function() {
+                                let thisBlock = $(this.element).closest('.js-carousel-block');
+
+                                thisBlock.addClass('ready');
+                                {% if carousel_arrows == 1 or carousel_nums %}
+                                if (this.slides.length > 1) {
+                                    thisBlock.find('.js-carousel-nav').addClass('active');
+                                }
+                                {% endif %}
+                                {% if carousel_nums %}
+                                let $navAll = thisBlock.find('.js-carousel-num-all');
+                                let slidesLength = this.slides.length;
+
+                                $navAll.html(slidesLength);
+                                {% endif %}
+                            },
+                            change: function( index ) {
+                                let thisBlock = $(this.element).closest('.js-carousel-block');
+
+                                {% if carousel_nums %}
+                                let $navActual = thisBlock.find('.js-carousel-num-actual');
+                                let $index = index + 1;
+
+                                $navActual.html($index);
+                                {% endif %}
+                            },
+                            resize: function() {
+                                let thisBlock = $(this.element).closest('.js-carousel-block');
+
+                                {% if carousel_nums %}
+                                let $navAll = thisBlock.find('.js-carousel-num-all');
+                                let slidesLength = this.slides.length;
+
+                                $navAll.html(slidesLength);
+                                {% endif %}
+                            }
+                        }
+                    };
+
+                let $flkty_{{ listId }} = $( '.carousel-{{ listId }}').flickity( $flkty_{{ listId }}_options );
+
+                {% if carousel_arrows == 1 %}
+                $('.carousel__buttons-{{ listId }} .carousel__prev-btn').on( 'click', function() {
+                    $flkty_{{ listId }}.flickity('previous', true);
+                });
+                $('.carousel__buttons-{{ listId }} .carousel__next-btn').on( 'click', function() {
+                    $flkty_{{ listId }}.flickity( 'next', true );
+                });
+                {% endif %}
+
+                {% if product_list_type == "cross_page" %}
+                $(document).on('removeCrossItem', function(){
+                    $flkty_{{ listId }}.flickity('resize');
+                });
+                {% endif %}
+
+                {% if product_list_type == "cross_popup" %}
+                $(document).on('removeCrossItem', function(){
+                    $flkty_{{ listId }}.flickity('resize');
+                });
+                {% endif %}
+
+                {% if product_list_type == "up_popup" %}
+                $(document).on('removeUpItem', function(){
+                    $flkty_{{ listId }}.flickity('resize');
+                });
+                {% endif %}
+
+                {% if product_list_type == "recommend" %}
+                $(document).on('removeRecommendItem', function(){
+                    $flkty_{{ listId }}.flickity('resize');
+                });
+                {% endif %}
+
+                /* SET CAROUSEL CELL TO HEIGHT 100% */
+                $flkty_{{ listId }}.flickity('resize');
+                $(".carousel-{{ listId }} .carousel-cell").css('height','100%');
+            {% endif %}
+            });
+            </script>
+
+{% if carousel_enabled %}
+        </div>
+    </div>
+</div>
+{% endif %}

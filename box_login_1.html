@@ -1,0 +1,119 @@
+{% if login_allow %}
+    {% if button_disp %}
+    <button class="profile__dropdown-btn js-profile-btn btn dropdown__btn" id="profile__dropdown-btn{{ suffix }}" type="button"
+            data-orders="[unas_shop_url]/shop_order_track.php" data-btn-for="#profile__dropdown"
+            aria-label="{{ text.profile }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="profile__dropdown"
+    >
+        <span class="profile__dropdown-btn-icon dropdown__btn-icon icon--user"></span>
+        <span class="profile__text dropdown__btn-text">{{ text.profile }}</span>
+        {% if logged_in %}
+        <span class="profile__bubble bubble"></span>
+        {% endif %}
+    </button>
+    {% endif %}
+
+    {% if dropdown_disp %}
+    <div class="profile__dropdown dropdown__content" id="profile__dropdown" data-content-for="#profile__dropdown-btn" data-content-direction="right"
+         role="dialog" aria-label="{{ text.profile }}" tabindex="-1"
+    >
+        <span class="dropdown__caret"></span>
+        <button class="dropdown__btn-close profile__dropdown-btn-close btn btn-close" type="button" aria-label="{{ text.button_close }}"></button>
+        <div class="dropdown__content-inner">
+        {% if logged_in %}
+            <div class="login-box__loggedin-container">
+                <div class="login-box__loggedin-header">
+                    <div class="profile__title">
+                        <span class="profile__title-text">{{ text.profile }}</span>
+                    </div>
+                    <div class="login-box__loggedin-text d-none">{{ text.logged_in }}</div>
+                    <div class="login-box__loggedin-user d-flex flex-wrap align-items-baseline mb-4">
+                        <div class="login-box__loggedin-user-title font-s mr-2">{{ text.logged_in_as }}:</div>
+                        <div class="login-box__loggedin-user-email font-l font-weight-bold">[[ cust ]]</div>
+                    </div>
+                </div>
+                <ul class="login-box__loggedin-btns text-center mb-4">
+                    {% if menu_orders_disp %}
+                    <li><a class="login-box-btn login-box__btn-orders btn btn-secondary" href="{{ orders_url }}">{{ text.orders }}</a></li>
+                    {% endif %}
+                    {% if menu_subscriptions_disp %}
+                    <li><a class="login-box-btn login-box__btn-subscriptions btn btn-secondary" href="{{ subscriptions_url }}">{{ text.subscriptions }}</a></li>
+                    {% endif %}
+                    {% if menu_discount_disp %}
+                    <li><a class="login-box-btn login-box__btn-discount btn btn-secondary" href="{{ discounts_url }}">{{ text.discounts }}</a></li>
+                    {% endif %}
+                    {% if menu_favourites_disp %}
+                    <li><a class="login-box-btn login-box__btn-favourites btn btn-secondary" href="{{ favourites_url }}">{{ text.favourites }}</a></li>
+                    {% endif %}
+                    {% if menu_saved_filters_disp %}
+                    <li><a class="login-box-btn login-box__btn-saved-filters btn btn-secondary" href="{{ saved_filters_url }}">{{ text.saved_filters }}</a></li>
+                    {% endif %}
+                    {% if menu_saved_cards_disp %}
+                    <li><a class="login-box-btn login-box__btn-saved-cards btn btn-secondary" href="{{ saved_cards_url }}">{{ text.saved_cards }}</a></li>
+                    {% endif %}
+                    {% if menu_customer_addresses_disp %}
+                    <li><a class="login-box-btn login-box__btn-customer-addresses btn btn-secondary" href="{{ customer_addresses_url }}">{{ text.customer_addresses }}</a></li>
+                    {% endif %}
+                    {% if menu_saved_delivery_points_disp %}
+                    <li><a class="login-box-btn login-box__btn-saved-delivery-points btn btn-secondary" href="{{ saved_delivery_points_url }}">{{ text.saved_delivery_points }}</a></li>
+                    {% endif %}
+                    {% if menu_modify_disp %}
+                    <li><a class="login-box-btn login-box__btn-reg btn btn-secondary" href="{{ modify_url }}">{{ text.data_modify }}</a></li>
+                    {% endif %}
+                </ul>
+                <div class="login-box__btn-logout-wrap text-center">
+                    <a class="login-box-btn login-box__btn-logout btn btn-primary" href="{{ logout_url }}">{{ text.logout }}</a>
+                </div>
+            </div>
+            <script type='text/javascript'>
+                $("#container").addClass("logged-in");
+            </script>
+        {% else %}
+            <div class="login-box__loggedout-container">
+                <div class="profile__title">
+                    <span class="profile__title-text">{{ text.login }}</span>
+                </div>
+                {{ form_start }}
+                <div class="login-box__form-inner">
+                    <div class="form-group login-box__input-field">
+                        <label for="shop_user_login">{{ username_login ? text.username : username_title }}</label>
+                        <input name="shop_user_login" id="shop_user_login" placeholder="{{ username_login ? text.username : username_title }}"
+                               type="text" maxlength="100" class="form-control" spellcheck="false" autocomplete="email" autocapitalize="off"
+                        >
+                    </div>
+                    <div class="form-group login-box__input-field mb-4">
+                        <label for="shop_pass_login">{{ text.password }}</label>
+                        <input name="shop_pass_login" id="shop_pass_login" placeholder="{{ text.password }}"
+                               type="password" maxlength="100" class="form-control" spellcheck="false" autocomplete="current-password" autocapitalize="off"
+                        >
+                    </div>
+                    <div class="login-box__btns-wrap form-group form-group-lg">
+                        <button type="submit" class="login-box__login-btn btn btn-primary">{{ text.button_login }}</button>
+                        <a class="login-box__reg-btn btn btn-primary icon--a-pen-line" href="[unas_shop_url]/shop_reg.php?no_reg=0">{{ text.registration }}</a>
+                    </div>
+                    <div class="login-box__remind-btn-wrap form-group{% if facebook_disp or google_disp %} mb-4{% endif %}">
+                        <button type="button" class="login-box__remind-btn btn btn-text2" onclick="handleCloseDropdowns(); overlay_login_remind();">{{ text.forgot_my_password }}</button>
+                    </div>
+                    {% if facebook_disp or google_disp %}
+                    <div class="login-box__social-group form-group">
+                        <div class="row row-gap-10 gutters-5">
+                            {% if facebook_disp %}
+                            <div class="col-12">
+                                {% embed common_vars.layout_urls.embed_facebook_login_1 %}{% endembed %}
+                            </div>
+                            {% endif %}
+                            {% if google_disp %}
+                            <div class="col-12">
+                                {% embed common_vars.layout_urls.embed_google_login_1 %}{% endembed %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {{ form_end }}
+            </div>
+        {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endif %}

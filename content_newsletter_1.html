@@ -1,0 +1,36 @@
+<section class="page-newsletter" id="page-newsletter">
+    <div class="page-newsletter__container container">
+        [[ newsletter_text ]]
+        <div class="page-newsletter__form-wrapper container-max-xs px-0 page-newsletter__input-count-{{ field_num }}{% if address_disp %} has-address{% endif %}">
+            {{ normal_form_start }}
+                {% if name_disp %}
+                <div class="form-group">
+                    <label for="news_name">{{ text.name }}</label>
+                    <input class="page-newsletter__name form-control" value="{{ name_value }}" name="news_name" placeholder="{{ text.name }}" id="news_name" type="text" maxlength="200">
+                </div>
+                {% endif %}
+
+                {% if address_disp %}
+                <div class="form-group">
+                    <label for="news_addr">{{ text.address }}</label>
+                    <input class="page-newsletter__address form-control" value="{{ address_value }}" name="news_addr" placeholder="{{ text.address }}" id="news_addr" type="text" maxlength="200">
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <label for="news_emai">{{ text.email }}</label>
+                    <input class="page-newsletter__email form-control" value="{{ email_value }}" id="news_emai" placeholder="{{ text.email }}" name="news_emai" type="email" maxlength="200">
+                </div>
+                <div class="page-newsletter__privacy-group form-group text-center">
+                    <div class="custom-control custom-checkbox d-inline-block page-newsletter__privacy_policy font-xs">
+                        <input class="custom-control-input" name="news_privacy_policy" id="news_privacy_policy_{{ box_num }}" type="checkbox" value="1">
+                        <label class="custom-control-label text-left" for="news_privacy_policy_{{ box_num }}">{{ text.accept_privacy_policy }}</label>
+                    </div>
+                </div>
+                <div class="page-newsletter__button-up-wrap text-center">
+                    <button class="page-newsletter__button-up btn btn-primary btn-lg" type="button" onclick="newsletter{{ box_num }}_submit();">{{ text.button_subscribe }}</button>
+                </div>
+                {{ end_script }}
+            {{ normal_form_end }}
+        </div>
+    </div>
+</section>

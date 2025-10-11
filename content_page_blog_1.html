@@ -1,0 +1,161 @@
+[[ element|name:start_blog_title_box;layout:title_box2; ]]
+
+{% if page_content_count>0 %}
+    {% if animation_on_scroll == "1" %}
+        {# get default aos animation type #}
+        {% set global_aos = animation_on_scroll_type %}
+
+        {# get default aos delay #}
+        {% set global_aos_delay = animation_on_scroll_delay %}
+
+        {# get default normal duration (slow/fast) #}
+        {% set global_aos_duration_text = animation_on_scroll_duration %}
+
+        {# get default multipliers for slow and fast duration #}
+        {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+        {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+        {% set aos_multiplier = 1 %}
+
+        {% if global_aos_duration_text == 'slow' %}
+            {% set aos_multiplier = global_slow_multiplier %}
+        {% elseif global_aos_duration_text == 'fast' %}
+            {% set aos_multiplier = global_fast_multiplier %}
+        {% endif %}
+    {% endif %}
+
+    <section id="start-blog" class="blog start-block" data-length="{{ page_contents|length }}" aria-label="{{ text.blog }}">
+        <div class="container">
+            <div class="blog__main-title main-title"
+                {% if animation_on_scroll == "1" and backvar.custom_aos_on_title != '0' %}
+                    {% set temp_aos_on_title %}
+                        {% if backvar.custom_aos_on_title != '' %}
+                            {{ backvar.custom_aos_on_title }}
+                        {% else %}
+                            {{ global_aos }}
+                        {% endif %}
+                    {% endset %}
+                    data-aos="{{ temp_aos_on_title|trim }}"
+                    {% if backvar.custom_aos_duration_on_title != '' %}
+                    data-aos-duration="{{ backvar.custom_aos_duration_on_title }}"
+                    {% endif %}
+                    {% if backvar.custom_aos_offset_on_title != '' %}
+                    data-aos-offset="{{ backvar.custom_aos_offset_on_title }}"
+                    {% endif %}
+                    {% if backvar.custom_aos_delay_on_title != '' %}
+                    data-aos-delay="{{ backvar.custom_aos_delay_on_title }}"
+                    {% endif %}
+                {% endif %}
+            >{{ text.blog }}</div>
+            <div class="blog__contents">
+                <div class="row gutters-5 gutters-md-10 gutters-xxl-20" role="list">
+                    {% for page_content in page_contents %}
+                        {% if page_content.disp %}
+                            {% set classes = "page_content page_content_item" %}
+                            {% set grid = "col-" ~ page_content.default ~ " col-xs-" ~ page_content.xs ~ " col-sm-" ~ page_content.sm ~ " col-md-" ~ page_content.md ~ " col-lg-" ~ page_content.lg ~ " col-xl-" ~ page_content.xl ~ " col-xxl-" ~ page_content.xxl %}
+
+                            {% embed common_vars.layout_urls.embed_blog_card_1 %}
+                                {% block aos_attributes %}
+                                    {% if animation_on_scroll == "1" and backvar.custom_aos_on_slide != '0' %}
+                                        {% set temp_aos_on_slide %}
+                                            {% if backvar.custom_aos_on_slide != '' %}
+                                                {{ backvar.custom_aos_on_slide }}
+                                            {% else %}
+                                                {{ global_aos }}
+                                            {% endif %}
+                                        {% endset %}
+                                        data-aos="{{ temp_aos_on_slide|trim }}"
+
+                                        {% set temp_aos_delay_on_slide %}
+                                            {% if backvar.custom_aos_delay_on_slide != '' %}
+                                                {{ backvar.custom_aos_delay_on_slide }}
+                                            {% else %}
+                                                {{ global_aos_delay }}
+                                            {% endif %}
+                                        {% endset %}
+                                        {% set temp_aos_delay_between_title_and_slides %}
+                                            {% if backvar.custom_aos_delay_between_title_and_slides != '' %}
+                                                {{ backvar.custom_aos_delay_between_title_and_slides }}
+                                            {% else %}
+                                                {{ global_aos_delay }}
+                                            {% endif %}
+                                        {% endset %}
+                                        {% if temp_aos_delay_on_slide|trim != '0' %}
+                                        data-aos-delay="{{ (((temp_aos_delay_between_title_and_slides|trim * aos_multiplier) / 50|round) * 50) + ((((temp_aos_delay_on_slide|trim * aos_multiplier ) / 50|round) * 50) * loop.index0 ) }}"
+                                        {% endif %}
+                                        data-aos-anchor="#start-blog"
+                                        {% if backvar.custom_aos_duration_on_slide != '' %}
+                                        data-aos-duration="{{ backvar.custom_aos_duration_on_slide }}"
+                                        {% endif %}
+                                        {% if backvar.custom_aos_offset_on_slide != '' %}
+                                        data-aos-offset="{{ backvar.custom_aos_offset_on_slide }}"
+                                        {% endif %}
+                                    {% endif %}
+                                {% endblock %}
+                            {% endembed %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if limit_exceeded %}
+                    <div role="listitem" class="col-12 start-blog-title-box"
+                        {% if animation_on_scroll == "1" and backvar.custom_aos_on_slide != '0' %}
+                            {% set temp_aos %}
+                                {% if backvar.custom_aos_on_slide != '' %}
+                                    {{ backvar.custom_aos_on_slide }}
+                                {% else %}
+                                    {{ global_aos }}
+                                {% endif %}
+                            {% endset %}
+                            data-aos="{{ temp_aos|trim }}"
+                            {% set temp_aos_delay_on_slide %}
+                                {% if backvar.custom_aos_delay_on_slide != '' %}
+                                    {{ backvar.custom_aos_delay_on_slide }}
+                                {% else %}
+                                    {{ global_aos_delay }}
+                                {% endif %}
+                            {% endset %}
+                            {% set temp_aos_delay_between_title_and_slides %}
+                                {% if backvar.custom_aos_delay_between_title_and_slides != '' %}
+                                    {{ backvar.custom_aos_delay_between_title_and_slides }}
+                                {% else %}
+                                    {{ global_aos_delay }}
+                                {% endif %}
+                            {% endset %}
+
+                            {% if temp_aos_delay_on_slide|trim != '0' %}
+                            data-aos-delay="{{ (((temp_aos_delay_between_title_and_slides|trim * aos_multiplier) / 50|round) * 50) + ((((temp_aos_delay_on_slide|trim * aos_multiplier ) / 50|round) * 50) * page_contents|length ) }}"
+                            {% endif %}
+                            data-aos-anchor="#start-blog"
+                            {% if backvar.custom_aos_duration_on_slide != '' %}
+                            data-aos-duration="{{ backvar.custom_aos_duration_on_slide }}"
+                            {% endif %}
+                            {% if backvar.custom_aos_offset_on_slide != '' %}
+                            data-aos-offset="{{ backvar.custom_aos_offset_on_slide }}"
+                            {% endif %}
+                        {% endif %}
+                    >
+                        [% if start_blog_title_box|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                        <div class="start-blog-title-box__inner">
+                            <div class="row align-items-center">
+                                <div class="col-sm">
+                                    [[ start_blog_title_box ]]
+                                </div>
+                                <div class="col-sm-auto">
+                                    <div class="blog__btn-more-wrap">
+                                        <a class="blog__btn-more btn btn-primary" href="{{ url }}">{{ text.button_more_articles }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        [% else %]
+                        <div class="blog__btn-more-wrap text-center">
+                            <a class="blog__btn-more btn btn-primary" href="{{ url }}">{{ text.button_more_articles }}</a>
+                        </div>
+                        [% endif %]
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endif %}

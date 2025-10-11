@@ -1,0 +1,49 @@
+<div role="listitem" id="page_content_{{ page_content.id }}" class="{{ classes }} {{ grid }} page_content--blog" {% block aos_attributes %}{% endblock %}>
+	<div class="blog-item__inner">
+        <div class="blog-item__details-btn-wrap row gutters-5">
+            <div class="col blog-item__title font-l">
+                <a href="{{ page_content.blog_details_url }}">{{ page_content.blog_title }}</a>
+            </div>
+            <div class="col-auto blog-item__details-btn-wrap">
+                <a class="blog-item__details-btn btn btn-square btn-primary" tabindex="-1" aria-hidden="true" title="{{ text.button_details }}" aria-label="{{ text.button_details }}" href="{{ page_content.blog_details_url }}"></a>
+            </div>
+        </div>
+        <div class="blog-item__creation-data">
+            {% if page_content.date_disp %}
+                <span class="blog-item__date">{{ page_content.blog_date }}</span>
+                <span class="blog-item__time mr-2 d-none">{{ page_content.blog_time }}</span>
+            {% endif %}
+
+            {% if page_content.blog_author_disp %}
+            <span class="blog-item__author-name">{{ page_content.blog_author_name }}</span>
+            {% endif %}
+        </div>
+        {% if page_content.blog_list_intro_img_disp %}
+        <div class="blog-item__date-and-img-wrapper">
+            <div class="blog-item__img-outer" style="width:100%;max-width:{{ page_content.blog_list_intro_img_width }}px;margin:0 auto;">
+                <a class="blog-item__img-link" href="{{ page_content.blog_details_url }}" tabindex="-1" aria-hidden="true">
+                    <div class="blog-item__img-wrap" style="padding-top:{{ page_content.blog_list_intro_img_height / page_content.blog_list_intro_img_width * 100 }}%;">
+                        <img class="blog-item__img lazy-img lazyload" width="{{ page_content.blog_list_intro_img_width }}" height="{{ page_content.blog_list_intro_img_height }}"
+                             src="[unas_shop_url]/main_pic/space.gif" data-src="{{ page_content.blog_list_intro_img_url }}" alt="{{ page_content.blog_title }}"
+                             data-srcset="{{ page_content.blog_list_intro_img_url }} 1x{% if page_content.blog_list_intro_img_retina_disp %}, {{ page_content.blog_list_intro_img_retina_url }} 2x{% endif %}"
+                        />
+                        <div class="loading-spinner"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        <div class="blog-item__data">
+            <div class="blog-item__intro">
+                <div class="blog-item__intro-text">{{ page_content.blog_intro }}</div>
+            </div>
+            {% if page_content.tags_disp %}
+            <div class="blog-item__tags">
+                {% set tag_include_type = "own_tags" %}
+                {% set tag_array = page_content.tags %}
+                {% include common_vars.layout_urls.embed_tag_filter_1 %}
+            </div>
+            {% endif %}
+        </div>
+	</div>
+</div>

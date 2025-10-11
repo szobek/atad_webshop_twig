@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="row">
+        <div class="filter-side-box-col col-auto">
+            <div class="filter-dropdown dropdown__content" id="filter-dropdown" data-content-for="#filter-box__dropdown-btn" data-content-direction="left">
+                <button class="dropdown__btn-close filter-dropdown__btn-close btn btn-close" type="button" aria-label="{{ text.button_close }}" data-text="{{ text.button_close|lower }}"></button>
+                <div class="dropdown__content-inner filter-dropdown__inner">
+                    [[ temp_box_filter ]]
+                </div>
+            </div>
+        </div>
+        <div class="rest-content-col col px-0">
+            {% block rest_content %}
+            {{ product_list }}
+            {% endblock %}
+        </div>
+    </div>
+</div>

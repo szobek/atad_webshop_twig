@@ -1,0 +1,6 @@
+{% if element_disp %}
+    {% for slide in slides %}
+        <li class="js-element {{ name }}-list-item" data-element-name="{{ name }}">{{ slide.html }}</li>
+    {% endfor %}
+{% endif %}
+

@@ -1,0 +1,222 @@
+{# START - Beállítások #}
+    {% set list_type = "type--2" %}
+    {% set card_type = card_view %}
+
+    {% if card_type == "" %}
+        {% set card_type = 1 %}
+    {% endif %}
+
+    {% set only_products = true %}
+    {% set carousel_enabled = false %}
+    {% set products_classes = "products js-products " ~ list_type ~ " card--" ~ card_type %}
+    {% set grid_row = "row gutters-10" %}
+{# END - beállítások #}
+
+{% if products_disp %}
+    {{ start_script }}
+
+    {#nem kell ismétlődnie infinite scroll és ajax frissítés esetén sem#}
+    {% if not infinite_scroll_disp and not ajax_filter_reload_disp %}
+    <div id="page_artlist_content" class="page_content product-list-wrapper"> {# product-list-wrapper - ebbe tölt bele az ajax#}
+    {% endif %}
+        {% if view_select_top or product_ordering_top or paging_disp and not infinite_scroll_disp %}
+        <div class="paging-sorting-ordering paging-sorting-ordering--top">
+            <div class="container">
+                <div class="paging-sorting-ordering__inner">
+                    <div class="row gutters-10 align-items-center">
+                        <div class="col-auto product-num-col font-xs font-md-m py-3">
+                            <span class="product-num">{{ product_count }}</span>
+                            <span class="product-num__text">{{ text.product }}</span>
+                            {% if not infinite_scroll_enabled %}
+                                <span class="product-num__start">{{ product_num_start }}</span>
+                                <span class="product-num__end">{{ product_num_end }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if product_ordering_top or view_select_top %}
+                        <div class="viewing-sorting--top order-md-3 col-auto d-flex align-items-center ml-auto">
+                                {% if view_select_top %}
+                                    <div class="view view--top flex-shrink-0 mr-3 mr-xl-5">
+                                        <button title="{{ text.view }} 1" type="button" class="view__btn btn view__btn--1{% if design_1_selected %} is-selected{% endif %}" {% if not design_1_selected %}onclick="location.href=location_href_with_get('change_page_design=1')"{% endif %}>
+                                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                                <path d="M0,0h3v3H0V0z M0,4h3v3H0V4z M0,8h3v3H0V8z M0,12h3v3H0V12z M4,0h3v3H4V0z M4,4h3v3H4V4z M4,8h3v3H4V8z M4,12h3
+                                            v3H4V12z M8,0h3v3H8V0z M8,4h3v3H8V4z M8,8h3v3H8V8z M8,12h3v3H8V12z M12,0h3v3h-3V0z M12,4h3v3h-3V4z M12,8h3v3h-3V8z M12,12h3v3
+                                            h-3V12z"/>
+                                            </svg>
+                                        </button>
+                                        <button title="{{ text.view }} 2" type="button" class="view__btn btn view__btn--2{% if design_2_selected or not design_1_selected and not design_2_selected %} is-selected{% endif %}" {% if not design_2_selected %}onclick="location.href=location_href_with_get('change_page_design=2')"{% endif %}>
+                                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                                <path class="st0" d="M0,0h15v3H0V0z M0,4h15v3H0V4z M0,8h15v3H0V8z M0,12h15v3H0V12z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                                {% if product_ordering_top %}
+                                    <div class="order--top flex-shrink-0">
+                                        {{ product_ordering_top_form_start }}
+                                        <div class="order__select-outer form-select-group" title="{{ text.order_by }}">
+                                            <select name="new_art_order" onchange="document.form_art_order1.submit();" class="form-control" aria-label="{{ text.order_by }}" id="new_art_order_top">
+                                                {% for product_ordering_type in product_ordering_types %}
+                                                    <option value="{{ product_ordering_type.value }}" {% if product_ordering_type.selected %}selected="selected"{% endif %}>{{ product_ordering_type.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        {{ product_ordering_top_form_end }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if paging_disp %}
+                        <nav class="paging__nav paging--top order-md-2 col-12 col-md-auto my-3 page_artlist_page ml-auto" aria-label="{{ text.top ~ ' ' ~ text.pagination ~ ': ' ~ text.product ~ text.list }}">
+                            {{ paging_content }}
+                        </nav>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if not infinite_scroll_disp %}
+        <section class="products-container container" aria-label="{{ text.products }}">
+            <div{{ subver >= 2 ? ' role="list"' }} class="page_artlist_list list-type--2{% if not carousel_enabled %} {{ grid_row }} {{ products_classes }}{% endif %}">
+        {% endif %}
+                {% set img_width = backvar.main_img_maxwidth %}
+                {% set img_height = backvar.main_img_maxheight %}
+                {% set img_thumb_width = backvar.main_img_thumbnail_maxwidth %}
+                {% set img_thumb_height = backvar.main_img_thumbnail_maxheight %}
+
+                {% embed common_vars.layout_urls.embed_product_list_2_card_frame_1 %}{% endembed %}
+
+                {{ infinite_scroll }} {#a következő blokk tartalma#}
+                {{ infinite_scroll_loading }} {#az esemény ami kiváltja a betöltést#}
+
+        {% if not infinite_scroll_disp %}
+            </div>
+        </section>{#products#}
+        {% endif %}
+
+        {% if infinite_scroll_button_disp and ajax_filter_reload_disp %}
+        <script>
+            $('.page_artlist_load_more_content').show();
+        </script>
+        {% endif %}
+
+        {% if not infinite_scroll_button_disp and ajax_filter_reload_disp %}
+        <script>
+            $('.page_artlist_load_more_content').hide();
+        </script>
+        {% endif %}
+
+        {% if infinite_scroll_button_enabled and not infinite_scroll_disp %} {# .page_artlist_load_more_content class for js #}
+            <div class="infinite-scroll-btn-wrap form-group text-center mb-0">
+                <button type="button" {% if not infinite_scroll_button_disp %}style="display:none;"{% endif %} class="infinite-scroll-btn page_artlist_load_more_content btn btn-primary">{{ text.more_products }}</button>
+            </div>
+        {% endif %}
+
+        {% if view_select_bottom or product_ordering_bottom or paging_disp and not infinite_scroll_disp %}
+        <div class="paging-sorting-ordering paging-sorting-ordering--bottom">
+            <div class="container">
+                <div class="paging-sorting-ordering__inner">
+                    <div class="row gutters-10 align-items-center justify-content-between">
+                {% if paging_disp %}
+                <nav class="paging__nav paging--bottom col-12 order-md-2 col-md-auto my-3 page_artlist_page ml-auto" aria-label="{{ text.bottom ~ ' ' ~ text.pagination ~ ': ' ~ text.product ~ text.list }}">
+                    {{ paging_content }}
+                </nav>
+                {% endif %}
+
+                <div class="col-auto product-num-col font-xs font-md-m py-3">
+                    <span class="product-num">{{ product_count }}</span>
+                    <span class="product-num__text">{{ text.product }}</span>
+                    {% if not infinite_scroll_enabled %}
+                        <span class="product-num__start">{{ product_num_start }}</span>
+                        <span class="product-num__end">{{ product_num_end }}</span>
+                    {% endif %}
+                </div>
+
+                {% if product_ordering_bottom or view_select_bottom %}
+                <div class="viewing-sorting--bottom order-3 col-auto d-flex align-items-center my-4 ml-auto">
+                        {% if view_select_bottom %}
+                            <div class="view view--bottom flex-shrink-0 mr-3 mr-xl-5">
+                                <button title="{{ text.view }} 1" type="button" class="view__btn btn view__btn--1{% if design_1_selected %} is-selected{% endif %}" {% if not design_1_selected %}onclick="location.href=location_href_with_get('change_page_design=1')"{% endif %}>
+                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                        <path d="M0,0h3v3H0V0z M0,4h3v3H0V4z M0,8h3v3H0V8z M0,12h3v3H0V12z M4,0h3v3H4V0z M4,4h3v3H4V4z M4,8h3v3H4V8z M4,12h3
+                                    v3H4V12z M8,0h3v3H8V0z M8,4h3v3H8V4z M8,8h3v3H8V8z M8,12h3v3H8V12z M12,0h3v3h-3V0z M12,4h3v3h-3V4z M12,8h3v3h-3V8z M12,12h3v3
+                                    h-3V12z"/>
+                                    </svg>
+                                </button>
+                                <button title="{{ text.view }} 2" type="button" class="view__btn btn view__btn--2{% if design_2_selected or not design_1_selected and not design_2_selected %} is-selected{% endif %}" {% if not design_2_selected %}onclick="location.href=location_href_with_get('change_page_design=2')"{% endif %}>
+                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                        <path class="st0" d="M0,0h15v3H0V0z M0,4h15v3H0V4z M0,8h15v3H0V8z M0,12h15v3H0V12z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        {% endif %}
+                        {% if product_ordering_bottom %}
+                            <div class="order--bottom flex-shrink-0 ml-auto">
+                                {{ product_ordering_bottom_form_start }}
+                                <div class="order__select-outer form-select-group" title="{{ text.order_by }}">
+                                    <select name="new_art_order" onchange="document.form_art_order2.submit();" class=" form-control" aria-label="{{ text.order_by }}" id="new_art_order_bottom">
+                                        {% for product_ordering_type in product_ordering_types %}
+                                            <option value="{{ product_ordering_type.value }}" {% if product_ordering_type.selected %}selected="selected"{% endif %}>{{ product_ordering_type.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {{ product_ordering_bottom_form_end }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% if not infinite_scroll_disp and not ajax_filter_reload_disp %}
+    </div>{#page_artlist_content#}
+    {% endif %}
+{% endif %}{#product_disp#}
+
+{% if not products_disp and artlist_type_product_list_cat_disp and ajax_filter_reload_disp %}
+    <div class="product-list-wrapper container{% if search_complex_disp %} empty-category container-max-md px-0 mb-5{% endif %}">
+        <div class="no-product alert alert-info icon--b-info" role="alert">{% if search_complex_disp %}{{ text.no_product_in_category }}{% else %}{{ text.no_product }}{% endif %}</div>
+    </div>
+{% endif %}
+
+<script>
+    $(document).ready(function() {
+        initTippy();
+
+        $('.js-show-filtered-products-btn').attr('data-product-num','{% if products_disp %}{{ product_count }}{% else %}0{% endif %}');
+    });
+{% if products_disp %}
+    {% if not infinite_scroll_disp %}
+        $(document).ready(function() {
+            /* Get all elements that have alt imgs */
+            var productsWithAltPic = $(".js-on-hover-alt-img");
+
+            /* Call the altPicHover fn (see above) on all elements with alt imgs */
+            productsWithAltPic.each(altPicHover);
+
+            /*** Short desc opener ***/
+            $('.read-more:not(.is-processed)').each(readMoreOpener);
+
+            initTippy();
+
+            {% if ajax_filter_reload_disp %}
+            initTippy();
+            {% endif %}
+        });
+
+        {% if infinite_scroll_enabled %}
+        $(document).ajaxStop(function() {
+            productsWithAltPic = $(".js-on-hover-alt-img");
+            productsWithAltPic.each(altPicHover);
+
+            /*** Short desc opener ***/
+            $('.read-more:not(.is-processed)').each(readMoreOpener);
+        });
+        {% endif %}
+    {% endif %}
+{% endif %}
+</script>

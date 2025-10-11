@@ -1,0 +1,12 @@
+<div id='page_help_checkout_content' class='page_content'>
+    <div class="container container-max-lg">
+        {% for section in sections %}
+            {% if section.title_disp or section.content_disp %}
+            <section class="checkout-details mb-5">
+            {% if section.title_disp %}<div class="checkout-details__title mb-3"><strong>{{ section.title }}</strong></div>{% endif %}
+            {% if section.content_disp %}<div class="checkout-details__content text-justify">{{ section.content }}</div>{% endif %}
+            </section>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

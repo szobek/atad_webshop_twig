@@ -1,0 +1,28 @@
+{% if more_langs_disp %}
+    {% if select_disp %}
+    <div class="{% if mobile_disp %}lang-box-mobile{% else %}lang-box-desktop flex-shrink-0{% endif %}">
+        <div class="lang-select-group form-group form-select-group form-select-group-sm mb-0">
+            <select class="form-control form-control-sm border-0 lang-select" aria-label="{{ text.change_language }}" name="change_lang" id="box_lang_select{% if mobile_disp %}_mobile{% else %}_desktop{% endif %}" onchange="location.href='{{ base_url }}'+this.value">
+                {% for lang in langs %}
+                <option value="{{ lang.uri }}"{% if lang.selected %} selected="selected"{% endif %}>{{ lang.code|upper }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if button_disp %}
+    <div class="lang-box lang-box--button-style">
+        <div class="lang-box__title">{{ text.change_language }}</div>
+        <ul class="lang-box__list" id="box_lang_content">
+            {% for lang in langs %}
+            <li>
+                <a id="box_lang_{{ lang.code }}" aria-label="{{ lang.name }}" data-langcode="{{ lang.code }}" rel="nofollow"
+                   href="#" data-uri="{{ lang.uri }}" onclick="location.href='{{ base_url }}'+$(this).data('uri')" class="{% if lang.selected %}is-selected{% endif %}" title="{{ lang.name }}">{{ lang.code }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+{% endif %}

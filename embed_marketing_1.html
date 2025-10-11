@@ -1,0 +1,39 @@
+{{ backvar(slide_direction,left) }}
+
+{% if popup_disp %}
+    {# Lista és részletek oldal: upsale #}
+    {% if up_disp %}
+        {{ up_product_list }}
+    {% endif %}
+    {# Lista oldal: crossale #}
+    {% if cross_disp %}
+        {{ cross_product_list }}
+    {% endif %}
+    {# Köszönő oldal: postsale #}
+    {% if postsale_disp %}
+        {{ postsale_art }}
+    {% endif %}
+{% endif %}
+{% if page_disp %}
+    {# Részletek és koásr oldal: ajándék #}
+    {% if gift_disp %}
+        {% for gift in gifts %}
+            {{ gift.product_list }}
+        {% endfor %}
+    {% endif %}
+
+    {# Kosár oldal: upsale #}
+    {% if up_disp %}
+        {{ up_product_list }}
+    {% endif %}
+
+    {# Részletek és kosár oldal: crossale #}
+    {% if cross_disp %}
+        {{ cross_product_list }}
+    {% endif %}
+
+    {# Részletek oldal: csomagban olcsóbb #}
+    {% if bundle_disp %}
+        {{ bundle_product_list }}
+    {% endif %}
+{% endif %}

@@ -1,0 +1,418 @@
+{% if element_disp %}
+    {% set carousel_arrows = backvar.custom_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_carousel_nums %}
+    {% set carousel_dots = backvar.custom_carousel_dots %}
+
+    {% if transition_effect_fade_disp %}
+    <script src="[unas_shop_url]/!common_packages/jquery/plugins/flickity/v3/flickity-fade.min.js" async></script>
+    <link rel="stylesheet" href="[unas_shop_url]/!common_packages/jquery/plugins/flickity/v3/flickity-fade.css">
+    {% endif %}
+
+    {% set tempCss %}
+        {% for slide in slides %}
+            {% if slide.img_default_disp %}
+                .{{ name }}__element-{{ slide.num }} .{{ layout }}__element-img-wrap {
+                    padding-top: calc({{ (slide.img_default_height / slide.img_default_width * 100) }}%);
+                    width: {{ slide.img_default_width }}px;
+                }
+                {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px){
+                        .{{ name }}__element-{{ slide.num }} .{{ layout }}__element-img-wrap {
+                            padding-top: calc({{ (slide.img_large_height / slide.img_large_width * 100) }}%);
+                            width: {{ slide.img_large_width }}px;
+                        }
+                    }
+                {% endif %}
+                {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px){
+                        .{{ name }}__element-{{ slide.num }} .{{ layout }}__element-img-wrap {
+                            padding-top: calc({{ (slide.img_medium_height / slide.img_medium_width * 100) }}%);
+                            width: {{ slide.img_medium_width }}px;
+                        }
+                    }
+                {% endif %}
+                {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px){
+                        .{{ name }}__element-{{ slide.num }} .{{ layout }}__element-img-wrap {
+                            padding-top: calc({{ (slide.img_small_height / slide.img_small_width * 100) }}%);
+                            width: {{ slide.img_small_width }}px;
+                        }
+                    }
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endset %}
+
+    {% if tempCss|replace({' ': ''}) != "" %}
+        <style>{{ tempCss }}</style>
+    {% endif %}
+
+    [% set {{ name }} %]
+    {% if animation_on_scroll == "1" %}
+        {# get default aos animation type #}
+        {% set global_aos = animation_on_scroll_type %}
+
+        {# get default aos delay #}
+        {% set global_aos_delay = animation_on_scroll_delay %}
+
+        {# get default normal duration (slow/fast) #}
+        {% set global_aos_duration_text = animation_on_scroll_duration %}
+
+        {# get default multipliers for slow and fast duration #}
+        {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+        {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+        {% set aos_multiplier = 1 %}
+
+        {% if global_aos_duration_text == 'slow' %}
+            {% set aos_multiplier = global_slow_multiplier %}
+        {% elseif global_aos_duration_text == 'fast' %}
+            {% set aos_multiplier = global_fast_multiplier %}
+        {% endif %}
+    {% endif %}
+
+    <div id="{{ name }}" class="js-element {{ layout }} {{ name }}{% if class != '' %} {{ class }}{% endif %}{% if main_title_disp %} has-title{% else %} no-title{% endif %}"
+         data-element-name="{{ name }}"{% if main_title_disp %} role="region" aria-label="{{ main_title }}"{% endif %}
+    >
+        <div class="{{ name }}__container{% if container_class != '' %} {{ container_class }}{% endif %}">
+            {% if main_title_disp %}
+            <div id="{{ name }}__main-title-wrap" class="{{ name }}__main-title-wrap"
+                {% if animation_on_scroll == "1" and backvar.custom_aos_on_title != '0' %}
+                    {% set temp_aos_on_title %}
+                        {% if backvar.custom_aos_on_title != '' %}
+                            {{ backvar.custom_aos_on_title }}
+                        {% else %}
+                            {{ global_aos }}
+                        {% endif %}
+                    {% endset %}
+                    data-aos="{{ temp_aos_on_title|trim }}"
+                    data-aos-anchor="#{{ name }}"
+                    {% if backvar.custom_aos_duration_on_title != '' %}
+                        data-aos-duration="{{ backvar.custom_aos_duration_on_title }}"
+                    {% endif %}
+                    {% if backvar.custom_aos_offset_on_title != '' %}
+                        data-aos-offset="{{ backvar.custom_aos_offset_on_title }}"
+                    {% endif %}
+                    {% if backvar.custom_aos_delay_on_title != '' %}
+                        data-aos-delay="{{ backvar.custom_aos_delay_on_title }}"
+                    {% endif %}
+                {% endif %}
+            >
+                <div class="{{ name }}__main-title main-title">{{ main_title }}</div>
+            </div>
+            {% endif %}
+
+            {# grid type: no effect -> list #}
+            {% if transition_effect_no_disp %}
+            <div class="{{ layout }}__elements" role="list">
+                {% if grid_class != '' %}
+                <div class="{{ grid_class }}">
+                {% endif %}
+                    {% for slide in slides %}
+                    <div role="listitem" class="{{ layout }}__element-col{% if grid_col_class != '' %} {{ grid_col_class }}{% endif %}"
+                        {% if animation_on_scroll == "1" and backvar.custom_aos_on_slide != '0' %}
+                            {% set temp_aos_on_slide %}
+                                {% if backvar.custom_aos_on_slide != '' %}
+                                    {{ backvar.custom_aos_on_slide }}
+                                {% else %}
+                                    {{ global_aos }}
+                                {% endif %}
+                            {% endset %}
+                            data-aos="{{ temp_aos_on_slide|trim }}"
+
+                            {% set temp_aos_delay_on_slide %}
+                                {% if backvar.custom_aos_delay_on_slide != '' %}
+                                    {{ backvar.custom_aos_delay_on_slide }}
+                                {% else %}
+                                    {{ global_aos_delay }}
+                                {% endif %}
+                            {% endset %}
+
+                            {% set temp_aos_delay_between_title_and_slides %}
+                                {% if backvar.custom_aos_delay_between_title_and_slides != '' %}
+                                    {{ backvar.custom_aos_delay_between_title_and_slides }}
+                                {% else %}
+                                    {{ global_aos_delay }}
+                                {% endif %}
+                            {% endset %}
+
+                            {% if temp_aos_delay_on_slide|trim != '0' %}
+                                data-aos-delay="{{ (((temp_aos_delay_between_title_and_slides|trim * aos_multiplier) / 50|round) * 50) + ((((temp_aos_delay_on_slide|trim * aos_multiplier ) / 50|round) * 50) * loop.index0 ) }}"
+                            {% endif %}
+                            data-aos-anchor="#{{ name }}"
+                            {% if backvar.custom_aos_duration_on_slide != '' %}
+                                data-aos-duration="{{ backvar.custom_aos_duration_on_slide }}"
+                            {% endif %}
+                            {% if backvar.custom_aos_offset_on_slide != '' %}
+                                data-aos-offset="{{ backvar.custom_aos_offset_on_slide }}"
+                            {% endif %}
+                        {% endif %}
+                    >
+                        <div class="{{ name }}__element {{ name }}__element-{{ slide.num }}">
+                            <div class="row gutters-10 flex-nowrap">
+                                {% if slide.img_default_disp %}
+                                <div class="col-auto">
+                                    <div class="{{ layout }}__element-symbol">
+                                        <div class="{{ layout }}__element-img-outer">
+                                            <div class="{{ layout }}__element-img-wrap abs-wrapper">
+                                                {% if slide.img_link_disp %}
+                                                <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %} aria-hidden="true" tabindex="-1">
+                                                {% endif %}
+                                                    <picture>
+                                                        {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                                                        <source width="{{ slide.img_small_width }}" height="{{ slide.img_small_height }}" media="(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_small_url }} 1x{% if slide.img_small_retina_disp %}, {{ slide.img_small_retina_url }} 2x{% endif %}" />
+                                                        {% endif %}
+                                                        {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                                                        <source width="{{ slide.img_medium_width }}" height="{{ slide.img_medium_height }}" media="(max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_medium_url }} 1x{% if slide.img_medium_retina_disp %}, {{ slide.img_medium_retina_url }} 2x{% endif %}" />
+                                                        {% endif %}
+                                                        {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                                                        <source width="{{ slide.img_large_width }}" height="{{ slide.img_large_height }}" media="(max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_large_url }} 1x{% if slide.img_large_retina_disp %}, {{ slide.img_large_retina_url }} 2x{% endif %}" />
+                                                        {% endif %}
+                                                        <source width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} 2x{% endif %}" />
+                                                        <img class="element__img abs-element lazyload" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ slide.img_default_url }}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}"/>
+                                                    </picture>
+                                                {% if slide.img_link_disp %}
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% elseif slide.icon_1 != '' %}
+                                <div class="{{ layout }}__element-icon-wrap col-auto">
+                                    {% if slide.img_link_disp %}
+                                    <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %} aria-hidden="true" tabindex="-1">
+                                        {% endif %}
+                                        <div class="{{ layout }}__element-icon {{ layout }}__element-symbol" data-icon="&#x{{ slide.icon_1|replace({';': ''}) }};"></div>
+                                        {% if slide.img_link_disp %}
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                <div class="{{ layout }}__element-html-wrap col">
+                                    <div class="{{ layout }}__element-title font-l">
+                                        {% if slide.img_link_disp %}
+                                        <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                                        {% endif %}
+                                            {{ slide.title }}
+                                        {% if slide.img_link_disp %}
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="{{ layout }}__element-text">{{ slide.html }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% if grid_class != '' %}
+                </div>
+                {% endif %}
+            </div>
+            {% else %} {# grid type: carousel #}
+            <div class="{{ layout }}__elements js-carousel-block{% if carousel_dots and slides|length > 1 %} has-dots{% endif %}{% if carousel_nums %} has-nums{% endif %}{% if carousel_arrows %} has-arrows{% endif %}"
+                {% if animation_on_scroll == "1" and backvar.custom_aos_on_slides != '0' %}
+                    {% set temp_aos_on_slides %}
+                        {% if backvar.custom_aos_on_slides != '' %}
+                            {{ backvar.custom_aos_on_slides }}
+                        {% else %}
+                            {{ global_aos }}
+                        {% endif %}
+                    {% endset %}
+                    data-aos="{{ temp_aos_on_slides|trim }}"
+
+                    {% set temp_aos_delay_on_slides %}
+                        {% if backvar.custom_aos_delay_on_slides != '' %}
+                            {{ backvar.custom_aos_delay_on_slides }}
+                        {% else %}
+                            {{ global_aos_delay }}
+                        {% endif %}
+                    {% endset %}
+
+                    {% set temp_aos_delay_between_title_and_slides %}
+                        {% if backvar.custom_aos_delay_between_title_and_slides != '' %}
+                            {{ backvar.custom_aos_delay_between_title_and_slides }}
+                        {% else %}
+                            {{ global_aos_delay }}
+                        {% endif %}
+                    {% endset %}
+
+                    {% if temp_aos_delay_on_slides|trim != '0' %}
+                        data-aos-delay="{{ (((temp_aos_delay_between_title_and_slides|trim * aos_multiplier) / 50|round) * 50) + ((((temp_aos_delay_on_slides|trim * aos_multiplier ) / 50|round) * 50) * loop.index0 ) }}"
+                    {% endif %}
+                    data-aos-anchor="#{{ name }}"
+                    {% if backvar.custom_aos_duration_on_slides != '' %}
+                        data-aos-duration="{{ backvar.custom_aos_duration_on_slides }}"
+                    {% endif %}
+                    {% if backvar.custom_aos_offset_on_slides != '' %}
+                        data-aos-offset="{{ backvar.custom_aos_offset_on_slides }}"
+                    {% endif %}
+                {% endif %}
+            >
+                <div class="carousel-{{ name }} carousel" tabindex="0">
+                    {% for slide in slides %}
+                    <div class="carousel-cell {{ name }}__element {{ name }}__element-{{ slide.num }}" role="group" aria-label="Slide {{ loop.index }} of {{ loop.length }}">
+                        <div class="row gutters-10 flex-nowrap">
+                            {% if slide.img_default_disp %}
+                            <div class="col-auto">
+                                <div class="{{ layout }}__element-symbol">
+                                    <div class="{{ layout }}__element-img-outer">
+                                        <div class="{{ layout }}__element-img-wrap abs-wrapper">
+                                            {% if slide.img_link_disp %}
+                                            <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %} aria-hidden="true" tabindex="-1">
+                                            {% endif %}
+                                            <picture>
+                                                {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                                                <source width="{{ slide.img_small_width }}" height="{{ slide.img_small_height }}" media="(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_small_url }} 1x{% if slide.img_small_retina_disp %}, {{ slide.img_small_retina_url }} 2x{% endif %}" />
+                                                {% endif %}
+                                                {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                                                <source width="{{ slide.img_medium_width }}" height="{{ slide.img_medium_height }}" media="(max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_medium_url }} 1x{% if slide.img_medium_retina_disp %}, {{ slide.img_medium_retina_url }} 2x{% endif %}" />
+                                                {% endif %}
+                                                {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                                                <source width="{{ slide.img_large_width }}" height="{{ slide.img_large_height }}" media="(max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_large_url }} 1x{% if slide.img_large_retina_disp %}, {{ slide.img_large_retina_url }} 2x{% endif %}" />
+                                                {% endif %}
+                                                <source width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} 2x{% endif %}" />
+                                                <img class="element__img abs-element lazyload" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ slide.img_default_url }}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}"/>
+                                            </picture>
+                                            {% if slide.img_link_disp %}
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% elseif slide.icon_1 != '' %}
+                            <div class="{{ layout }}__element-icon-wrap col-auto">
+                                {% if slide.img_link_disp %}
+                                <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %} aria-hidden="true" tabindex="-1">
+                                    {% endif %}
+                                    <div class="{{ layout }}__element-icon {{ layout }}__element-symbol" data-icon="&#x{{ slide.icon_1|replace({';': ''}) }};"></div>
+                                    {% if slide.img_link_disp %}
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            <div class="{{ layout }}__element-html-wrap col">
+                                <div class="{{ layout }}__element-title font-l">
+                                    {% if slide.img_link_disp %}
+                                    <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                                        {% endif %}
+                                        {{ slide.title }}
+                                        {% if slide.img_link_disp %}
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <div class="{{ layout }}__element-text">{{ slide.html }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if carousel_arrows or carousel_nums %}
+                <div class="carousel__nav carousel__nav--{{ name }}">
+                    {% if carousel_nums %}
+                    <div class="carousel__nums carousel__nums-{{ name }}">
+                        <div class="carousel__num-actual">1</div>
+                        <div class="carousel__num-all">1</div>
+                    </div>
+                    {% endif %}
+                    {% if carousel_arrows %}
+                    <div class="carousel__buttons carousel__buttons-{{ name }}">
+                        <button type="button" class="carousel__prev-btn carousel__prev-next-btn btn" aria-label="{{ text.previous }}"></button>
+                        <button type="button" class="carousel__next-btn carousel__prev-next-btn btn" aria-label="{{ text.next }}"></button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <script type="text/javascript">
+
+                    {% set flkty_options = {} %}
+                    {% if autoplay_enabled %}
+                    {% set flkty_options = flkty_options|merge({ "autoPlay": delay }) %}
+                    {% endif %}
+                    {% if not carousel_dots %}
+                    {% set flkty_options = flkty_options|merge({ "pageDots": false }) %}
+                    {% endif %}
+                    {% if transition_effect_fade_disp %}
+                    {% set flkty_options = flkty_options|merge({ "fade": true }) %}
+                    {% endif %}
+                    {% set flkty_options = flkty_options|merge({ "groupCells": true }) %}
+                    {% set flkty_options = flkty_options|merge({ "prevNextButtons": false }) %}
+                    {% set flkty_options = flkty_options|merge({ "dragThreshold": 10 }) %}
+                    {% set flkty_options = flkty_options|merge({ "cellAlign": "left" }) %}
+
+                    let $flkty_{{ name }}_options = {{ flkty_options|json_encode(constant('JSON_PRETTY_PRINT')) }}
+                    {% if autoplay_enabled %}
+                    $flkty_{{ name }}_options.autoPlay = parseInt($flkty_{{ name }}_options.autoPlay);
+                    {% endif %}
+
+                    let $flkty_{{ name }}_options_on = {
+                        on: {
+                            ready: function() {
+                                $(this.element).addClass('ready');
+                                $(this.element).closest('.js-carousel-block').addClass('ready');
+                                if (this.slides.length > 1) {
+                                    $(this.element).parent().find('.carousel__nav').addClass('active');
+                                }
+
+                                {% if carousel_nums %}
+                                let $thisNav = $(this.element).parent().find('.carousel__nav');
+                                let slidesLength = this.slides.length;
+                                let $navAll = $thisNav.find('.carousel__num-all');
+
+                                $navAll.html(slidesLength);
+                                {% endif %}
+                            },
+                            change: function(index) {
+                                {% if carousel_nums %}
+                                let $thisNav = $(this.element).parent().find('.carousel__nav');
+                                let $navActual = $thisNav.find('.carousel__num-actual');
+                                let $index = index + 1;
+
+                                $navActual.html($index);
+                                {% endif %}
+                            },
+                            resize: function() {
+                                {% if carousel_arrows %}
+                                let $thisButtons = $(this.element).parent().find('.carousel__buttons');
+
+                                if (this.slides.length == 1) {
+                                    $thisButtons.removeClass('active');
+                                } else {
+                                    $thisButtons.addClass('active');
+                                }
+                                {% endif %}
+                            },
+                            dragStart: function () {
+                                document.ontouchmove = function (e) {
+                                    e.preventDefault();
+                                }
+                            },
+                            dragEnd: function () {
+                                document.ontouchmove = function () {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    $.extend( $flkty_{{ name }}_options, $flkty_{{ name }}_options_on );
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                        let $flkty_{{ name }} = $( '.carousel-{{ name }}' ).flickity($flkty_{{ name }}_options);
+
+                        {% if carousel_arrows %}
+                        $('.carousel__buttons-{{ name }} .carousel__prev-btn').on( 'click', function() {
+                            $flkty_{{ name }}.flickity('previous', true).flickity('stopPlayer');
+                        });
+                        $('.carousel__buttons-{{ name }} .carousel__next-btn').on( 'click', function() {
+                            $flkty_{{ name }}.flickity( 'next', true ).flickity('stopPlayer');
+                        });
+                        {% endif %}
+                    });
+                </script>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    [% endset %]
+{% endif %}

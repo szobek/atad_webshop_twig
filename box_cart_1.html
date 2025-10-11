@@ -1,0 +1,181 @@
+{% if counter_disp %}
+    {% if not ajax_disp %}<span id="box_cart_content" class="cart-box">{% endif %}
+        {% if subver >= 2 %}
+        <span class="bubble cart-box__bubble"><span class="sr-only">{{ text.number_of_items_in_cart }}:</span>{{ total_product_count }}</span>
+        {% else %}
+        <span class="bubble cart-box__bubble">{% if not cart_empty %}{{ total_product_count }}{% else %}0{% endif %}</span>
+        {% endif %}
+    {% if not ajax_disp %}</span>{% endif %}
+{% else %}
+    {% if cart_empty %}
+        <div class="cart-box__empty-container">
+            <div class="cart-box__title">
+                <span class="cart-box__title-text">{{ text.cart }}</span>
+            </div>
+            <div class="car-box__empty alert alert-info d-inline-block">
+                <div class="cart-box__empty-text icon--b-info" role="status">{{ text.cart_is_empty }}</div>
+            </div>
+            <div class="cart-box__to-purchase-btn-wrap mb-4">
+                <a class="cart-box__jump-to-products-btn btn-link text-primary" href="[unas_shop_url]/sct/0/">{{ text.click_here_to_purchase }}</a>
+            </div>
+
+            {% if cart_restore_disp %}
+            <div class="cart-box__restore-text mb-4 icon--b-info text-info" role="status">{{ text.cart_restore_text }}</div>
+            <div class="cart-box__restore-btn-wrap">
+                <button class="cart-box__restore-btn btn btn-primary icon--a-trash-restore" type="button" onclick="location.href='{{ cart_restore_url }}';">{{ text.button_cart_restore }}</button>
+            </div>
+            {% endif %}
+        </div>
+    {% else %}
+    <div class="cart-box__dropdown-inner d-flex flex-column d-xl-block h-100">
+        <div class="cart-box__title js-cart-box-title">
+            <span class="cart-box__title-text">{{ text.cart }}</span>
+        </div>
+        <div class="cart-box__items js-cart-box__dropdown__items pb-2" role="list">
+            {% for product in products %}
+            <div class="cart-box__item
+                 {%- if product.type == "package_offer" %} cart-box__item-package-offer{% endif -%}
+                 {%- if product.is_package_offer_item %} cart-box__item-package-offer-item js-package-offer-cart-item-{{ product.package_offer_item_id }}
+                     {%- if product.is_last_item_in_package_offer %} last-package-offer-item{% endif -%}
+                     {%- if product.is_first_item_in_package_offer %} first-package-offer-item{% endif -%}
+                 {% endif -%}
+                 {%- if product.plus_item %} cart-box__plus-item{% endif %}"
+                 {%- if product.type =="package_offer" %} role="group" data-package-offer-item-id="{{ product.package_offer_item_id }}"{%- else %} role="listitem"{% endif -%}
+            >
+                <div class="row gutters-10 flex-nowrap{% if product.is_package_offer_item %} cart-box__item-package-offer-item-inner{% endif %}">
+                    {% if product.img_allowed or product.type == "package_offer" %}
+                    <div class="col-auto" aria-hidden="true">
+                        {% if product.type == "package_offer" %}
+                        <div class="cart-box__package-offer-wrap d-flex justify-content-center align-items-center">
+                            <div class="icon--box font-xxxxl"></div>
+                        </div>
+                        {% else %}
+                        <div class="cart-box__pic-wrap position-relative">
+                            <a href="{{ product.url }}" title="{{ product.name }}" tabindex="-1">
+                                {% if product.img_exists %}
+                                <img class="cart-box__img" width="{{ box_vars.img_width }}" height="{{ box_vars.img_height }}" src="{{ product.img_url }}"
+                                     {%- if product.img_retina_exists %} srcset="{{ product.img_retina_url }} {{ product.img_retina_size }}"{% endif %}
+                                     alt="{{ product.img_alt }}" title="{{ product.img_alt }}"
+                                >
+                                {% else %}
+                                <img class="cart-box__no-img" width="{{ box_vars.img_width }}" height="{{ box_vars.img_height }}" src="{{ product.img_url }}"
+                                     srcset="{{ product.img_url|resize(2 * box_vars.img_width,2 * box_vars.img_height) }} 2x" alt="{{ product.img_alt }}" title="{{ product.img_alt }}"
+                                >
+                                {% endif %}
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="col">
+                        <div class="cart-box__name line-height-12 mb-2" id="label-cart-box-{{ product.type == 'package_offer' ? product.package_offer_id : product.sku }}">
+                            {% if product.type != "package_offer" %}<a href="{{ product.url }}">{% endif %}{{ product.name }}{% if product.type != "package_offer" %}</a>{% endif %}
+                        </div>
+                        {% if product.variant_1_disp or product.variant_2_disp or product.variant_3_disp %}
+                        <div class="cart-box__variants">
+                            {% if product.variant_1_disp %}<span class="cart-box__variant">{{ product.variant_1_title }}: {{ product.variant_1_value }}</span>{% endif %}
+                            {% if product.variant_2_disp %}<span class="cart-box__variant">{{ product.variant_2_title }}: {{ product.variant_2_value }}</span>{% endif %}
+                            {% if product.variant_3_disp %}<span class="cart-box__variant">{{ product.variant_3_title }}: {{ product.variant_3_value }}</span>{% endif %}
+                        </div>
+                        {% endif %}
+                        <div class="d-flex flex-column">
+                            <div class="cart-box__volume font-s">
+                                <span class="cart-box__volume-qty">{{ product.qty }}</span>
+                                <span class="cart-box__volume-unit">{{ product.unit }}</span>
+                            </div>
+                            <div class="cart-box__item-price-wrapper d-flex justify-content-between align-items-center">
+                            {% set isGift = product.total_price|striptags|split(' ') %}
+                                {% if isGift[0] in ['0','0,0','0.0','0,00','0.00','0,000','0.000','0,0000','0.0000'] %}
+                                <div class="cart-box__badge-gift badge badge--gift2 m-0" title="{{ text.gift }}"><span class="icon--gift"></span></div>
+                                {% else %}
+                                <div class="cart-box__item-price--full">{{ product.total_price }}</div>
+                                {% endif %}
+
+                                {% if not product.is_package_offer_item %}
+                                <button type="button" class="cart-box__del-btn btn btn-square-sm icon--trash"
+                                        onclick="cartRefreshing(this)" data-del-fn="{{ product.delete_onclick }}" title="{{ text.delete }}"
+                                        aria-labelledby="label-cart-box-{{ product.type == "package_offer" ? product.package_offer_id : product.sku }}"></button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="cart-box__sum-and-btns">
+            <div class="cart-box__sum js-cart-box-sum">
+                <div class="row no-gutters align-items-baseline">
+                    <div class="col-auto px-0">
+                        <div class="cart-box__sum-text">{{ text.total_amount }}:</div>
+                    </div>
+                    <div class="col px-0">
+                        <div class="cart-box__sum-price">{{ total_price }}</div>
+                    </div>
+                </div>
+            </div>
+            {% if shipping_free_alert_box_disp %}
+            <div class="cart-box__free-shipping js-cart-box-free-shipping mb-3">
+                {% if shipping_not_free_disp %}
+                <div class="cart-box__shipping-not-free icon--b-truck mb-0" role="status">{{ shipping_free_text }}</div>
+                {% else %}
+                <div class="cart-box__shipping-free icon--b-truck mb-0" role="status">{{ shipping_free_text }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            <div class="cart-box__dropdown-btn-wrap d-flex flex-wrap align-items-baseline justify-content-between js-cart-box-btns">
+                {% if disable_checkout_button %}
+                <a class="cart-box__to-cart-link btn orderflow-main-btn" href="{{ cart_url }}" type="button">{{ text.button_go_to_cart }}</a>
+                {% else %}
+                <a class="cart-box__to-cart-link btn btn-text2" href="{{ cart_url }}" type="button">{{ text.button_go_to_cart }}</a>
+                <a class="cart-box__to-cart btn orderflow-main-btn" href="{{ order_url }}" onclick="{{ order_onclick }}" type="button">{{ text.button_checkout }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="loading-spinner"></div>
+    {% endif %}
+
+    <script>
+        function checkCartItems() {
+            $('.cart-box__bubble').html($('#box_cart_content').find('.cart-box__bubble').html());
+        }
+
+        function cartRefreshing(thisButton) {
+            let $thisBtn = $(thisButton);
+            let $thisItem = $thisBtn.closest(".cart-box__item");
+            let packageOfferItemID = $thisItem.attr("data-package-offer-item-id");
+
+            $(".js-cart-box-dropdown").addClass("cart-refreshing");
+
+            if (typeof packageOfferItemID !== "undefined") {
+                let packageOfferItems = $(`.js-package-offer-cart-item-${packageOfferItemID}`);
+
+                if (packageOfferItems.length > 0) {
+                    packageOfferItems.remove();
+                }
+            }
+
+            $thisItem.animate({
+                height:     "0",
+                marginBottom: "0",
+                padding:    "0",
+                opacity:    "0.25"
+            }, 400, function () {
+                $thisItem.remove();
+                eval($thisBtn.data('del-fn'));
+            });
+        }
+
+        $(document).ready(function() {
+            checkCartItems();
+        });
+
+        if (typeof $._data($(document)[0], "events") !== 'undefined' && typeof $._data($(document)[0], "events").cartRefreshed === 'undefined' || typeof $._data($(document)[0], "events") === 'undefined' ) {
+            $(document).on('cartRefreshed', function () {
+                checkCartItems();
+                $(".js-cart-box-dropdown").removeClass("cart-refreshing");
+            });
+        }
+    </script>
+{% endif %}

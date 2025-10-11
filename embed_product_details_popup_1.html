@@ -1,0 +1,1126 @@
+{% import common_vars.layout_urls.macro_average_rating_1 as rating %}
+{% import common_vars.layout_urls.macro_img_dimension_1 as dimension %}
+
+{% if img_exists %}
+<script src="[unas_shop_url]/!common_packages/jquery/plugins/flickity/v3/as-nav-for.js"></script>
+<script src="[unas_shop_url]/!common_packages/jquery/plugins/flickity/v3/flickity-sync.js"></script>
+{% endif %}
+
+{% if params_spec_disp %}
+    {% set paramSpecNotInput %}
+        {% for param_spec in params_spec if (param_spec.type not in ['cust_input_text', 'cust_input_select', 'cust_input_file','icon','iconmore']) %}
+            {% set direction = loop.index is odd ? 'odd' : 'even' %}
+            <div class="col-12 spec-param-{{ direction }}">
+                <div class="artdet__spec-param py-2 product_param_type_{{ param_spec.type }}" id="page_artdet_product_param_spec_{{ param_spec.id }}">
+                    <div class="row gutters-10">
+                        <div class="col-6">
+                            <span class="artdet__spec-param-title"{% if param_spec.desc_disp %} tabindex="0" data-tippy="{{ param_spec.desc|escape }}"{% endif %}>
+                                <span class="param-name"{% if param_spec.direct_filter_disp %} id="artdet-param-title-{{ param_spec.id }}"{% endif %}>{{ param_spec.title }}</span>{% if not param_spec.desc_disp %}:{% else %}&nbsp;<span class="param-details-icon icon--info"></span>:{% endif %}
+                            </span>
+                        </div>
+                        <div class="col-6">
+                            <div class="artdet__spec-param-value">
+                                {% if param_spec.type in ['color','color_text'] %}
+                                    {% if _context["param_" ~ param_spec.id ~ "_disp"] %}
+                                        {%- if param_spec.direct_filter_disp -%}<a aria-{{ param_spec.type == 'color' ? 'labelledby' :'describedby' }}="artdet-param-title-{{ param_spec.id }}" class="direct-filter-link{% if param_spec.type == 'color' %} has-fv{% endif %}" rel="nofollow" href="{{ param_spec.direct_filter_url }}">{% endif %}
+                                            {% if param_spec.type == 'color_text' %}<span class="artdet__spec-param-type--color-text">{{ _context["param_" ~ param_spec.id ~ "_color_text"] }}</span>{% endif %}
+                                            <div class="artdet__spec-param-type--color" style="{% if _context["param_" ~ param_spec.id ~ "_color_code"]|lower == "#ffffff" %}color:#dddddd;{% else %}color:{{ _context["param_" ~ param_spec.id ~ "_color_code"] }};{% endif %}background-color:{{ _context["param_" ~ param_spec.id ~ "_color_code"] }};"></div>
+                                        {%- if param_spec.direct_filter_disp -%}</a>{% endif %}
+                                    {% endif %}
+                                {% else %}
+                                    {{ param_spec.value }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endset %}
+
+    {% set paramSpecIcon %}
+        {% for param_spec in params_spec if (param_spec.type in ['icon','iconmore']) %}
+        <div class="artdet__spec-param product_param_type_{{ param_spec.type }}" id="page_artdet_product_param_spec_{{ param_spec.id }}" role="group" aria-label="{{ param_spec.title }}">
+            <div class="artdet__spec-param-value spec-param-icons" data-title="{{ param_spec.title }}">
+                {% for icon in _context["param_" ~ param_spec.id ~ "_icons"] if _context["param_" ~ param_spec.id ~ "_disp"] %}
+                    {% set tippy_content %}data-tippy="<p class='spec-param-icon-desc'><span class='spec-param-icon-title'>{{ param_spec.title }}:</span>&nbsp;<span class='spec-param-icon-alt'>{{ icon.img_alt }}</span>{% if param_spec.desc_disp %}{{ param_spec.desc|escape }}{% endif %}</p>"{% endset %}
+                    {%- if icon.direct_filter_disp -%}<a class="direct-filter-link has-img" rel="nofollow" href="{{ icon.direct_filter_url }}" {{ tippy_content }}>{% endif %}
+                        <div class="spec-param-icon-wrapper has-img"{% if not icon.direct_filter_disp %} tabindex="0" {{ tippy_content }}{% endif %}>
+                            <img class="spec-param-icon page_artdet_product_param_icon lazyload" width="{{ param_icon_width }}" height="{{ param_icon_height }}" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ icon.img_url }}" alt="{{ icon.img_alt }}">
+                        </div>
+                    {%- if icon.direct_filter_disp -%}</a>{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% endset %}
+
+    {% set paramSpecInput %}
+        {% for param_spec in params_spec if (param_spec.type in ['cust_input_text', 'cust_input_select', 'cust_input_file']) %}
+        <div class="artdet__spec-param type--input-param product_param_type_{{ param_spec.type }}" id="page_artdet_product_param_spec_{{ param_spec.id }}">
+            {% if param_spec.type == 'cust_input_text' %}
+            <div class="form-group">
+                <label for="{{ param_spec.id }}"{% if param_spec.desc_disp %} tabindex="0" data-tippy="{{ param_spec.desc|escape }}"{% endif %}>
+                    <span class="param-name">{{ param_spec.title }}</span>{% if param_spec.desc_disp %}&nbsp;<span class="param-details-icon icon--info"></span>{% endif %}
+                </label>
+                <input class="form-control cust_input cust_input_text{% if param_spec.required %} required{% endif %}{% if param_spec.stored %} param_cust_input_save{% endif %}"
+                       type="text" placeholder="{{ param_spec.title }}" name="cust_input_text" id="{{ param_spec.id }}"
+                       {%- if param_spec.maxlength_disp %} maxlength="{{ param_spec.maxlength }}"{% endif -%}
+                >
+            </div>
+            {% elseif param_spec.type == 'cust_input_file' %}
+            <div class="form-group">
+                <label class="custom-file-label-inline" for="{{ param_spec.id }}"{% if param_spec.desc_disp %} tabindex="0" data-tippy="{{ param_spec.desc|escape }}"{% endif %}><span class="param-name">{{ param_spec.title }}</span>{% if param_spec.desc_disp %}&nbsp;<span class="param-details-icon icon--info"></span>{% endif %}</label>
+                <div class="custom-file">
+                    <input class="custom-file-input custom-file-input--2 cust_input cust_input_file{% if param_spec.required %} required{% endif %}"
+                           name="cust_input_file" id="{{ param_spec.id }}" onchange="file_input_filname_change(this);" type="file"
+                    >
+                    <label class="custom-file-label custom-file-label--2" for="{{ param_spec.id }}">
+                        <div class="custom-file-name" data-text="{{ text.no_file_selected }}">{{ text.no_file_selected }}</div>
+                        <div class="custom-file-choose-btn">{{ text.select_file }}</div>
+                    </label>
+                </div>
+            </div>
+            {% elseif param_spec.type == 'cust_input_select' %}
+            <div class="form-group">
+                <label for="{{ param_spec.id }}"{% if param_spec.desc_disp %} tabindex="0" data-tippy="{{ param_spec.desc|escape }}"{% endif %}>
+                    <span class="param-name">{{ param_spec.title }}</span>{% if param_spec.desc_disp %}&nbsp;<span class="param-details-icon icon--info"></span>{% endif %}
+                </label>
+                <div class="form-select-group">
+                    <select class="cust_input cust_input_select form-control{% if param_spec.required %} required{% endif %}{% if param_spec.stored %} param_cust_input_save_select{% endif %}"
+                            name="cust_input_select" id="{{ param_spec.id }}"
+                    >
+                        {% for option in _context['param_' ~ param_spec.id ~ '_options'] %}
+                        <option value="{{ option.value }}" {% if option.disabled %}disabled="disabled" style="display:none;"{% endif %} {% if option.selected %}selected="selected"{% endif %}>{{ option.text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% endset %}
+{% endif %}
+
+<div id="page_tooltip" class="product-tooltip js-product h-100">
+    {{ start_script }}
+
+    <div class="artdet__name-outer">
+        {% if sku_disp %}
+        <div class="artdet__sku d-flex flex-wrap text-muted">
+            <div class="artdet__sku-title">{{ text.sku }}:&nbsp;</div>
+            <div class="artdet__sku-value">{{ sku }}</div>
+        </div>
+        {% endif %}
+        <div class="artdet__name-wrap">
+            <div class="row align-items-center">
+                <div class="col d-flex flex-wrap flex-md-nowrap align-items-center row-gap-5 col-gap-10">
+                    {% if new_disp %}
+                    <div class="artdet__new badge badge--new flex-shrink-0 flex-grow-0">{{ text.status_new }}</div>
+                    {% endif %}
+                    <h1 class="artdet__name mb-0" title="{{ name }}"><a href="{{ product_url }}">{{ name }}</a></h1>
+                </div>
+            </div>
+        </div>
+        {% if social_media_disp or reviews_highlighted_disp %}
+        <div class="social-reviews-wrap d-flex align-items-center flex-wrap row-gap-10">
+            {% if reviews_highlighted_disp %}
+            <div class="artdet__rating-highlighted d-flex align-items-center mr-3">
+                {{ rating.avg_stars(reviews_score_percent, reviews_score_avg) }}
+                <div class="artdet__rating-highlighted-numbers line-height-1 d-flex align-items-baseline ml-3">
+                    <span class="artdet__rating-highlighted-score-num pr-3">{{ reviews_score_avg|replace({',': '.'}) }}</span>
+                    <span class="artdet__rating-highlighted-reviews-count">({{ reviews_count }} {{ text.review }})</span>
+                </div>
+            </div>
+            {% endif %}
+            {% if social_media_disp %}
+            <div class="social-medias ml-auto">
+                {% if social_share_disp %}
+                    {% for type in social_shares %}
+                    <button class="social-media social-media--{{ type.name }}" type="button" aria-label="{{ type.name }}" data-tippy="{{ type.name }}" onclick='{{ type.onclick_value }}'></button>
+                    {% endfor %}
+                {% endif %}
+                {% if facebook_like_disp %}
+                <div class="social-media social-media--fb-like d-flex">{{ facebook_like_content|replace({'<iframe': '<iframe title="facebook like"'}) }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="product-tooltip__data">
+        {{ product_form_start }}
+        <div class="product-tooltip__grid row">
+            <div class="product-tooltip__pic-wrap col-md-6 col-lg-4 mb-4 mb-md-0">
+                <div class="artdet__img-data-left">
+                    <div class="artdet__img-inner{% if alt_images_disp %} js-carousel-block fade-in{% endif %}">
+                        {% if new_disp or sale_disp %}
+                        <div class="artdet__badges d-none">
+                            {% if sale_disp %}
+                            <div class="badge badge--sale mb-0">
+                                <span class="js-sale-percent-{{ sku_id }}" data-percent="%">{{ sale_percent }}</span>
+                            </div>
+                            {% endif %}
+
+                            {% if new_disp %}
+                            <div class="artdet__new badge badge--new flex-shrink-0 flex-grow-0">{{ text.status_new }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% include [common_vars.layout_urls.embed_product_stickers_1,"@base/002400/embed_product_stickers_1.html"] with { position_array: ['above'] } %}
+                        <div class="artdet__alts-wrap position-relative">
+                            {% include [common_vars.layout_urls.embed_product_stickers_1,"@base/002400/embed_product_stickers_1.html"] with { position_array: ['on_top_left','on_top_right','on_bottom_left','on_bottom_right'], on_image: true } %}
+                            <div class="artdet__alts{% if alt_images_disp %} js-alts carousel{% endif %}">
+                                <div class="carousel-cell artdet__alt-img-cell" data-loop-index="0">
+                                    <img class="artdet__alt-img artdet__img--main" loading="lazy"
+                                        src="{{ img_url }}"
+                                        {% if img_retina_exists %}srcset="{{ img_retina_url }} {{ img_retina_size }}"{% endif %}
+                                        alt="{{ img_alt }}" title="{{ img_alt }}" id="main_image_tooltip"
+                                        {% if img_exists %}
+                                        data-original-width="{{ img_original_width }}"
+                                        data-original-height="{{ img_original_height }}"
+                                        {{ dimension.img_dimension(img_original_width, img_original_height, backvar.main_img_maxwidth, backvar.main_img_maxheight) }}
+                                        {% endif %}
+                                    />
+                                </div>
+                                {% for alt_img in alt_images if alt_images_disp %}
+                                <div class="carousel-cell artdet__alt-img-cell" data-loop-index="{{ loop.index }}">
+                                    <img class="artdet__alt-img artdet__img--alt carousel__lazy-image"
+                                         src="[unas_shop_url]/main_pic/space.gif"
+                                         data-flickity-lazyload-src="{{ alt_img.url }}"
+                                         {% if alt_img.retina_exists %}
+                                         data-flickity-lazyload-srcset="{{ alt_img.retina_url }} {{ alt_img.retina_size }}"
+                                         {% endif %}
+                                         alt="{{ alt_img.alt }}" title="{{ alt_img.title }}"
+                                         data-original-width="{{ alt_img.original_width }}"
+                                         data-original-height="{{ alt_img.original_height }}"
+                                         {{ dimension.img_dimension(alt_img.original_width, alt_img.original_height, backvar.alt_img_maxwidth, backvar.alt_img_maxheight) }}
+                                    />
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            {% if img_exists and alt_images_disp %}
+                                {% if carousel_arrows %}
+                                <div class="carousel__buttons carousel__buttons-alt-images">
+                                    <button type="button" class="carousel__prev-btn carousel__prev-next-btn btn" aria-label="{{ text.previous }}"></button>
+                                    <button type="button" class="carousel__next-btn carousel__prev-next-btn btn" aria-label="{{ text.next }}"></button>
+                                </div>
+                                {% endif  %}
+
+                                {% if carousel_nums %}
+                                <div class="carousel__nums carousel__nums-alt-images">
+                                    <div class="carousel__num-actual">1</div>
+                                    <div class="carousel__num-all">1</div>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% include [common_vars.layout_urls.embed_product_stickers_1,"@base/002400/embed_product_stickers_1.html"] with { position_array: ['under'] } %}
+                    </div>
+
+
+                    {% if alt_images_disp %}
+                    <div class="artdet__img-thumbs js-thumbs carousel fade-in">
+                        <div class="carousel-cell artdet__img--thumb-outer">
+                            <div class="artdet__img--thumb-wrap">
+                                <img class="artdet__img--thumb-main" loading="lazy"
+                                     src="{{ img_thumbnail_url }}"
+                                     {% if img_thumbnail_retina_exists %}
+                                     srcset="{{ img_thumbnail_retina_url }} {{ img_thumbnail_retina_size }}"
+                                     {% endif %}
+                                     alt="{{ img_alt }}" title="{{ img_alt }}"
+                                     data-original-width="{{ img_original_width }}"
+                                     data-original-height="{{ img_original_height }}"
+                                     {{ dimension.img_dimension(img_original_width, img_original_height, backvar.main_img_thumbnail_maxwidth, backvar.main_img_thumbnail_maxheight) }}
+                                />
+                            </div>
+                        </div>
+                        {% for alt_img in alt_images %}
+                        <div class="carousel-cell artdet__img--thumb-outer">
+                            <div class="artdet__img--thumb-wrap">
+                                <img class="artdet__img--thumb lazyload"
+                                     src="[unas_shop_url]/main_pic/space.gif"
+                                     data-src="{{ alt_img.thumbnail_url }}"
+                                     {% if alt_img.thumbnail_retina_exists %}
+                                     data-srcset="{{ alt_img.thumbnail_retina_url }} {{ alt_img.thumbnail_retina_size }}"
+                                     {% endif %}
+                                     alt="{{ alt_img.alt }}" title="{{ alt_img.title }}"
+                                     data-original-width="{{ alt_img.original_width }}"
+                                     data-original-height="{{ alt_img.original_height }}"
+                                     {{ dimension.img_dimension(alt_img.original_width, alt_img.original_height, backvar.alt_img_thumbnail_maxwidth, backvar.alt_img_thumbnail_maxheight) }}
+                                />
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="product-tooltip__data1 col-md-6 col-lg-4">
+                <div class="product-tooltip__data-inner">
+                    {% if prices_disp %}
+                    <div class="artdet__price-and-countdown row gutters-10 row-gap-10 mb-4">
+                        <div class="artdet__price-datas col-auto mr-auto">
+                            <div class="artdet__prices row no-gutters{% if price_sale_disp %} has-price-sale{% endif %}">
+                                {% if sale_disp %}
+                                <div class="col-auto">
+                                    <div class="badge badge--sale mb-0">
+                                        <span class="js-sale-percent-{{ sku_id }}" data-percent="%">{{ sale_percent }}</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="col">
+                                    {% if price_disp %}
+                                    <span class="artdet__price-base product-price--base"{% if price_normal_info_text_disp %} tabindex="0" data-tippy="{{ price_normal_info_text }}"{% endif %}>
+                                        {{- price_normal_text -}}
+                                        <span class="artdet__price-base-value{% if price_line_through and sale_disp %} text-line-through{% endif %}">{{ price }}</span>
+                                        {%- if price_normal_info_text_disp -%}&nbsp;<span class="icon--info">{{ icon.use('circle-info') }}</span>{%- endif -%}
+                                    </span>
+                                    {% endif %}
+
+                                    {% if price_sale_disp %}
+                                    <div class="artdet__price-discount product-price--sale">
+                                        {{ price_discounted_text }}
+                                        {{ price_sale }}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if price_unit_disp %}
+                                    <div class="artdet__price-unit product-price--unit-price">{{ text.unit_price }}: {{ price_unit }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if sale_text_disp %}
+                            <div class="artdet__price-discount-period line-height-12">
+                                <span class="artdet__price-discount-period-start">{{ text.start }}: {{ sale_start }}</span>&nbsp;&nbsp;
+                                <span class="artdet__price-discount-period-end">
+                                    {% if sale_have_end %}
+                                        {{ text.end }}: {{ sale_end }}
+                                    {% else %}
+                                        {{ text.while_stock_lasts }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% endif %}
+
+                            {% if price_sale_disp %}
+                            <div class="artdet__discount-texts line-height-12">
+                                <div class="artdet__discount-saving">
+                                    <span class="artdet__discount-saving__title">{{ text.saving }}</span>
+                                    <span class="artdet__discount-saving__value">{{ sale_amount }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if login_needed %}
+                            <div class="artdet__price-login-alert alert alert-warning text-left" role="alert">
+                                <button class="artdet__price-login-btn btn btn-text icon--b-exclamation" type="button" onclick="overlay_login()">{{ text.need_login_to_prices }}</button>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if sale_countdown_disp %}
+                        <div class="artdet__countdown-outer col-12" id="countdown-{{ sku_id }}">
+                            <div class="artdet__countdown__label cd__label d-none">{{ text.sale_countdown }}</div>
+                            <div class="artdet__countdown d-flex align-items-center{% if sale_countdown_animation_disp %} countdown--animated{% else %} countdown--simple{% endif %}" title="{{ text.sale_countdown }}">
+                                <div id="cd_color_front"></div>
+                                <div id="cd_color_back"></div>
+                                <div id="ardet__countdown-icon"></div>
+                                <div id="cd_custom">
+                                    <div class="cd_day">
+                                        <div class="cd_wrap">
+                                            <span class="cd_num"></span>
+                                            <span class="cd_txt">{{ text.day }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="cd_hour">
+                                        <div class="cd_wrap">
+                                            <span class="cd_num"></span>
+                                            <span class="cd_txt">{{ text.hour }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="cd_min">
+                                        <div class="cd_wrap">
+                                            <span class="cd_num"></span>
+                                            <span class="cd_txt">{{ text.minute }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="cd_sec">
+                                        <div class="cd_wrap">
+                                            <span class="cd_num"></span>
+                                            <span class="cd_txt">{{ text.second }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    function startSaleCountdown(uniqueId, $saleStart,$saleEnd,$textDay,$textHour,$textMin,$textSec){
+                                        const parentEl = $('#' + uniqueId);
+                                        const cdEl = parentEl.find('#cd_custom');
+
+                                        if (cdEl.length) {
+                                            const countDownDate = new Date($saleEnd).getTime();
+                                            const countStartDate = new Date($saleStart);
+                                            const daysdiff = Math.floor((countDownDate - countStartDate) / (1000 * 60 * 60 * 24));
+                                            const cd_color_front = parentEl.find('#cd_color_front').css('background-color');
+                                            const cd_color_back = parentEl.find('#cd_color_back').css('background-color');
+                                            let initialized = false;
+
+                                            function startSaleCountdownRefresh() {
+                                                const now = new Date().getTime();
+                                                const distance = countDownDate - now;
+                                                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                                let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                                hours = (hours < 10 ? "0" : "") + hours;
+                                                minutes = (minutes < 10 ? "0" : "") + minutes;
+                                                seconds = (seconds < 10 ? "0" : "") + seconds;
+
+                                                cdEl.html(`
+                                                    <div class='cd_day'><div class='cd_wrap'><span class='cd_num'>${days}</span><span class='cd_txt'>${$textDay}</span></div></div>
+                                                    <div class='cd_hour'><div class='cd_wrap'><span class='cd_num'>${hours}</span><span class='cd_txt'>${$textHour}</span></div></div>
+                                                    <div class='cd_min'><div class='cd_wrap'><span class='cd_num'>${minutes}</span><span class='cd_txt'>${$textMin}</span></div></div>
+                                                    <div class='cd_sec'><div class='cd_wrap'><span class='cd_num'>${seconds}</span><span class='cd_txt'>${$textSec}</span></div></div>
+                                                `);
+
+                                                {% if sale_countdown_animation_disp %}
+
+                                                const dayB = parentEl.find('.cd_day');
+                                                const hourB = parentEl.find('.cd_hour');
+                                                const minB = parentEl.find('.cd_min');
+                                                const secB = parentEl.find('.cd_sec');
+
+                                                if (seconds > 59) {
+                                                    seconds = 0;
+                                                }
+                                                const degSec = 360 * (seconds / 60);
+                                                if (degSec <= 180) {
+                                                    secB.css('background-image', 'linear-gradient(' + (90 + degSec) + 'deg, transparent 50%, ' + cd_color_back + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                } else {
+                                                    secB.css('background-image', 'linear-gradient(' + (degSec - 90) + 'deg, transparent 50%, ' + cd_color_front + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                }
+
+                                                if (minutes > 59) {
+                                                    minutes = 0;
+                                                }
+                                                const degMin = 360 * (minutes / 60);
+                                                if (degMin <= 180) {
+                                                    minB.css('background-image', 'linear-gradient(' + (90 + degMin) + 'deg, transparent 50%, ' + cd_color_back + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                } else {
+                                                    minB.css('background-image', 'linear-gradient(' + (degMin - 90) + 'deg, transparent 50%, ' + cd_color_front + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                }
+
+                                                if (hours > 23) {
+                                                    hours = 0;
+                                                }
+                                                const degHr = 360 * (hours / 24);
+                                                if (degHr <= 180) {
+                                                    hourB.css('background-image', 'linear-gradient(' + (90 + degHr) + 'deg, transparent 50%, ' + cd_color_back + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                } else {
+                                                    hourB.css('background-image', 'linear-gradient(' + (degHr - 90) + 'deg, transparent 50%, ' + cd_color_front + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                }
+
+                                                const degDay = 360 * (days / daysdiff);
+
+                                                if (degDay == 0) {
+                                                    dayB.css('background-image', 'linear-gradient(' + (0) + 'deg, transparent 50%, ' + cd_color_back + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                }
+                                                if (degDay <= 180) {
+                                                    dayB.css('background-image', 'linear-gradient(' + (90 + degDay) + 'deg, transparent 50%, ' + cd_color_back + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                } else {
+                                                    dayB.css('background-image', 'linear-gradient(' + (degDay - 90) + 'deg, transparent 50%, ' + cd_color_front + ' 50%),linear-gradient(90deg, ' + cd_color_back + ' 50%, transparent 50%)');
+                                                }
+
+                                                const startdeg = 0;
+                                                dayB.css('transform', 'rotate(' + startdeg + 'deg)');
+                                                hourB.css('transform', 'rotate(' + startdeg + 'deg)');
+                                                minB.css('transform', 'rotate(' + startdeg + 'deg)');
+                                                secB.css('transform', 'rotate(' + startdeg + 'deg)');
+                                                parentEl.find(".cd_wrap").css('transform', 'rotate(' + (-startdeg) + 'deg)');
+                                                {% endif %}
+
+                                                if (!initialized) {
+                                                    $(cdEl).addClass('is-initialized');
+                                                    initialized = true;
+                                                }
+                                            }
+                                        }
+
+                                        startSaleCountdownRefresh();
+                                        setInterval(startSaleCountdownRefresh,1000);
+                                    }
+
+                                    startSaleCountdown(
+                                        'countdown-{{ sku_id }}',
+                                        '{{ sale_countdown_date_start }}',
+                                        '{{ sale_countdown_date_end }}',
+                                        '{{ text.day }}',
+                                        '{{ text.hour }}',
+                                        '{{ text.minute }}',
+                                        '{{ text.second }}'
+                                    );
+                                </script>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if paramSpecNotInput|trim or paramSpecIcon |trim != "" %}
+                    <div id="artdet__param-spec" class="mb-4" role="region" aria-label="{{ text.search_product_parameters }}">
+                        {% if paramSpecIcon|trim != "" %}
+                        <div class="artdet__spec-params artdet__spec-params--1 mb-3">
+                            {{ paramSpecIcon }}
+                        </div>
+                        {% endif %}
+
+                        {% if paramSpecNotInput|trim != "" %}
+                        <div class="artdet__spec-params artdet__spec-params--2 row gutters-10 mb-3">
+                            {{ paramSpecNotInput }}
+                        </div>
+                        {% endif %}
+                        <script>
+                            $(document).ready(function(){
+                                check_cust_input_live();
+                            });
+                        </script>
+                    </div>
+                    {% endif %}
+
+                    {% if qty_discount_disp %}
+                    <div id="artdet__discount" class="discount mb-4">
+                        <div class="discount__title main-title3">{{ text.quantity_discount }}:</div>
+                        <div class="discount__content line-height-12">
+                            {% for row in qty_discount_rows %}
+                                {% if not row.no_discount %}
+                                    <div class="discount__row row no-gutters text-center align-items-center py-2">
+                                        <div class="col" data-label="{{ text.quantity }}">
+                                            <div class="discount__from-wrap">
+                                                <span class="discount__from">{{ row.from }}<span class="discount__interval-sign"></span></span>
+                                                <span class="discount__unit">&nbsp;{{ unit }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col" data-label="{{ text.discount }}">
+                                            <div class="discount__amount-wrap">
+                                                {% if row.percent %}
+                                                    <span class="discount__amount percent-based" data-percent="%">{{ row.discount_amount }}</span>
+                                                {% else %}
+                                                    <span class="discount__amount amount-based">-{{ row.discount_amount }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col" data-label="{{ text.product_price }}">
+                                            <div class="discount__price-wrap">{{ row.discount_price }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if short_desc_disp %}
+                    <div id="artdet__short-descrition" class="artdet__short-descripton mb-4">
+                        {% if collapsible_short_description_on_product_details_popup %}
+                        <div class="read-more">
+                            <div class="read-more__content artdet__short-descripton-content text-justify">{{ short_desc }}</div>
+                            <div class="read-more__btn-wrap">
+                                <button class="read-more__btn btn" type="button">
+                                    <span class="read-more-text" data-closed="{{ text.more_description }}" data-opened="{{ text.less }}" aria-label="{{ text.more_description }}"></span>
+                                </button>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="artdet__short-descripton-content text-justify">{{ short_desc }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="product-tooltip__data2 col-lg-4">
+                <div class="product-tooltip__data-inner">
+                    {% if stock_disp or status_1_disp or status_2_disp or status_3_disp %}
+                        <div class="artdet__badges2 d-flex align-items-baseline flex-wrap mb-3">
+                            {% if stock_disp %}
+                            <div class="artdet__stock stock{% if not stock_text_only %} stock-number{% endif %}{% if stock_available %} on-stock{% else %}{% if no_stock_but_buyable_disp %} to-order{% else %} no-stock{% endif %}{% endif %}">
+                                <div class="artdet__stock-text product-stock-text"
+                                        {% if variants_disp and variants_stock_enabled %}
+                                    data-tippy="
+                                                {% for variant in stock_variant %}
+                                                    {# SZÖVEGES KIJELZÉS (Raktáron, Rendelhető, Nincs raktáron) #}
+                                                    {% if stock_text_only %}
+                                                    <div class='stock-variant'>
+                                                        <span class='stock-variant__title'>{{ variant.title }}:</span>
+                                                        <span class='stock-variant__qty'>
+                                                         {% if variant.available and variant.reach_min_qty %}
+                                                             {% if variant.stock_interval_text_exists %}
+                                                                {{ variant.qty }}
+                                                             {% endif %}
+                                                             {% if not variant.stock_interval_text_exists %}
+                                                                {{ text.status_on_stock }}
+                                                             {% endif %}
+                                                         {% else %}
+                                                            {% if no_stock_but_buyable_disp %}
+                                                                {{ text.status_orderable }}
+                                                            {% else %}
+                                                                {{ text.status_no_stock }}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        </span>
+                                                    </div>
+                                                    {# DARABSZÁMOS KIJELZÉS #}
+                                                    {% else %}
+                                                        {% if (variant.available and variant.reach_min_qty) or no_stock_visible %}{# csak akkor ha vásárolható, vagy "vásárolható akkor is, ha nincs raktáron" #}
+                                                        <div class='stock-variant'>
+                                                            <span class='stock-variant__title'>{{ variant.title }}:</span>
+                                                            <span class='stock-variant__qty'>{{ variant.qty }}&nbsp;<span class='stock-variant__unit'>{% if not variant.stock_interval_text_exists %}{{ unit }}{% endif %}</span></span>
+                                                        </div>
+                                                       {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}"
+                                        {% endif %}>
+                                    {% if stock_available %}
+                                        <div class="stock__content icon--b-on-stock">
+                                            {% if not stock_interval_text_exists or (variants_disp and variants_stock_enabled) %}<span class="stock__text">{{ text.status_on_stock }}</span>{% endif %}
+                                            {% if (stock_text_only and not variant_disp and stock_interval_text_exists) or (not stock_text_only and not variants_stock_enabled) %}
+                                                {% if not variants_stock_enabled %}
+                                                <span class="stock__qty-and-unit{% if not stock_interval_text_exists %} round-bracket-around{% else %} is-text{% endif %}">{{ stock }}</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        {% if no_stock_but_buyable_disp %}
+                                        <div class="stock__content icon--b-to-order">{{ text.status_orderable }}</div>
+                                        {% else %}
+                                        <div class="stock__content icon--b-no-stock">{{ text.status_no_stock }}</div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if status_1_disp or status_2_disp or status_3_disp %}
+                                {% if status_1_disp %}
+                                <div class="artdet__custom-badge badge--2 badge--custom-1{% if status_1_link_disp %} has-link{% endif %}">
+                                    {% if status_1_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=3" aria-label="{{ text.product_status }}: {{ status_1 }}">{% endif %}
+                                    <div class="product-custom-text">{{ status_1 }}</div>
+                                    {% if status_1_link_disp %}</a>{% endif %}
+                                </div>
+                                {% endif %}
+
+                                {% if status_2_disp %}
+                                <div class="artdet__custom-badge badge--2 badge--custom-2{% if status_2_link_disp %} has-link{% endif %}">
+                                    {% if status_2_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=4" aria-label="{{ text.product_status }}: {{ status_2 }}">{% endif %}
+                                    <div class="product-custom-text">{{ status_2 }}</div>
+                                    {% if status_2_link_disp %}</a>{% endif %}
+                                </div>
+                                {% endif %}
+
+                                {% if status_3_disp %}
+                                <div class="artdet__custom-badge badge--2 badge--custom-3{% if status_3_link_disp %} has-link{% endif %}">
+                                    {% if status_3_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=5" aria-label="{{ text.product_status }}: {{ status_3 }}">{% endif %}
+                                    <div class="product-custom-text">{{ status_3 }}</div>
+                                    {% if status_3_link_disp %}</a>{% endif %}
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if product_types_disp %}
+                    <div id="artdet__type" class="product-type{% if product_type_style_select %} product-type--select{% else %} product-type--button{% endif %} pb-4 mb-4 border-bottom"
+                         role="region" aria-label="{{ text.product_types }}"
+                    >
+                        {% if product_type_style_select %}
+                            {% for param in product_type_params %}
+                            <div class="product-type__item" id="page_artdet_product_type_{{ param.id }}">
+                                <div class="product-type__values row no-gutters">
+                                    <div class="col-12">
+                                        <label for="tooltip_param_type_{{ param.id }}"><span class="param-name">{{ param.title }}</span>{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" tabindex="0" data-tippy="{{ param.desc|escape }}"></span>:{% else %}:{% endif %}</label>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-select-group">
+                                            <select class="product_type_select tooltip form-control" id="tooltip_param_type_{{ param.id }}" data-param_id="{{ param.id }}" onchange="ajaxProductTooltip($('option:selected', this).data('sku'),'#page_PopupContainer_tooltip_inner');">
+                                                {% for value_attribute in param.value_attributes %}
+                                                <option value="{{ value_attribute.value_orig }}"{% if value_attribute.selected %} selected="selected"{% endif %} data-sku="{{ value_attribute.sku }}">{{ value_attribute.value }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            {% for param in product_type_params %}
+                            <div class="product-type__item type--{{ param.type }}{% if param.desc_disp %} has-description{% endif %}" id="page_artdet_product_type_{{ param.id }}">
+                                <div class="product-type__title position-relative">
+                                    <span class="param-name">{{ param.title }}</span>{% if not param.desc_disp %}:{% endif %}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" tabindex="0" data-tippy="{{ param.desc|escape }}"></span>:{% endif %}
+                                </div>
+                                <div class="product-type__values product-type__values--{{ param.type }}">
+                                    {% for value_attribute in param.value_attributes %}
+                                    <div class="product-type__value product-type__value--{{ param.type }}{% if not value_attribute.exists %} product-type-disabled{% endif %}{% if value_attribute.selected %} is-active{% endif %}{% if value_attribute.base_type %} is-base{% else %} is-by{% endif %}"
+                                        {% if not value_attribute.selected and value_attribute.exists %}
+                                        onclick="product_type_mod('{{ param.id }}','{{ value_attribute.option_value }}','trigger','{{ value_attribute.url }}');" data-sku="{{ value_attribute.sku }}"
+                                        {% endif %}>
+                                        {% if value_attribute.exists %}
+                                        <a onclick="return false;" class="product-type__value-link" href="{{ value_attribute.url }}"{% if 'color' in param.type %} aria-label="{% if 'color_text' in param.type %}{{ value_attribute.title }}{% else %}hexa code {{ value_attribute.value_orig }}{% endif %}"{% elseif 'pic' not in param.type and 'icon' not in param.type %} aria-label="{{ value_attribute.value }}"{% endif %}>
+                                        {% else %}
+                                        <div class="product-type__value-link">
+                                        {% endif %}
+                                            {% if param.type in ['color','color_text'] %}
+                                                <span class="product-type__value-color" style="color:#{{ value_attribute.option_value }};" data-hexa="{{ value_attribute.option_value|lower }}"></span>
+                                                {% if param.type in ['color_text'] %}
+                                                <span class="product-type__value--color-text">{{ value_attribute.title }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="product-type__option-name text-truncate">{{ value_attribute.option_name }}</span>
+                                            {% endif %}
+                                        {% if value_attribute.exists %}
+                                        </a>
+                                        {% else %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                    <input class="product_type_select tooltip" type="hidden" id="tooltip_param_type_{{ param.id }}" data-param_id="{{ param.id }}" value="{{ param.value_act }}" />
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if is_subscribable %}
+                        {% if subver >= 2 %}
+                        <div id="artdet__subscription-period" class="subscription-period form-group" role="region" aria-label="{{ text.select_subscription_period }}">
+                            <label class="subscription-periods__title">{{ text.select_subscription_period }}:</label>
+                            <div class="subscription-period__inner d-flex flex-wrap gap-5" role="radiogroup">
+                                {% if one_time_purchasable %}
+                                <div class="custom-control custom-control-inline custom-radio no-input m-0">
+                                    <input class="custom-control-input subscription-period-input" name="tooltip_subscription_period" checked="checked" id="subscription_0" value="0" type="radio">
+                                    <label class="subscription-period__item mb-0" for="subscription_0">
+                                        <span class="subscription-period__item-text">{{ text.one_time_purchase }}</span>
+                                    </label>
+                                </div>
+                                {% endif %}
+                                {% for period in subscription_periods %}
+                                <div class="custom-control custom-control-inline custom-radio no-input m-0">
+                                    <input class="custom-control-input subscription-period-input" name="tooltip_subscription_period" id="subscription_{{ period.length }}"
+                                           value="{{ period.length }}" type="radio"{% if period.checked %} checked="checked"{% endif %}
+                                    >
+                                    <label class="subscription-period__item mb-0" for="subscription_{{ period.length }}">
+                                        <span class="subscription-period__item-text">{{ period.length }}&nbsp;{{ text.day }}</span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div id="artdet__subscription-period" class="subscription-period js-subscription-block mb-4 pb-3">
+                            <div class="subscription-periods__title font-weight-bold mb-3">{{ text.select_subscription_period }}:</div>
+                            <div class="subscription-period__inner">
+                                {% if one_time_purchasable %}
+                                <label class="subscription-period__item is-active" for="subscription_0">
+                                    <span class="subscription-period__item-text">{{ text.one_time_purchase }}</span>
+                                </label>
+                                <input class="d-none" name="tooltip_subscription_period" checked="checked" id="subscription_0" value="0" type="radio">
+                                {% endif %}
+                                {% for period in subscription_periods %}
+                                <label class="subscription-period__item{% if period.checked %} is-active{% endif %}" for="subscription_{{ period.length }}">
+                                    <span class="subscription-period__item-text">{{ period.length }}&nbsp;{{ text.day }}</span>
+                                </label>
+                                <input class="d-none" name="tooltip_subscription_period" id="subscription_{{ period.length }}" value="{{ period.length }}"
+                                       type="radio"{% if period.checked %} checked="checked"{% endif %}
+                                >
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <script>
+                            $(document).on('click','.subscription-period__item',function(){
+                                let block = $(this).closest('.js-subscription-block');
+                                $('.subscription-period__item', block).removeClass('is-active');
+                                $(this).addClass('is-active');
+                            });
+                        </script>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if variants_disp or paramSpecInput|trim != "" %}
+                    <div class="variants-params-spec-wrap mb-4">
+                        {% if paramSpecInput|trim != "" %}
+                        <div id="artdet__param-spec--input" class="artdet__spec-params--input product-tooltip__spec-params js-spec-params-input">{{ paramSpecInput }}</div>
+                        {% endif %}
+
+                        {% if variants_disp %}
+                            {{ variants_hidden }}
+                            {% set variantCount = 1 %}
+                            {% if variant_3_disp %}
+                                {% set variantCount = 3 %}
+                            {% elseif variant_2_disp %}
+                                {% set variantCount = 2 %}
+                            {% endif %}
+
+                        <div id="artdet__other" class="artdet__variants d-flex flex-column product-tooltip__variants js-variants">
+                                {% for index in 1..variantCount %}
+                                <label for="egyeb_list{{ index }}_{{ sku_id }}" class="product-variant__label">{{  _context["variant_"~ index ~ "_title"] }}</label>
+                                <div class="form-group form-select-group product-variant product-variant--{{ index }} js-variant-wrap">
+                                    {{ _context["variant_" ~ index ~ "_hidden"] }}
+                                    <select name="egyeb_list{{ index }}" id="egyeb_list{{ index }}_{{ sku_id }}" class="form-control" onchange="changeVariant(this)">
+                                        {% for option in _context["variant_" ~ index ~ "_options"] %}
+                                        <option value="{{ option.value }}" {% if option.disabled %} style="display:none;" disabled="disabled" {% endif %} {% if option.selected %} selected="selected" {% endif %}>{{ option.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div id="artdet__cart" class="artdet__cart row no-gutters gap-10{% if point_highlighted_disp and not inquire_disp or subscribe_disp and not login_needed or bundle_products_disp or plus_service_disp or recommend_disp or print_disp or question_disp or compare_disp or favourites_disp %} mb-4{% endif%}{% if cart_unit_disp %}{% if quantity_input_unit_position_with_two_settings == 1 %} qty-unit-under{% else%} qty-unit-tippy{% endif %}{% endif %} js-main-cart-btn">
+                        {% if cart_disp %}
+                            {% if can_add_to_cart_disp %}
+                                {% if quantity_input_unit_position_with_two_settings == "1" %}
+                                <div class="artdet__cart-btn-input-col quantity-unit-type--under">
+                                    <div class="artdet__cart-input-wrap cart-input-wrap page_qty_input_outer">
+                                        <input class="artdet__cart-input page_qty_input form-control" name="db" id="{{ cart_input_id }}" type="number" value="{{ cart_input_value_number }}" data-min="{{ cart_input_data_min }}" data-max="{{ cart_input_data_max }}" data-step="{{ cart_input_data_step }}" step="{{ cart_input_data_step }}" aria-label="{{ text.quantity }}">
+                                        <div class="product__qty-buttons">
+                                            <button type="button" class="qtyplus_common" aria-label="{{ text.plus }}"></button>
+                                            <button type="button" class="qtyminus_common qty_disable" aria-label="{{ text.minus }}"></button>
+                                        </div>
+                                    </div>
+                                    {% if cart_unit_disp %}<div class="artdet__cart-unit">{{ unit }}</div>{% endif %}
+                                </div>
+                                {% else %}
+                                <div class="artdet__cart-btn-input-col quantity-unit-type--tippy">
+                                    <div class="artdet__cart-input-wrap cart-input-wrap page_qty_input_outer" {% if cart_unit_disp %}data-tippy="{{ unit }}"{% endif  %}>
+                                        <input class="artdet__cart-input page_qty_input form-control" name="db" id="{{ cart_input_id }}" type="number" value="{{ cart_input_value_number }}" data-min="{{ cart_input_data_min }}" data-max="{{ cart_input_data_max }}" data-step="{{ cart_input_data_step }}" step="{{ cart_input_data_step }}" aria-label="{{ text.quantity }}">
+                                        <div class="product__qty-buttons">
+                                            <button type="button" class="qtyplus_common" aria-label="{{ text.plus }}"></button>
+                                            <button type="button" class="qtyminus_common qty_disable" aria-label="{{ text.minus }}"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="artdet__cart-btn-col h-100 usn">
+                                    <button type="button" class="artdet__cart-btn product-tooltip__cart-btn artdet-main-btn btn btn-block js-main-product-cart-btn" onclick="{% if not variants_disp and paramSpecInput|trim == "" %}cart_add('{{ sku_id }}','',null,2);{% else %}checkVariants(this);inputsErrorHandling(1);{% endif %}" {{ cart_target }} {{ cart_analytics_event }} data-cartadd="cart_add('{{ sku_id }}','',null,2);">
+                                        <span class="artdet__cart-btn-icon icon--b-cart"></span>
+                                        <span class="artdet__cart-btn-text">{{ text.button_add_to_cart }}</span>
+                                    </button>
+                                </div>
+                            {% else %}
+                                <div class="artdet__cart-no-stock alert alert-info icon--b-info mb-0" role="alert">{{ text.status_no_stock }}</div>
+                            {% endif %}
+                        {% else %}
+                            {% if inquire_disp %}
+                            <div id="artdet__inquire" class="artdet__inquire">
+                                <button type="button" class="artdet__inquire-btn artdet-main-btn btn btn-lg icon--b-inquire" onclick="{{ inquire_onclick }}">{{ text.button_inquire }}</button>
+                            </div>
+                            {% endif %}
+
+                            {% if no_buyable_disp %}
+                            <div class="artdet__cart-not-buyable alert alert-warning icon--b-exclamation mb-0" role="alert">{{ text.status_not_buyable }}</div>
+                            {% endif %}
+
+                            {% if not inquire_disp and not no_buyable_disp and not login_needed %}
+                            <div class="artdet__need-login-to-cart-alert alert alert-info mb-0" role="alert">
+                                <button type="button" class="artdet__need-login-to-cart-btn btn btn-block btn-text icon--b-info" aria-haspopup="dialog" onclick="overlay_login()">{{ text.need_login_to_cart }}</button>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    {% if point_highlighted_disp %}
+                    <div class="product-tooltip__virtual-point-highlighted mb-4">
+                        <span class="">{{ text.points_for_purchase }}:</span>
+                        <span class="font-weight-bold">{{ point }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if warehouses_disp %}
+                        <div class="product-tooltip__warehouse-list-wrapper mt-4">
+                            {% if common_vars.layout_urls.embed_warehouse_list_1 == '' %}
+                                {% embed '@base/002400/embed_warehouse_list_1.html' %}{% endembed %}
+                            {% else %}
+                                {% embed common_vars.layout_urls.embed_warehouse_list_1 %}{% endembed %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if subscribe_disp and not login_needed %}
+                    <div class="artdet__subscribe-btn-wrap mb-4">
+                        <button class="artdet__subscribe-btn btn btn-secondary" type="button" onclick="{{ button_subscribe_onclick|escape }}" id="{{ button_subscribe_id }}" aria-label="{{ button_subscribe_text }}">
+                            <span class="artdet__function-icon icon--b-bell"></span>
+                            <span class="artdet__function-text">{{ subscribe_text }}</span>
+                        </button>
+                    </div>
+                    {% endif %}
+
+                    {% if plus_service_disp %}
+                    <div id="artdet__service-plus" class="plus-service">
+                        <div class="plus-service__inner">
+                            {% if plus_service_can_choose_none_disp %}
+                                <div class="custom-control custom-radio plus-service__item plus-service__none service_plus_radio">
+                                    <input class="custom-control-input plus-service__radio-input plus-service--none" id="service_plus_none_radio" name="service_plus" value="" type="radio" checked="checked" />
+                                    <label class="custom-control-label plus-service__label" for="service_plus_none_radio">
+                                        <span class="plus-service__name">{{ text.dont_want_plus_service }}</span>
+                                    </label>
+                                </div>
+                            {% endif %}
+                            {% for service in plus_services %}
+                                <div class="custom-control custom-radio plus-service__item service_plus_radio">
+                                    <input class="custom-control-input plus-service__radio-input" name="service_plus" id="{{ service.id }}" value="{{ service.id }}" type="radio" {% if service.checked %} checked="checked"{% endif %}/>
+                                    <label class="custom-control-label plus-service__label" for="{{ service.id }}">
+                                        <span class="plus-service__name">{{ service.name }}&nbsp;<span class="plus-service__price round-bracket-around">{{ service.price }}</span></span>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                        {% if plus_service_can_choose_none_disp %}
+                        <script>
+                            $(document).ready(function(){
+                                $(".plus-service__label").on('click',function(e){
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    var thisLabel = $(this);
+                                    let thisPlusService = thisLabel.closest('.plus-service');
+                                    var thisRadio = thisPlusService.find('#' +thisLabel.attr('for'));
+
+                                    if ( thisRadio.is(':checked')) {
+                                        thisRadio.prop('checked', false);
+                                        thisPlusService.find(".plus-service--none").prop('checked', true);
+                                    } else {
+                                        thisRadio.prop('checked', true);
+                                    }
+                                });
+                            });
+                        </script>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if recommend_disp or print_disp or question_disp or compare_disp or favourites_disp %}
+                    <div id="artdet__functions" class="artdet__function d-flex justify-content-center">
+                        {% if favourites_disp %}
+                        <button id="page_tooltip_func_favourites" type="button" class="product__func-btn favourites-btn icon--a-favo page_artdet_func_favourites_{{ sku_id }} page_artdet_func_favourites_outer_{{ sku_id }}
+                                {% if favourites_checked %} added remove_favourites{% endif %}" onclick="{{ favourite_onclick|escape  }}" aria-label="{{ favourite_text }}" data-tippy="{{ favourites_text }}"
+                        >
+                        </button>
+                        {% endif %}
+
+                        {% if compare_disp %}
+                        <button type="button" class="product__func-btn icon--a-compare artdet-func-compare page_artdet_func_compare_{{ sku_id }} page_artdet_func_compare_text_{{ sku_id }}{% if compare_checked %} page_artdet_func_compare_checked{% endif %}"
+                                onclick="{{ compare_onclick|escape }}" id="page_artdet_func_compare" aria-label="{{ text.comparison }}"
+                                {% if compare_checked %} data-tippy="{{ text.delete_from_compare }}"{% else %} data-tippy="{{ text.comparison }}"{% endif %}
+                                data-text-add="{{ text.comparison }}" data-text-delete="{{ text.delete_from_compare }}"
+                        >
+                        {% if compare_checked %}{{ text.delete_from_compare }}{% else %}{{ text.comparison }}{% endif %}
+                        </button>
+                        {% endif %}
+
+                        {% if question_disp %}
+                        <button type="button" class="product__func-btn artdet-func-question icon--a-question2" onclick="{{ question_onclick|escape }}"
+                                id="page_artdet_func_question" aria-label="{{ text.question_about_product }}" data-tippy="{{ text.question_about_product }}">
+                            {{ text.question_about_product }}
+                        </button>
+                        {% endif %}
+
+                        {% if print_disp %}
+                        <button type="button" class="product__func-btn artdet-func-print icon--a-print d-none d-lg-inline-flex" onclick="{{ print_onclick|escape  }}"
+                                id="page_artdet_func_print" aria-label="{{ text.button_print }}" data-tippy="{{ text.button_print }}">
+                            {{ text.button_print }}
+                        </button>
+                        {% endif %}
+
+                        {% if recommend_disp %}
+                        <button type="button" class="product__func-btn artdet-func-recommend icon--a-mail" onclick="{{ recommend_onclick|escape  }}"
+                                id="page_artdet_func_recommend" aria-label="{{ text.recommend }}" data-tippy="{{ text.recommend }}">
+                            {{ text.recommend }}
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if products_in_bundle_disp %}
+            <div id="artdet__products-in-bundle" class="product-tooltip__products-in-bundle col-12 mt-4">
+                <div class="products_in_bundle ajax-content-placeholder js-products-in-bundle">
+                    <div class="products-in-bundle__inner">
+                        <div class="loading-spinner"></div>
+                    </div>
+                    <script>
+                        if (typeof elTooltipProdInBundle === 'undefined') {
+                            var elTooltipProdInBundle =  $(".product-tooltip .js-products-in-bundle");
+                        } else {
+                            elTooltipProdInBundle =  $(".product-tooltip .js-products-in-bundle");
+                        }
+
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{ products_in_bundle_ajax_url }}&unas_page_forced=1',
+                            beforeSend:function(){
+                                elTooltipProdInBundle.addClass('ajax-loading');
+                            },
+                            success:function(data){
+                                if (data !== '' && data !== 'no') {
+                                    elTooltipProdInBundle.removeClass('ajax-loading ajax-content-placeholder').addClass('ajax-loaded');
+                                    elTooltipProdInBundle.find('.products-in-bundle__inner').html(data);
+                                } else  {
+                                    elTooltipProdInBundle.remove();
+                                }
+                            },
+                            error:function(){
+                                elTooltipProdInBundle.html('Hiba történt a lekerés folyamán...').addClass('ajax-error');
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {{ product_form_end }}
+    </div>
+</div>
+<div id="page_PopupContainer_tooltip_ajax" style="display: none"></div>
+
+<script>
+    {% if img_exists %}
+
+    {% if alt_images_disp %}
+    if (typeof $flkty_tooltip_alt_images_options === 'undefined') {
+        var $flkty_tooltip_alt_images_options;
+    }
+    $flkty_tooltip_alt_images_options = {
+        cellAlign: 'left',
+        lazyLoad: true,
+        contain: true,
+        imagesLoaded: true,
+        sync: "#page_tooltip .js-thumbs",
+        {% if carousel_dots %}
+        pageDots: true,
+        {% else %}
+        pageDots: false,
+        {% endif %}
+        {% if carousel_arrows and not carousel_nums %}
+        prevNextButtons: true,
+        {% else %}
+        prevNextButtons: false,
+        {% endif %}
+        watchCSS: true,
+        on: {
+            ready: function () {
+                $(this.element).addClass('ready');
+                $(this.element).closest('.js-carousel-block').addClass('ready');
+
+                if (this.slides.length > 1) {
+                    $(this.element).closest('.js-carousel-block').find('.carousel__nav').addClass('active');
+                }
+
+                {% if carousel_nums %}
+                let $thisNums = $(this.element).closest('.js-carousel-block').find('.carousel__nums');
+                let slidesLength = this.slides.length;
+                let $thisNumsAll = $thisNums.find('.carousel__num-all');
+
+                {# if (slidesLength.toString().length < 2) slidesLength = '0' + slidesLength; #}
+
+                $thisNumsAll.html(slidesLength);
+                {% endif %}
+            },
+            change: function (index) {
+                {% if carousel_nums %}
+                let $thisNums = $(this.element).closest('.js-carousel-block').find('.carousel__nums');
+                let $thisNumsActual = $thisNums.find('.carousel__num-actual');
+                let $index = index + 1;
+
+                {# if ($index.toString().length < 2) $index = '0' + $index; #}
+
+                $thisNumsActual.html($index);
+                {% endif %}
+            },
+            resize: function () {
+                {% if carousel_nums == 1 %}
+                let $thisNav = $(this.element).closest('.js-carousel-block').find('.carousel__nav');
+                let slidesLength = this.slides.length;
+                let $navAll = $thisNav.find('.carousel__num-all');
+
+                {# if (slidesLength.toString().length < 2) slidesLength = '0' + slidesLength; #}
+
+                $navAll.html(slidesLength);
+                {% endif %}
+            },
+            dragStart: function () {
+                document.ontouchmove = function (e) {
+                    e.preventDefault();
+                }
+            },
+            dragEnd: function () {
+                document.ontouchmove = function () {
+                    return true;
+                }
+            }
+        }
+    }
+    if (typeof $flkty_tooltip_thumb_images_options === 'undefined') {
+        var $flkty_tooltip_thumb_images_options;
+    }
+
+    $flkty_tooltip_thumb_images_options = {
+        cellAlign: 'center',
+        lazyLoad: false,
+        contain: true,
+        groupCells: false,
+        imagesLoaded: true,
+        asNavFor: "#page_tooltip .js-alts",
+        pageDots: false,
+        on: {
+            ready: function () {
+                $(this.element).addClass('ready');
+            }
+        }
+    }
+    {% endif %}
+    {% endif %}
+
+    $(document).off('productTypeChange').on('productTypeChange', function(e, data){
+        ajaxProductTooltip(data.sku,'#page_PopupContainer_tooltip_inner');
+    });
+    $(document).off('ajaxProductTooltipLoading').on('ajaxProductTooltipLoading', function(){
+        $('#page_PopupContainer_tooltip_ajax').show();
+        $('#page_PopupContainer_tooltip_inner').removeClass('loaded').addClass('loading');
+    });
+    $(document).off('ajaxProductTooltipLoaded').on('ajaxProductTooltipLoaded', function(){
+        $('#page_PopupContainer_tooltip_ajax').hide();
+        $('#page_PopupContainer_tooltip_inner').removeClass('loading').addClass('loaded');
+    });
+    $(document).ready(function() {
+        initTippy();
+        {% if img_exists and alt_images_disp %}
+
+        if (typeof $flkty_tooltip_alt_images === 'undefined') {
+            var $flkty_tooltip_alt_images;
+        }
+        if (typeof $flkty_tooltip_thumb_images === 'undefined') {
+            var $flkty_tooltip_thumb_images;
+        }
+        $flkty_tooltip_alt_images = $('#page_tooltip').find('.js-alts').flickity($flkty_tooltip_alt_images_options);
+        $flkty_tooltip_thumb_images = $('#page_tooltip').find('.js-thumbs').flickity($flkty_tooltip_thumb_images_options);
+
+            {% if carousel_arrows %}
+            $('#page_tooltip').find('.carousel__buttons-alt-images .carousel__prev-btn').on( 'click', function() {
+                $flkty_tooltip_alt_images.flickity('previous', true);
+            });
+            $('#page_tooltip').find('.carousel__buttons-alt-images .carousel__next-btn').on( 'click', function() {
+                $flkty_tooltip_alt_images.flickity( 'next', true );
+            });
+            {% endif %}
+        {% endif %}
+        $('.read-more:not(.is-processed)').each(readMoreOpener);
+    });
+</script>

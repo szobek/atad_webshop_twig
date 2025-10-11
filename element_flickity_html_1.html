@@ -1,0 +1,110 @@
+{% if element_disp %}
+    {#FLICKITY SETTINGS#}
+    {% set flickitySettings %}
+        "adaptiveHeight": true,{% if not arrows_disp %}"prevNextButtons": false{% endif %}{% if autoplay_enabled %}{% if not arrows_disp %},{% endif %}"autoPlay": {{ delay }}{% endif %}
+    {% endset %}
+
+    {# LOOP FOR CLS STYLING #}
+    {% for slide in slides %}
+        {% if slide.img_default_disp %}
+            <style>
+                .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-holder {
+                    padding-top: {{ (slide.img_default_height / slide.img_default_width * 100) }}%;
+                }
+                .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-wrapper {
+                    max-width: {{ slide.img_default_width }}px;
+                    margin: 0 auto;
+                }
+                {% if slide.img_large_disp %}
+                @media (max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px){
+                    .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-holder {
+                        padding-top: {{ (slide.img_large_height / slide.img_large_width * 100) }}%;
+                    }
+                    .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-wrapper {
+                        max-width: {{ slide.img_large_width }}px;
+                    }
+                }
+                {% endif %}
+                {% if slide.img_medium_disp %}
+                @media (max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px){
+                    .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-holder {
+                        padding-top: {{ (slide.img_medium_height / slide.img_medium_width * 100) }}%;
+                    }
+                    .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-wrapper {
+                        max-width: {{ slide.img_medium_width }}px;
+                    }
+                }
+                {% endif %}
+                {% if slide.img_small_disp %}
+                @media (max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px){
+                    .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-holder {
+                        padding-top: {{ (slide.img_small_height / slide.img_small_width * 100) }}%;
+                    }
+                    .{{ name }}-carousel .carousel-cell--{{ loop.index }} .carousel-cell__image-wrapper {
+                        max-width: {{ slide.img_small_width }}px;
+                    }
+                }
+                {% endif %}
+            </style>
+        {% endif %}
+    {% endfor %}
+
+    [% set {{ name }} %]
+        <div class="js-element {{ name }}-carousel-wrapper{% if class != '' %} {{ class }}{% endif %}" data-element-name="{{ name }}"
+            {%- if main_title_disp %} role="region" aria-label="{{ main_title }}" aria-roledescription="carousel"{% endif %}
+        >
+            {% if main_title_disp %}
+            <div class="{{ name }}__main-title h5">{{ main_title }}</div>
+            {% endif %}
+            <div class="{{ name }}-carousel carousel" data-flickity='{ {{ flickitySettings|trim }} }' tabindex="0">
+                {% for slide in slides %}
+                <div class="carousel-cell carousel-cell--{{ loop.index }}{% if slide.img_default_disp and not slide.html_disp %} carousel-cell--only-img{% endif %}"
+                     role="group" aria-label="Slide {{ loop.index }} of {{ loop.length }}"
+                >
+                    {% if slide.img_default_disp %}
+                    <div class="carousel-cell__image-wrapper">
+                        <div class="carousel-cell__image-holder">
+                        {% if slide.img_link_disp %}
+                        <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                        {% endif %}
+                        <picture>
+                            {% if slide.img_xxsmall_disp %}
+                                <source media="(max-width: {{ common_vars.grid_breakpoints.xxs - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xxsmall_url }} 1x{% if slide.img_xxsmall_retina_disp %}, {{ slide.img_xxsmall_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            {% if slide.img_xsmall_disp %}
+                                <source media="(max-width: {{ common_vars.grid_breakpoints.xs - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xsmall_url }} 1x{% if slide.img_xsmall_retina_disp %}, {{ slide.img_xsmall_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                                <source width="{{ slide.img_small_width }}" height="{{ slide.img_small_height }}" media="(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_small_url }} 1x{% if slide.img_small_retina_disp %}, {{ slide.img_small_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                                <source width="{{ slide.img_medium_width }}" height="{{ slide.img_medium_height }}" media="(max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_medium_url }} 1x{% if slide.img_medium_retina_disp %}, {{ slide.img_medium_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                                <source width="{{ slide.img_large_width }}" height="{{ slide.img_large_height }}" media="(max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_large_url }} 1x{% if slide.img_large_retina_disp %}, {{ slide.img_large_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            {% if slide.img_xlarge_disp %}
+                                <source media="(max-width: {{ common_vars.grid_breakpoints.xl - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xlarge_url }} 1x{% if slide.img_xlarge_retina_disp %}, {{ slide.img_xlarge_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            {% if slide.img_xxlarge_disp %}
+                                <source media="(max-width: {{ common_vars.grid_breakpoints.xxl - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xxlarge_url }} 1x{% if slide.img_xxlarge_retina_disp %}, {{ slide.img_xxlarge_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            {% if slide.img_xxxlarge_disp %}
+                                <source media="(max-width: {{ common_vars.grid_breakpoints.xxxl - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xxxlarge_url }} 1x{% if slide.img_xxxlarge_retina_disp %}, {{ slide.img_xxxlarge_retina_url }} 2x{% endif %}" />
+                            {% endif %}
+                            <source width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} 2x{% endif %}" />
+                            <img class="lazy-img {{ name }}{{ loop.index }} lazyload" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ slide.img_default_url }}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}"/>
+                        </picture>
+                        {% if slide.img_link_disp %}</a>{% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if slide.html_disp %}
+                        <div class="carousel-cell-text__html html-text">{{ slide.html }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    [% endset %]
+{% endif %}

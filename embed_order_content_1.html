@@ -1,0 +1,273 @@
+<div class="col-12 order-control-section__col">
+    <div class="order-control-section__wrapper contact">
+        <section class="order-control__contact-datas">
+            <div class="order-control__main-title contact__main-title">
+                [% if page_id in [ "page_shop_order_control" ] %]
+                <a class="order-control-modify-btn icon--a-edit" href="{{ reg_url }}" title="{{ text.button_modify }}">{{ text.contact_data }}</a>
+                [% else %]
+                {{ text.contact_data }}
+                [% endif %]
+            </div>
+            <div class="order-control-datas">
+                <div class="order-control-data order-contact-name">
+                    <div class="order-control-title">{{ text.name }}:</div>
+                    <div class="order-control-value">{{ contact_name }}</div>
+                </div>
+                <div class="order-control-data order-contact-username">
+                    <div class="order-control-title">{{ title_contact_username }}:</div>
+                    <div class="order-control-value">{{ contact_username }}</div>
+                </div>
+                {% if contact_phone_disp %}
+                <div class="order-control-data order-contact-phone">
+                    <div class="order-control-title">{{ text.phone_number }}:</div>
+                    <div class="order-control-value">{{ contact_phone }}</div>
+                </div>
+                {% endif %}
+                {% if contact_mobile_disp %}
+                <div class="order-control-data order-contact-mobile">
+                    <div class="order-control-title">{{ text.mobile_phone_number }}:</div>
+                    <div class="order-control-value">{{ contact_mobile }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+{% if customer_params_disp %}
+<div class="col-12 order-control-section__col">
+    <div class="order-control-section__wrapper customer-params">
+        <section class="order-control__customer-params" id="page_order_control_custdata">
+            <div class="order-control__main-title contact__main-title">
+                [% if page_id in [ "page_shop_order_control" ] %]
+                <a class="order-control-modify-btn icon--a-edit" href="{{ reg_url }}" title="{{ text.button_modify }}">{{ text.other_customer_data }}</a>
+                [% else %]
+                {{ text.other_customer_data }}
+                [% endif %]
+            </div>
+            <div class="order-control-datas">
+                {% if recipient_name_disp %}
+                <div class="order-control-data order-recipient-name">
+                    <div class="order-control-title">{{ text.recipient_name }}:</div>
+                    <div class="order-control-value">{{ recipient_name }}</div>
+                </div>
+                {% endif %}
+                {% if vat_disp %}
+                <div class="order-control-data order-vat">
+                    <div class="order-control-title">{{ text.company_vat_number }}:</div>
+                    <div class="order-control-value">{{ vat_number }}</div>
+                </div>
+                {% endif %}
+                {% if eu_vat_disp %}
+                <div class="order-control-data order-eu-vat">
+                    <div class="order-control-title">{{ text.eu_vat_number }}:</div>
+                    <div class="order-control-value">{{ eu_vat_number }}</div>
+                </div>
+                {% endif %}
+                {% if customer_type_disp %}
+                <div class="order-control-data order-customer-type">
+                    <div class="order-control-title">{{ title_customer_type }}:</div>
+                    <div class="order-control-value">{{ customer_type }}</div>
+                </div>
+                {% endif %}
+                {% for param in customer_params %}
+                <div class="order-control-data order-customer-param order-customer-param-{{ param.id }}">
+                    <div class="order-control-title">{{ param.title }}:</div>
+                    <div class="order-control-value">{{ param.value }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endif %}
+<div class="col-md-6 order-control-section__col">
+    <div class="order-control-section__wrapper invoice-and-pay-mode">
+        <section class="order-control__invoice-datas" id="page_order_control_szam">
+            <div class="order-control__main-title">
+                [% if page_id in [ "page_shop_order_control" ] %]
+                <a class="order-control-modify-btn icon--a-edit" href="{{ reg_url }}" title="{{ text.button_modify }}">{{ text.billing_data }}</a>
+                [% else %]
+                {{ text.billing_data }}
+                [% endif %]
+            </div>
+            <div class="order-control-data order-billing-name">
+                <div class="invoice-name__title order-control-title">{% if customer_type_value == '1' %}{{ text.reg_title_company_name }}{% else %}{{ text.reg_title_name }}{% endif %}:</div>
+                <div class="invoice-name__data order-control-value">{{ billing_name }}</div>
+            </div>
+
+            {% if billing_country_disp %}
+            <div class="order-control-data order-billing-country">
+                <div class="invoice-country__title order-control-title">{{ text.country }}:</div>
+                <div class="invoice-country__data order-control-value">{{ billing_country }}</div>
+            </div>
+            {% endif %}
+
+            {% if billing_zip_disp %}
+            <div class="order-control-data order-billing-zip">
+                <div class="invoice-zip__title order-control-title">{{ text.zip_code }}:</div>
+                <div class="invoice-zip__data order-control-value">{{ billing_zip }}</div>
+            </div>
+            {% endif %}
+
+            {% if billing_county_disp %}
+            <div class="order-control-data order-billing-county">
+                <div class="invoice-county__title order-control-title">{{ billing_county_title }}:</div>
+                <div class="invoice-county__data order-control-value">{{ billing_county }}</div>
+            </div>
+            {% endif %}
+
+            <div class="order-control-data order-billing-city">
+                <div class="invoice-city__title order-control-title">{{ text.city }}:</div>
+                <div class="invoice-city__data order-control-value">{{ billing_city }}</div>
+            </div>
+            <div class="order-control-data order-billing-street">
+                <div class="invoice-street__title order-control-title">{{ text.street_address }}:</div>
+                <div class="invoice-street__data order-control-value">{{ billing_street }}</div>
+            </div>
+        </section>
+        <div class="line-separator"></div>
+        <section class="order-control__payment-mode" id="page_order_control_modfiz">
+            <div class="order-control__main-title">
+                [% if page_id in [ "page_shop_order_control" ] %]
+                <a class="order-control-modify-btn icon--a-edit" href="{{ order_methods_url }}" title="{{ text.button_modify }}">{{ text.payment_method }}</a>
+                [% else %]
+                {{ text.payment_method }}
+                [% endif %]
+            </div>
+            <div class="order-control__payment-name mb-4">
+                {{ payment_method_name }}
+                {% if payment_method_use_recurring_with_saved_card %}
+                    <div class="font-s mt-2 font-weight-normal">{{ text.recurring_option_used_with_saved_card }}</div>
+                {% elseif payment_method_use_recurring %}
+                    <div class="font-s mt-2 font-weight-normal">{{ text.recurring_option_used_and_card_stored }}</div>
+                {% endif %}
+                {% if payment_method_use_oneclick_with_saved_card %}
+                    <div class="font-s mt-2 font-weight-normal">{{ text.oneclick_option_used_with_saved_card }}</div>
+                {% elseif payment_method_use_oneclick %}
+                    <div class="font-s mt-2 font-weight-normal">{{ text.oneclick_option_used_and_card_stored }}</div>
+                {% endif %}
+            </div>
+            {% if payment_method_logo_disp %}
+            <div class="order-control__payment-logo mb-4">
+                {% if payment_method_logo_link_disp %}<a href="{{ payment_method_logo_link_url }}" title="{{ payment_method_logo_alt }}" target="{{ payment_method_logo_link_target }}">{% endif %}
+                <img src="{{ payment_method_logo_img_url }}" alt="{{ payment_method_logo_alt }}" title="{{ payment_method_logo_alt }}" />
+                {% if payment_method_logo_link_disp %}</a>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if payment_method_details_disp %}
+                <div class='order-mods__description py-3 font-xs font-md-s text-justify'>{{ payment_method_details }}</div>
+            {% endif %}
+
+            {% if payment_method_use_oneclick_checkbox %}
+            <div class="custom-control custom-checkbox mb-4">
+                <input class="custom-control-input" type="checkbox" name="use_oneclick" id="use_oneclick" value="1" />
+                <label class="custom-control-label font-weight-bold" for="use_oneclick">{{ text.oneclick_store_card_data }}</label>
+            </div>
+            {% elseif payment_method_use_oneclick_pass %}
+            <div class="form-group order-mods__oneclick-pass--input js-oneclick-pass-wrap">
+                <label for="oneclick_pass">{{ text.oneclick_password }}</label>
+                <input class="form-control{% if payment_method_oneclick_pass_required %} is-required{% endif %}" type="password" onkeyup="oneclick_pass_change($(this));" name="oneclick_pass" id="oneclick_pass" />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            {% endif %}
+
+            {% if payment_method_pay_disp %}
+            <div class="order-control__payment-pay row no-gutters col-gap-10 row-gap-20 mb-4">
+                <button class="order-control__payment-btn btn btn-primary" onclick="{{ button_pay_onclick }}">{{ button_pay_text }}</button>
+                {% if payment_method_change_disp %}
+                <button class="order-control__payment-change-btn btn btn-secondary" onclick="{{ button_change_onclick }}">{{ text.other_payment_method }}</button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+<div class="col-md-6 order-control-section__col">
+    <div class="order-control-section__wrapper shipping-and-shipping-mode">
+        <section class="order-control__shipping-datas" id="page_order_control_szall">
+            <div class="order-control__main-title">
+                [% if page_id in [ "page_shop_order_control" ] %]
+                <a class="order-control-modify-btn icon--a-edit" href="{{ reg_url }}" title="{{ text.button_modify }}">{{ text.shipping_data }}</a>
+                [% else %]
+                {{ text.shipping_data }}
+                [% endif %]
+            </div>
+            <div class="order-control-data order-shipping-name">
+                <div class="shipping-name__title order-control-title">{{ text.name }}:</div>
+                <div class="shipping-name__data order-control-value">{{ shipping_name }}</div>
+            </div>
+            {% if shipping_country_disp %}
+                <div class="order-control-data order-shipping-country">
+                    <div class="shipping-country__title order-control-title">{{ text.country }}:</div>
+                    <div class="shipping-country__data order-control-value">{{ shipping_country }}</div>
+                </div>
+            {% endif %}
+            {% if shipping_zip_disp %}
+                <div class="order-control-data order-shipping-zip">
+                    <div class="shipping-zip__title order-control-title">{{ text.zip_code }}:</div>
+                    <div class="shipping-zip__data order-control-value">{{ shipping_zip }}</div>
+                </div>
+            {% endif %}
+            {% if shipping_county_disp %}
+                <div class="order-control-data order-shipping-county">
+                    <div class="shipping-county__title order-control-title">{{ shipping_county_title }}:</div>
+                    <div class="shipping-county__data order-control-value">{{ shipping_county }}</div>
+                </div>
+            {% endif %}
+            <div class="order-control-data order-shipping-city">
+                <div class="shipping-city__title order-control-title">{{ text.city }}:</div>
+                <div class="shipping-city__data order-control-value">{{ shipping_city }}</div>
+            </div>
+            <div class="order-control-data order-shipping-street">
+                <div class="shipping-street__title order-control-title">{{ text.street_address }}:</div>
+                <div class="shipping-street__data order-control-value">{{ shipping_street }}</div>
+            </div>
+        </section>
+        <div class="line-separator"></div>
+        <section class="order-control__shipping-mode" id="page_order_control_modszall">
+            <div class="order-control__main-title">
+                [% if page_id in [ "page_shop_order_control" ] %]
+                <a class="order-control-modify-btn icon--a-edit" href="{{ order_methods_url }}" title="{{ text.button_modify }}">{{ text.shipping_method }}</a>
+                [% else %]
+                {{ text.shipping_method }}
+                [% endif %]
+            </div>
+            <div class="order-control__shipping-name">{{ shipping_method_name }}</div>
+            {% if shipping_method_logo_disp %}
+                <div class="order-control__shipping-logo my-2">
+                    <img src="{{ shipping_method_logo_img_url }}" alt="{{ shipping_method }}" />
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% if order_params_disp %}
+<div class="col-12 order-control-section__col">
+    <div class="order-control-section__wrapper customer-params">
+        <section class="order-control__order-params">
+            <div class="order-control__main-title contact__main-title">
+                [% if page_id in [ "page_shop_order_control" ] %]
+                <a class="order-control-modify-btn icon--a-edit" href="{{ order_methods_url }}" title="{{ text.button_modify }}">{{ text.other_order_data }}</a>
+                [% else %]
+                {{ text.other_order_data }}
+                [% endif %]
+            </div>
+            <div class="order-params order-control-datas">
+                {% for param in order_params %}
+                <div class="order-control-data order-param order-param-{{ param.id }}">
+                    <div class="order-control-title">{{ param.title }}:</div>
+                    <div class="order-control-value">
+                        {% if param.file_link_disp %}  {# letölthető tartalom #}
+                        <a href='{{ param.file_link_url }}' target="_blank">{{ param.value }}</a>
+                        {% else %}
+                        {{ param.value }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endif %}

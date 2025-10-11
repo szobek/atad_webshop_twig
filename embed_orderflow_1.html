@@ -1,0 +1,29 @@
+<div class="order-steps order-steps--{{ step_count }}" id="page_orderflow_outer" role="region" aria-label="{{ text.breadcrumb }}">
+    <div class="container">
+        <div class="order-steps-inner row no-gutters flex-nowrap align-items-start justify-content-between justify-content-sm-start" aria-live="polite" role="list">
+            {% for step in steps %}
+            <div role="listitem" class="col order-step order-step--{{ step.key }}
+                 {%- if fade_reg and step.key == 'reg' %} is-done{% endif %}
+                 {%- if fade_mods and step.key == 'mods' %} is-done{% endif %}
+                 {%- if fade_control and step.key == 'control' %} is-done{% for step in steps if step.key == 'send' %} has-send{% endfor %}{% endif %}
+                 {%- if fade_send and step.key == 'send' %} is-done{% endif %}
+                 {%- if fade_checkout and step.key == 'checkout' %} is-done{% endif %}
+                 {%- if step.key == actual_key %} is-active{% endif %}"
+                 {%- if step.key == actual_key %} aria-current="step"{% endif %}
+            >
+                {% set attributes -%}
+                {% if _context['link_' ~ step.key] %} aria-label="{{ step.title ~ ' ' ~ loop.index ~ '. ' ~ text.step ~ ' ' ~ text.accomplished }}"{% endif %}
+                {%- endset %}
+
+                {% if link_reg and step.key == 'reg' %}<a {{ attributes }} href="{{ link_reg_url }}">{% endif %}
+                {% if link_mods and step.key == 'mods' %}<a {{ attributes }} href="{{ link_mods_url }}">{% endif %}
+                <div class="order-step__icon"></div>
+                <div class="order-step__text">{{ step.title }}{% if not _context['link_' ~ step.key] %}<span class="sr-only">{{ loop.index ~ '. ' ~ text.step }}</span>{% endif %}</div>
+                {% if link_reg and step.key == 'reg' %}</a>{% endif %}
+                {% if link_mods and step.key == 'mods' %}</a>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="order-step__text--actual">{% for step in steps if step.key == actual_key %}{{ step.title }}{% endfor %}</div>
+    </div>
+</div>

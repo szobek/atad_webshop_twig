@@ -1,0 +1,105 @@
+<div id="page_help_content" class="page_content">
+    {# TAB SETTINGS #}
+    {% set default_tab_name = '' %}
+    {% set GET_tab_name = '' %}
+    {% set tab_names = [] %}
+    {% for tab in tabs %}
+        {# set first tab to default #}
+        {% if loop.first %}
+            {% set default_tab_name = tab.id %}
+        {% endif %}
+        {# add tab to tabs #}
+        {% set tab_names = tab_names|merge([tab.id]) %}
+    {% endfor %}
+
+    {# if GET param string found in tabs array, set it to default #}
+    {% if tab_default_disp and tab_default in tab_names %}
+        {% set default_tab_name = tab_default %}
+    {% endif %}
+
+    {% if tab_count > 1 %}
+    <div id="nav-tab-accordion-1" class="nav-tabs-accordion">
+        <div class="nav-tabs-container container">
+            <ul class="nav nav-tabs help-tabs" role="tablist">
+                {% for tab in tabs %}
+                {% set this_name = tab.id %}
+                <li class="nav-item" role="presentation">
+                    <a href="#" id="tab-{{ tab.id }}" role="tab" aria-controls="pane-{{ tab.id }}"
+                       class="nav-link{% if default_tab_name == this_name %} active{% endif %}"
+                       {% if default_tab_name == this_name %} aria-selected="true"{% else %}aria-selected="false"{% endif %}
+                    >{{ tab.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="tab-panes pane-accordion container">
+            {% for tab in tabs %}
+                {% set this_name = tab.id %}
+                <div class="pane-header" id="pane-header-{{ tab.id }}">
+                    <a id="accordion-btn-{{ tab.id }}" href="#" aria-controls="pane-{{ tab.id }}"
+                       class="pane-header-btn btn{% if default_tab_name == this_name %} active{% endif %}"
+                       {%- if default_tab_name == this_name %} aria-expanded="true"{% endif %}>
+                        {{ tab.title }}
+                    </a>
+                </div>
+                <div class="tab-pane fades{% if default_tab_name == this_name %} active show{% endif %}"
+                     id="pane-{{ tab.id }}" role="tabpanel" aria-labelledby="pane-header-{{ tab.id }}"
+                     {%- if default_tab_name != this_name %} inert{% endif %}>
+                    <div class="tab-pane__container container container-max-xl">
+                        {% if tab.embedded %}
+                        {{ tab.content }}
+                        {% else %}
+                            {% if tab.pdf_disp %}
+                            <div class="float-right">
+                                <a class="page-help-icon icon--a-print btn btn-primary btn-square" href="{{ tab.pdf_url }}" rel="nofollow" target="_blank" title="{{ text.printing }}"></a>
+                            </div>
+                            {% endif %}
+
+                            {% for part in tab.parts %}
+                                {% if part.title_disp %}
+                                <a id="{{ tab.id }}_item_{{ part.num }}"></a>{% if tab.id == "terms" %}<a id="item_{{ part.num }}"></a>{% endif %}
+                                    <div class="page_help_title text-uppercase py-2 font-l font-lg-xxxl font-weight-bold mb-3">
+                                        {{ part.title }}
+                                    </div>
+                                {% endif %}
+                                <div class="page_help_content text-justify">{{ part.content }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% embed common_vars.layout_urls.embed_tab_script_1 %}{% endembed %}
+    </div>
+    {% else %}
+        {% for tab in tabs %}
+        <div id="tab-pane-{{ tab.id }}">
+            <h2 class="tab-pane__header main-title2">
+                <div class="container">
+                    {{ tab.title }}
+                </div>
+            </h2>
+            <div class="tab-pane__container container container-max-xl">
+                {% if tab.embedded %}
+                    {{ tab.content }}
+                {% else %}
+                    {% if tab.pdf_disp %}
+                        <div class="float-right">
+                            <a class="page-help-icon icon--a-print btn btn-primary btn-square" href="{{ tab.pdf_url }}" rel="nofollow" target="_blank" title="{{ text.printing }}"></a>
+                        </div>
+                    {% endif %}
+                    {% for part in tab.parts %}
+                        {% if part.title_disp %}
+                        <a id="{{ tab.id }}_item_{{ part.num }}"></a>{% if tab.id == "terms" %}<a id="item_{{ part.num }}"></a>{% endif %}
+                            <div class="page_help_title text-uppercase py-2 font-l font-lg-xxxl font-weight-bold mb-3">
+                                {{ part.title }}
+                            </div>
+                        {% endif %}
+                        <div class="page_help_content text-justify">{{ part.content }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>

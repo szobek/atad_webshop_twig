@@ -1,0 +1,55 @@
+{% if element_disp %}
+    {% for slide in slides|slice(0,1) %}
+        {% set tempCss %}
+            {% if slide.img_default_disp %}
+                .{{ name }}-img-wrapper {
+                    padding-top: calc({{ (slide.img_default_height / slide.img_default_width * 100) }}%);
+                }
+                .{{ name }}-img-container {
+                    max-width: {{ slide.img_default_width }}px;
+                    position: relative;
+                }
+                .{{ name }}-img-wrapper img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+            {% endif %}
+        {% endset %}
+        {% if tempCss != "" %}
+            <style>{{ tempCss }}</style>
+        {% endif %}
+
+        [% set {{ name }} %]
+        <div id="box_container_{{ name }}" class="js-element {{ class }}" data-element-name="{{ name }}"{% if main_title_disp %} role="region" aria-label="{{ main_title }}"{% endif %}>
+            <div class="box">
+            {% if main_title_disp %}
+                <div class="box__title h4">{{ main_title }}</div>
+            {% endif %}
+            {% if slide.img_default_disp or slide.html_disp %}
+                <div class="box__content">
+                    {% if slide.img_default_disp %}
+                    <div class="{{ name }}-img-container mb-3">
+                        <div class="{{ name }}-img-wrapper">
+                            {% if slide.img_link_disp %}
+                            <a href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                            {% endif %}
+                            <img class="lazyload" width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" src="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} 2x{% endif %}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}"/>
+                            {% if slide.img_link_disp %}
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if slide.html_disp %}
+                        {{ slide.html }}
+                    {% endif %}
+                </div>
+            {% endif %}
+            </div>
+        </div>
+        [% endset %]
+    {% endfor %}
+{% endif %}

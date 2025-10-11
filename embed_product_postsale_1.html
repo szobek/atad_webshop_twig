@@ -1,0 +1,68 @@
+<div class="post-sale up-block js-postsale-container" id="popup_postsale_content">
+    <div class="post-sale__title-wrap up-block__title-wrap">
+        <div class="post-sale__title up-block__title">{{ text.special_offer }}</div>
+        <div class="post-sale__title-sub up-block__title-sub">{{ text.postsale_info_text }}</div>
+    </div>
+    <div class="up-block__content">
+        <div class="row">
+            <div class="col-12 col-sm-6 post-sale__left">
+                <div class="post-sale__img-outer" style="width: 100%;max-width:{{ backvar.main_img_maxwidth }}px;margin:0 auto;">
+                    <div class="post-sale__img-wrap product-img-wrapper">
+                        <img class="lazyload product-img" width="{{ backvar.main_img_maxwidth }}" height="{{ backvar.main_img_maxheight }}"
+                             src="[unas_shop_url]/main_pic/space.gif" data-src="{{ img_url }}"
+                             {% if img_retina_exists %}
+                             data-srcset="{{ img_retina_url }} {{ img_retina_size }}"
+                             {% endif %} id="main_image" alt="{{ img_alt }}" title="{{ img_alt }}"
+                        />
+                    </div>
+                    <div class="post-sale__product-info-url-wrap text-center my-3">
+                        <a class="post-sale__product-info-url icon--b-info font-weight-bold" href="{{ product_url }}" target="_blank">{{ text.button_details }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 post-sale__right">
+                <div class="post-sale__product-name px-4 mb-3 font-xl">{{ name }}</div>
+                {% if price_disp %}
+                <div class="post-sale__normal-price px-4 d-flex align-items-baseline">
+                    {% if price_normal_text|trim != "" %}{{ price_normal_text }}{% else %}{{ text.base_price }}:{% endif %} <span class="ml-auto font-xxl{% if price_line_through and sale_disp %} text-line-through{% endif %}">{{ price }}</span>{% if price_normal_info_text_disp %}&nbsp;<span class="icon--info" tabindex="0" data-tippy="{{ price_normal_info_text }}"></span>{% endif %}
+                </div>
+                {% endif %}
+
+                {% if price_sale_disp %}
+                <div class="post-sale__sale-price mb-3 px-4 d-flex align-items-baseline">
+                    {% if price_discounted_text|trim != "" %}{{ price_discounted_text }}{% else %}{{ text.sale_price }}:{% endif %} <span class="ml-auto font-xxl text-sale">{{ price_sale }}</span>
+                </div>
+                {% endif %}
+
+                {% if postsale_price_disp %}
+                <div class="post-sale__postsale-price font-weight-bold pt-3 pb-4 px-4 d-flex align-items-center">
+                    {{ text.postsale_price }}: <span class="ml-auto post-sale__postsale-price-amount font-xxxxl">{{ postsale_price }}</span>
+                </div>
+                {% endif %}
+
+                <div class="post-sale__buttons text-center page_postsale_buttons js-postsale-hide-this-after-click-yes mb-4"> {# .page_postsale_buttons jor JS#}
+                    <button type="button" onclick="popup_action_postsale({{ order_key }},'{{ sku_always }}');" class="post-sale__btn-want-it btn btn-primary btn-lg mb-3 icon--b-cart">{{ text.button_want_it }}</button>
+                </div>
+                <div class="post-sale__total-amount mb-4">
+                    {{ postsale_total_price }}
+                </div>
+                <div class="post-sale__buttons text-center page_postsale_buttons js-postsale-hide-this-after-click-yes"> {# .page_postsale_buttons jor JS#}
+                    <button type="button" onclick="postsale_close();"" class="post-sale__btn-not-want-it btn btn-secondary icon--b-close mx-3 mb-3">{{ text.button_not_want_it }}</button>
+                </div>
+                <div class="post-sale__before-send beforesend"><div class="loading-spinner"></div></div> {# .beforesend jor JS#}
+                <div class="post-sale__success-data success_wrapper"> {# .success_wrapper jor JS#}
+                    <div class="success_text alert alert-success icon--b-check text-left" role="alert">{{ text.product_added_to_order }}</div>
+                    <button type="button" onclick="postsale_close();"" class="post-sale__success-btn-close btn btn-primary">
+                        {{ text.button_close }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+       initTippy();
+    });
+</script>
+

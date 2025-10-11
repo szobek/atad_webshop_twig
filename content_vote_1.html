@@ -1,0 +1,49 @@
+<div id="page_vote_content" class="page_content mb-4">
+    <section class="votes">
+    {% for vote in votes %}
+        <article class="vote vote--{{ loop.index }}">
+            <div class="container">
+                <div class="vote__inner">
+                    <header class="vote__title mb-4 text-center">{{ vote.title }}</header>
+                    {{ vote.form_start }}
+                    <div class="vote-options">
+                        {% for vote_option in vote.vote_options %}
+                            {% if vote.can_vote %}
+                                {% if loop.first %}<div class="form-group">{% endif %}
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input vote_radio_{{ vote.id }}" id="vote_radio_{{ vote.id }}_{{ vote_option.num }}" name="vote" type="radio" onclick="vote_disable('{{ vote.id }}');" value="{{ vote_option.value }}">
+                                    <label class="custom-control-label" for="vote_radio_{{ vote.id }}_{{ vote_option.num }}">{{ vote_option.value }}</label>
+                                </div>
+                                {% if loop.last %}</div>{% endif %}
+                            {% else %}
+                                <div class="vote-option vote--{{ vote.id }}-{{ vote_option.num }}{% if not vote.limit_disp %} vote-limit--no{% endif %}{% if vote.limit_disp %} vote-limit--yes{% endif %}">
+                                    <div class="vote-option__name-wrap"><span class="vote-option__name">{{ vote_option.value }}</span><span class="vote-option__count">({{ vote_option.count }})</span></div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ vote_option.percent }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ vote_option.percent }}%">
+                                            <div class="vote-option__percent">{{ vote_option.percent }}%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% if vote.can_vote %}
+                            <div class="form-group page_vote_privacy_policy">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" name="vote_privacy_policy" id="vote_privacy_policy_{{ vote.id }}" type="checkbox" onclick="vote_disable('{{ vote.id }}');" value="1">
+                                    <label class="custom-control-label" for="vote_privacy_policy_{{ vote.id }}">{{ text.accept_privacy_policy }}</label>
+                                </div>
+                            </div>
+                            <button class="page-vote__btn-vote btn btn-primary mt-3" name="submit_button" id="vote_button_{{ vote.id }}" disabled="disabled">{{ text.button_vote }}</button>
+                        {% endif %}
+                    </div>
+                    {{ vote.form_end }}
+                    <div class="vote__count mb-3">{{ text.vote_count }}: {{ vote.count }}&nbsp;{{ text.pcs }}</div>
+                    {% if vote.already_voted %}
+                    <div class="vote__info alert alert-success icon--b-check">{{ text.already_voted }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+    {% endfor %}
+    </section>
+</div>

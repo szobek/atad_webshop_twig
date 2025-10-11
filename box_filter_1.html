@@ -1,0 +1,695 @@
+{% set savedFilters %} {# reusable code block #}
+<div class="saved_filters_outer" {% if not save_disp %} style="display:none;"{% endif %}>
+    <div role="button" tabindex="0" class="product_filter_title saved_filters_title{% if filter_box_parameter_values_are_in_opened_state == '0' %} is-closed{% endif %}"
+        {%- if filter_box_parameter_values_are_in_opened_state == '0' %} aria-expanded="false"{% else %} aria-expanded="true"{% endif -%}
+    >
+        <span class="product_filter_title__text">{{ text.saved_filters }}</span>
+        <span class="product_filter_title__icon"></span>
+    </div>
+    <div class="saved_filters_content product_filter_content"{% if filter_box_parameter_values_are_in_opened_state == '0' %} style="display:none;"{% endif %}>
+        {% for saved_filter in saved_filters %}
+        <div class="saved_filter_wrapper">
+            <a href="{{ saved_filter.url }}" class="saved_filter_url icon--a-filter">{{ saved_filter.title }}</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endset %}
+
+{# build up the selected filters #}
+{% set temp_selected_filters %}
+    {% for filter in filters if filter.group_checked %}
+        {% if filter.type_slider %}
+        <label class="product_filter_link label-type--{{ filter.type }} js-remove-slider-filter" data-id="{{ filter.param_id }}">
+            <span class="selected-filter__title">{{ filter.title }}</span>
+            <span class="selected-filter__values">
+                <span class="selected-filter__value-min">{{ filter.act_min|number_format(filter.decimal_length,money_dec,money_thousend) }}</span>
+                <span class="selected-filter__value-max">{{ filter.act_max|number_format(filter.decimal_length,money_dec,money_thousend) }}</span>
+                {%- if filter.text_after is not empty%}<span class="selected-filter__text-after product_filter_num_texts">&nbsp;({{ filter.text_after|trim }})</span>{% endif -%}
+            </span>
+        </label>
+        {% else %}
+            {% for param_value in filter.param_values if param_value.checked %}
+            <label class="product_filter_link label-type--{{ filter.type }}" for="{{ param_value.id }}"{% if param_value.onclick != "" %} onclick="{{ param_value.onclick|escape }}"{% endif %}>
+                {% if filter.param_id != "product_status" %}
+                <span class="selected-filter__title">{{ filter.title }}</span>
+                {% endif %}
+                <span class="selected-filter__values">
+                    {% if filter.type in ['text','textmore','enum','enummore'] %}
+                        {{ param_value.title }}
+                    {% endif %}
+
+                    {% if filter.type in ['color','color_text'] %}
+                        <span class="product_filter_color_value" style="color:#{{ param_value.value }};"{% if param_value.value|lower == "ffffff" %} data-hexa="ffffff"{% endif %}></span>
+                        {% if param_value.color_text_disp %}
+                        <span class="product_filter_text_color_text">{{ param_value.color_text }}</span>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if filter.type in ['icon','iconmore'] %}
+                    <span class="product_icon_outer">
+                        {% if img_lazy_load %}
+                        <img class="product_filter_icon_img lazyload" width="{{ param_icon_width }}" height="{{ param_icon_height }}" id="{{ prefix }}param_icon_{{ filter.param_id }}_{{ param_value.value }}_img" src="{{ lazy_load_img_url }}" data-src="{{ param_value.img_url }}" alt="{{ param_value.img_alt }}" title="{{ param_value.img_alt }}" />
+                        {% else %}
+                        <img class="product_filter_icon_img" width="{{ param_icon_width }}" height="{{ param_icon_height }}" id="{{ prefix }}param_icon_{{ filter.param_id }}_{{ param_value.value }}_img" src="{{ param_value.img_url }}" alt="{{ param_value.img_alt }}" title="{{ param_value.img_alt }}" />
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                </span>
+            </label>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endset %}
+
+{% set filterContent %}
+    <section class="filtered-tags filtered-tags--1 js-selected-filters js-filtered-tags js-filtered-tags--1">{{ temp_selected_filters|replace({"\n": "", "\r": "", "\t": ""})|trim }}</section>
+    <div class="show-filtered-products-btn-wrap{% if not immediate_filter_is_disabled %} d-sm-none{% endif %}">
+        <button type="button"{% if immediate_filter_is_disabled %} onclick="filter_activate_delay('');"{% endif%}
+                class="show-filtered-products-btn js-show-filtered-products-btn dropdown__btn-close btn btn-primary{% if immediate_filter_is_disabled %} immediate-disabled{% endif %}">{{ text.show_results }}</button>
+    </div>
+
+    {% if save_on %}
+    <section class="saved_filters_wrapper">{% if save_disp %}{{ savedFilters }}{% endif %}</section>
+    {% endif %}
+
+    {% if not ajax_filter_load %}
+    <section class="loading-spinner__wrap">
+        <div class="loading-spinner"></div>
+    </section>
+    {% endif %}
+
+    {% set hasProductFilterNum = false %}
+    {% for filter in filters %}
+        {% if filter.param_group_start %}<div class="product_filter_param_group param_group_{{ filter.param_group_id }}">{% endif %}
+        <div class="{{ filter.group_class }}{% if filter.type_slider %} filter-type--slider{% else %} filter-type--checkbox{% endif %}" id="{{ prefix }}param_{{ filter.param_id }}_group" data-id="{{ filter.param_id }}"{% if filter.type_slider %} data-def-min="{{ filter.base_min }}" data-def-max="{{ filter.base_max }}" data-decimal-length="{{ filter.decimal_length }}"{% endif %}>
+            <div role="button" tabindex="0" class="product_filter_title{% if filter_box_parameter_values_are_in_opened_state == '0' %} is-closed{% endif %}"
+                 id="{{ prefix }}param_{{ filter.param_id }}_title"{% if filter_box_parameter_values_are_in_opened_state == '0' %} aria-expanded="false"{% else %} aria-expanded="true"{% endif %}
+            >
+                <span class="product_filter_title__text">{{ filter.title }}</span>{% if filter.text_before is not empty or filter.text_after is not empty %}<span class="product_filter_num_texts">&nbsp;({{ filter.text_before|trim }}{% if filter.text_before is not empty and filter.text_after is not empty %} - {% endif %}{{ filter.text_after|trim }})</span>{% endif %}{% if filter.description_disp %}&nbsp;<span class="product_filter_desc_icon icon--info" tabindex="0" data-tippy="{{ filter.description|escape }}"></span>{% endif %}
+                <span class="product_filter_title__icon"></span>
+            </div>
+            <div class="product_filter_content position-relative product_filter_type_{{ filter.type }} product_filter_{{ filter.param_id }}_content {{ filter.class }}" id="{{ prefix }}param_{{ filter.param_id }}_content"{% if filter_box_parameter_values_are_in_opened_state == '0' %} style="display:none;"{% endif %}>
+                {% if filter.type_slider %}
+                    <div class="product_filter_num mb-4" id="{{ prefix }}product_filter_num_{{ filter.param_id }}"></div>
+                    <div class="product_filter_num_text text-center d-none">{{ filter.value }}</div>
+                    {{ filter.hidden_inputs }}
+                    <form id="{{ prefix }}product_filter_num_form_{{ filter.param_id }}">
+                        <div class="product_filter_num_inputs">
+                            <div class="row gutters-10">
+                                <div class="col-6 product_filter_num_from_col">
+                                    <div class="input-group mb-0">
+                                        <input class="form-control product_filter_{{ filter.param_id }}_input product_filter_num_from" type="text" inputmode="decimal"
+                                               id="filter-number-from-{{ filter.param_id }}" aria-label="{{ text.start|lower }}" maxlength="{{ filter.base_max|number_format(filter.decimal_length,money_dec,money_thousend)|length }}"
+                                               data-step="{{ filter.step }}" data-min="{{ filter.base_min }}" data-max="{{ filter.base_max }}"
+                                               value="{{ filter.act_min|number_format(filter.decimal_length,money_dec,money_thousend) }}"
+                                               placeholder="{{ text.start|lower }}" data-slider-id="{{ prefix }}product_filter_num_{{ filter.param_id }}" required
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group mb-0">
+                                        <input class="form-control product_filter_{{ filter.param_id }}_input product_filter_num_to" type="text" inputmode="decimal"
+                                               id="filter-number-to-{{ filter.param_id }}" aria-label="{{ text.end|lower }}" maxlength="{{ filter.base_max|number_format(filter.decimal_length,money_dec,money_thousend)|length }}"
+                                               data-step="{{ filter.step }}" data-min="{{ filter.base_min }}" data-max="{{ filter.base_max }}"
+                                               value="{{ filter.act_max|number_format(filter.decimal_length,money_dec,money_thousend) }}"
+                                               placeholder="{{ text.end|lower }}" data-slider-id="{{ prefix }}product_filter_num_{{ filter.param_id }}" required
+                                        >
+                                    </div>
+                                </div>
+                                {{ money_type }}
+                            </div>
+                            {% if hasProductFilterNum == false %}
+                            <script>
+                                function round(number, step) {
+                                    let divided = 1 / step;
+                                    return Math.round( number * divided ) / divided;
+                                }
+                                function filterNumInputChange(el) {
+                                    let $thisGroup = el.closest('.product_filter_group');
+                                    let $currencyRate = 1;
+                                    let $decimalLength = $thisGroup.data('decimal-length');
+                                    if ($thisGroup.attr('data-id') === 'price') {
+                                        $currencyRate = parseFloat(UNAS.shop.currency_rate);
+                                    }
+                                    let $thisAktMinHidden = el.closest('.product_filter_group').find('.akt_min'); /* akt_min hidden input */
+                                    let $thisAktMaxHidden = el.closest('.product_filter_group').find('.akt_max'); /* akt_max hidden input */
+                                    let $thisAktMin = parseFloat($thisAktMinHidden.val()) * $currencyRate;
+                                    let $thisAktMax = parseFloat($thisAktMaxHidden.val()) * $currencyRate;
+                                    let $thisStep = parseFloat(el.attr('data-step'));
+                                    let $thisMinVal = parseFloat(el.attr('data-min'));
+                                    let $thisMaxVal = parseFloat(el.attr('data-max'));
+                                    let $thisBelongSlider = $('#' + el.data('slider-id'));
+                                    let $thisActVal = el.val().replace(/\s/g, '');
+
+                                    $thisActVal = parseFloat($thisActVal.replace(',','.'));
+                                    $thisActVal = round($thisActVal,$thisStep);
+
+                                    let $newTempMin = $thisMinVal;
+                                    let $newTempMax = $thisMaxVal;
+
+                                    /*FROM INPUT*/
+                                    let reset = false;
+                                    if (el.hasClass('product_filter_num_from')) {
+                                        if ($thisActVal === '' || isNaN($thisActVal) ) {
+                                            $newTempMin = $thisMinVal;
+                                            reset = true;
+                                        } else if ( $thisActVal > $thisAktMax ) { /* ha nagyobb a beírt min, mint az aktuális max, akkor legyen: akt max */
+                                            $newTempMin = $thisAktMax;
+                                        } else if ($thisActVal <= $thisMinVal) {
+                                            $newTempMin = $thisMinVal;
+                                            reset = true;
+                                        } else {
+                                            $newTempMin = $thisActVal;
+                                        }
+
+                                        el.val(number_format($newTempMin,$decimalLength,money_dec,money_thousend));
+                                        if (reset) {
+                                            $thisAktMinHidden.val(el.closest('.product_filter_group').find('.base_min').val());
+                                            $thisBelongSlider.slider("values", 0, el.closest('.product_filter_group').find('.base_min').val());
+                                        } else {
+                                            $thisAktMinHidden.val(number_format(($newTempMin / $currencyRate), $decimalLength, '.', ''));
+                                            $thisBelongSlider.slider("values", 0, number_format(($newTempMin / $currencyRate), $decimalLength, '.', ''));
+                                        }
+                                    } else {/*TO INPUT*/
+                                        if ($thisActVal === '' || isNaN($thisActVal) ) {
+                                            $newTempMax = $thisMaxVal;
+                                            reset = true;
+                                        } else if ($thisActVal < $thisAktMin) { /* ha kisebb a beírt max, mint az aktuális min, akkor legyen: akt min */
+                                            $newTempMax = $thisAktMin;
+                                        } else if ($thisActVal >= $thisMaxVal) {
+                                            reset = true;
+                                            $newTempMax = $thisMaxVal;
+                                        } else {
+                                            $newTempMax = $thisActVal;
+                                        }
+
+                                        el.val(number_format($newTempMax,$decimalLength,money_dec,money_thousend));
+                                        if (reset){
+                                            $thisAktMaxHidden.val(el.closest('.product_filter_group').find('.base_max').val());
+                                            $thisBelongSlider.slider("values", 1, el.closest('.product_filter_group').find('.base_max').val());
+                                        } else {
+                                            $thisAktMaxHidden.val(number_format(($newTempMax / $currencyRate), $decimalLength, '.', ''));
+                                            $thisBelongSlider.slider("values", 1, number_format(($newTempMax / $currencyRate), $decimalLength, '.', ''));
+                                        }
+                                    }
+                                }
+                                $(document).ready(function() {
+                                    let productFilterNumInput = $(".product_filter_num_inputs input");
+
+                                    productFilterNumInput.on('click', function() {
+                                        let $this = $(this);
+                                        $this.select();
+                                    });
+
+                                    productFilterNumInput.on('input', function(e) {
+                                        const $this = $(this);
+                                        const $thisGroup = $this.closest('.product_filter_group');
+                                        const dec = $thisGroup.data("decimal-length")
+
+                                        let inputField = e.target;
+                                        let inputValue = inputField.value;
+
+                                        // Ha az input üres, ne csináljon semmit
+                                        if (!inputValue) return;
+
+                                        // Ellenőrizd, hogy van-e pont vagy vessző
+                                        const hasComma = inputValue.includes(',');
+                                        const hasDot = inputValue.includes('.');
+
+                                        // Ha már van pont, ne engedj vesszőt, és fordítva
+                                        if (hasComma && hasDot) {
+                                            // Töröljük az utolsó gépelt karaktert, mert mindkettő van
+                                            inputValue = inputValue.slice(0, -1);
+                                        }
+
+                                        // Csak számjegyek, pont és vessző maradhat
+                                        let sanitizedInput = inputValue.replace(/[^0-9.,]/g, '');
+
+                                        // Vessző és pont sem kell
+                                        if (dec == 0) {
+                                            sanitizedInput = inputValue.replace(/[^0-9]/g, '');
+                                        }
+
+                                        // Ellenőrizzük, hogy van-e tizedesvessző vagy tizedespont, és ha igen, azt megőrizzük
+                                        let parts = sanitizedInput.split(hasComma ? ',' : '.');
+                                        let integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, money_thousend);
+                                        let decimalPart = parts[1] ? parts[1].slice(0, dec) : '';
+
+                                        // Nem kezdhet nullával, kivéve ha tizedes szám
+                                        if (integerPart.length > 1 && integerPart.startsWith('0') && !decimalPart) {
+                                            integerPart = integerPart.slice(1);
+                                        }
+
+                                        // Rakjuk újra össze a számot
+                                        let inputNew = parts.length > 1 ? `${integerPart}${hasComma ? ',' : '.'}${decimalPart}` : integerPart;
+
+                                        e.target.value = inputNew;
+                                    });
+
+                                    let productFilterNumInputValue = '';
+                                    productFilterNumInput.on('focus',function() {
+                                        productFilterNumInputValue = this.value;
+                                    });
+
+                                    let productFilterNumInputTimeoutId;
+                                    productFilterNumInput.on('keyup',function(e) {
+                                        clearTimeout(productFilterNumInputTimeoutId);
+                                        let $this = $(this);
+
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            filterNumInputChange($this);
+                                        } else if (e.target.value != '') {
+                                            productFilterNumInputTimeoutId = setTimeout(filterNumInputChange, 2000, $this);
+                                        }
+                                    });
+
+                                    productFilterNumInput.on('blur', function() {
+                                        clearTimeout(productFilterNumInputTimeoutId);
+
+                                        let $this = $(this);
+                                        let $thisVal = $this.val();
+
+                                        if ( $thisVal !== '' && $thisVal !== productFilterNumInputValue ||
+                                            $thisVal === ''
+                                        ) {
+                                            filterNumInputChange($this);
+                                            return;
+                                        }
+                                    });
+                                });
+                            </script>
+                            {% endif %}
+                            {% set hasProductFilterNum = true %}
+                        </div>
+                    </form>
+                {% else %}
+                    {% for param_value in filter.param_values %}
+                        {% if filter.type in ['text','textmore','enum','enummore'] %}
+                        <div class="{{ param_value.class|escape }}">
+                            <div class="product_filter_checkbox custom-control custom-checkbox">
+                                <span class="text_input">{#scripthez kell#}
+                                    <input class="product_filter_checkbox_input custom-control-input" id="{{ param_value.id }}"
+                                           {%- if param_value.onclick != "" %} onclick="{{ param_value.onclick|escape }}"{% endif %}
+                                           {%- if param_value.checked %} checked="checked"{% endif %}
+                                           type="checkbox" value="{{ param_value.value }}"
+                                    >
+                                    <label class="product_filter_link custom-control-label label-type--{{ filter.type }}" for="{{ param_value.id }}"
+                                           {%- if param_value.onclick != "" %} tabindex="0"{% endif %}
+                                    >
+                                        {{ param_value.title }}
+                                        {% if param_value.count_disp %}
+                                        <span class="product_filter_text_count">
+                                            <span class="product_filter_text_count_value">{{ param_value.count }}</span>
+                                        </span>
+                                        {% endif %}
+                                    </label>
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if filter.type in ['color','color_text'] %}
+                        <div class="{{ param_value.class }}">
+                            <div class="product_filter_checkbox">
+                                <span class="text_input">{#scripthez kell#}
+                                    <input class="product_filter_checkbox_input" type="checkbox" value="{{ param_value.value }}" id="{{ param_value.id }}"{% if param_value.checked %} checked="checked"{% endif %} />
+                                    <label class="product_filter_link label-type--{{ filter.type }}" for="{{ param_value.id }}"{% if param_value.onclick != "" %} onclick="{{ param_value.onclick|escape }}"{% endif %}>
+                                        <span class="product_filter_color_value" style="color:#{{ param_value.value }};"{% if param_value.value|lower == "ffffff" %}data-hexa="ffffff"{% endif %}></span>
+                                        {% if param_value.color_text_disp %}<span class="product_filter_text_color_text">{{ param_value.color_text }}</span>{% endif %}
+                                        {% if param_value.count_disp %}
+                                        <span class="product_filter_text_count text-center">
+                                            <span class="product_filter_text_count_value">{{ param_value.count }}</span>
+                                        </span>
+                                        {% endif %}
+                                    </label>
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if filter.type in ['icon','iconmore'] %}
+                        <div id="{{ prefix }}param_icon_{{ filter.param_id }}_{{ param_value.value }}" class="{{ param_value.class }}"{% if not param_value.label_disp %} onclick="{{ param_value.onclick|escape }}"{% endif %}>
+                            <input class="product_filter_checkbox_input" type="checkbox" style="display:none;" value="{{ param_value.value }}" id="{{ param_value.id }}"{% if param_value.checked %} checked="checked"{% endif %}{% if param_value.label_disp %} onclick="{{ param_value.onclick|escape }}"{% endif %} />
+                            <label class="product_filter_link label-type--{{ filter.type }}" for="{{ param_value.id }}">
+                                <span class="product_icon_outer">
+                                    {% if img_lazy_load %}
+                                    <img class="product_filter_icon_img lazyload" width="{{ param_icon_width }}" height="{{ param_icon_height }}" id="{{ prefix }}param_icon_{{ filter.param_id }}_{{ param_value.value }}_img" src="{{ lazy_load_img_url }}" data-src="{{ param_value.img_url }}" alt="{{ param_value.img_alt }}" title="{{ param_value.img_alt }}" />
+                                    {% else %}
+                                    <img class="product_filter_icon_img" width="{{ param_icon_width }}" height="{{ param_icon_height }}" id="{{ prefix }}param_icon_{{ filter.param_id }}_{{ param_value.value }}_img" src="{{ param_value.img_url }}" alt="{{ param_value.img_alt }}" title="{{ param_value.img_alt }}" />
+                                    {% endif %}
+                                </span>
+                            </label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% if filter.param_group_end %}</div>{% endif %}
+    {% endfor %}
+
+    {{ script }}
+    <div class="product-filter__buttons">
+        <div class="show-filtered-products-btn-wrap mb-3 p-0 border-0{% if not immediate_filter_is_disabled %} d-sm-none{% endif %}">
+            <button class="dropdown__btn-close show-filtered-products-btn js-show-filtered-products-btn btn btn-primary{% if immediate_filter_is_disabled %} immediate-disabled{% endif %}"
+                    {% if immediate_filter_is_disabled %} onclick="filter_activate_delay('');"{% endif%}
+                    type="button" title="{{ text.button_close|lower }}" aria-label="{{ text.button_close|lower }}"
+            >{{ text.show_results }}</button>
+        </div>
+        {% if button_save_disp %}
+        <div class="filter__filter-save-btn-wrap mb-3">
+            <button type="button" class="filter__filter-save-btn btn btn-primary js-filter-save-btn icon--a-save" disabled onclick="$.mask.close(); setTimeout(function(){ handleCloseDropdowns(); {{ button_save_onclick|escape }} }, 500);">{{ text.save_filter }}</button>
+        </div>
+        {% endif %}
+        {% if button_delete_disp %}
+        <div class="filter__filter-delete-btn-wrap">
+            <button type="button" class="filter__filter-delete-btn btn btn-primary js-filter-delete-btn icon--a-trash" disabled onclick="{{ button_delete_onclick|escape }}">{{ text.delete_filter }}</button>
+        </div>
+        {% endif %}
+    </div>
+    <script>
+        /*** FILTER BADGES ***/
+        $(document).ready(function(){
+            {% if page_type != "cat" and not ajax_filter_load or page_type == "cat" and ajax_filter_load %}
+                $(".js-filter-box").on("click keydown", ".product_filter_title", function(e) {
+                    if (e.type === "click" || (e.type === "keydown" && (e.key === "Enter" || e.keyCode === 13))) {
+                        if (!e.target.closest(".product_filter_desc_icon")) {
+                            let $thisTitle = $(this);
+                            {% if filter_box_parameter_values_are_in_opened_state == '0' %}
+                            let $otherTitles = $('.product_filter_title:not(.is-closed)').not($thisTitle);
+                            $otherTitles.toggleClass('is-closed');
+                            $otherTitles.next('.product_filter_content').stop().slideToggle(400);
+                            {% endif %}
+                            $thisTitle.toggleClass('is-closed').attr("aria-expanded", !$thisTitle.hasClass("is-closed"));
+                            $thisTitle.next('.product_filter_content').stop().slideToggle(400);
+                        }
+                    }
+                });
+
+                $(".js-filter-box").on("keydown", ".product_filter_link", function(e) {
+                    if (e.which === 32 || e.which === 13) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $(this).click();
+                    }
+                });
+            {% endif %}
+
+            {#  VÉGKAT PAGE LOAD  {% if page_type != "cat" and not ajax_filter_load %}{% endif %} #}
+
+            /* KÖZTES KAT & AJAX LOAD */
+            {% if page_type == "cat" and ajax_filter_load %}
+                {% if filter_button_position_with_three_settings == "2" %}
+                createFilterLabels();
+                {% endif %}
+                refreshParamCheckedNum();
+            {% endif %}
+
+            const $selectedFilters = $(".js-filtered-tags");
+            const $selectedFilters1 = $(".js-filtered-tags--1");
+            const $selectedFilters2 = $(".js-filtered-tags--2");
+
+            $selectedFilters.on("click", ".js-remove-slider-filter", function (){
+                let $thisLabel = $(this);
+                /* cause slidechange event run twice ('from'&'to') on reset,
+                 and label can be deleted only when 'to' value is reseted */
+                $thisLabel.addClass('reset');
+                resetSliderFilter($('#param_'+$thisLabel.data('id')+'_group .ui-slider'));
+            });
+
+            $(".product_filter_num").on("slidechange", function( event, ui ) {
+                let $thisSlider = $(event.target);
+
+                /* the 'reset' class is placed temporary under
+                 * the 'product_filter_delete_all('')' function is called,
+                 * so no action is required in this case
+                 */
+                if (!$thisSlider.hasClass('reset')) {
+                    let $thisGroup = $thisSlider.closest('.product_filter_group')
+                    let dataId = $thisGroup.data('id');
+                    let $thisLabel = $selectedFilters.find('label[data-id=' + dataId + ']');
+                    let aktMin = ui.values[0];
+                    let aktMax = ui.values[1];
+                    let defMin = $thisGroup.data('def-min');
+                    let defMax = $thisGroup.data('def-max');
+
+                    if ($thisLabel.length > 0) {
+                        if ( $thisLabel.hasClass('reset') ) {
+                            removeThisLabel($thisLabel);
+                        } else {
+                            let numberFormattedValues = getSliderNumberFormat($thisGroup, dataId, aktMin, aktMax, defMin, defMax);
+
+                            if ( numberFormattedValues['defMin'] == numberFormattedValues['aktMin'] && numberFormattedValues['defMax'] == numberFormattedValues['aktMax'] ) {
+                                {% if not immediate_filter_is_disabled %}
+                                removeThisLabel($thisLabel);
+                                {% else %}
+                                $thisLabel.remove();
+                                {% endif %}
+                                refreshParamCheckedNum();
+                            } else {
+                                let $thisLabelMin = $thisLabel.find('.selected-filter__value-min');
+                                let $thisLAbelMax = $thisLabel.find('.selected-filter__value-max');
+
+                                $thisLabelMin.html(numberFormattedValues['aktMin']);
+                                $thisLAbelMax.html(numberFormattedValues['aktMax']);
+                            }
+                        }
+                        if ( !$selectedFilters1.children().length ) {
+                            $selectedFilters1.empty();
+                            $selectedFilters2.find('label').remove();
+                        }
+                    } else {
+                        let numberFormattedValues = getSliderNumberFormat($thisGroup, dataId, aktMin, aktMax, defMin, defMax)
+
+                        if ( numberFormattedValues['aktMin'] != numberFormattedValues['defMin'] || numberFormattedValues['aktMax'] != numberFormattedValues['defMax'] ) {
+                            let $thisTitle = $thisGroup.find('.product_filter_title__text');
+                            let $thisAfterText = $thisGroup.find('.product_filter_num_texts').text();
+                            let $tempAfterTextHtml = '';
+
+                            if ($thisAfterText) {
+                                $tempAfterTextHtml = "<span class='selected-filter__text-after product_filter_num_texts'>" + $thisAfterText + "</span>";
+                            }
+
+                            let $tempIntervals = "<span class='selected-filter__values'><span class='selected-filter__value-min'>" + numberFormattedValues['aktMin'] + "</span><span class='selected-filter__value-max'>" + numberFormattedValues['aktMax'] + "</span>" + $tempAfterTextHtml + "</span>";
+                            let appendContent = "<label class='product_filter_link label-type--slider js-remove-slider-filter' data-id='" + dataId + "'><span class='selected-filter__title'>" + $thisTitle.text() + "</span>" + $tempIntervals + "</label>";
+                            $selectedFilters.append(appendContent);
+                            refreshParamCheckedNum();
+                        }
+                    }
+                }
+            });
+            $(".product_filter_checkbox_input").on("change", function( event ) {
+                let $thisCheckbox = $(event.target);
+                let $thisLabel = $selectedFilters.find('label[for='+$thisCheckbox.attr('id')+']');
+
+                if ( $thisLabel.length > 0 ) {
+                    $thisLabel.remove();
+                    $thisCheckbox.addClass('no-hover');
+
+                    if ( !$selectedFilters1.children().length ) {
+                        $selectedFilters1.empty();
+                        $selectedFilters2.find('label').remove();
+                    }
+                } else {
+                    let $thisGroup = $thisCheckbox.closest('.product_filter_group')
+                    let dataId = $thisGroup.data('id');
+                    let $thisTitle = $thisGroup.find('.product_filter_title__text');
+                    $thisCheckbox.removeClass('no-hover');
+
+                    let $thisLabel = $thisCheckbox.siblings('label');
+                    let $tempLabel = $thisLabel.clone();
+                    {% if not immediate_filter_is_disabled %}
+                    let $tempAttr = $tempLabel.attr('onclick');
+                    if ($tempAttr === undefined) $tempLabel.attr('onclick', 'removeThisLabel(this);');
+                    {% endif %}
+
+                    if (dataId === 'product_status') {
+                        ($tempLabel.removeClass('custom-control-label')
+                            .wrapInner('<span class="selected-filter__values"></span>')
+                        ).appendTo($selectedFilters);
+                    } else {
+                        ($tempLabel.removeClass('custom-control-label')
+                            .wrapInner('<span class="selected-filter__values"></span>')
+                            .prepend('<span class="selected-filter__title">' + $thisTitle.text() + '</span>')
+                        ).appendTo($selectedFilters);
+                    }
+                }
+                refreshParamCheckedNum();
+            });
+        });
+        {% if page_type != "cat" and not ajax_filter_load or page_type == "cat" and ajax_filter_load %}
+        $(document).on('filterProductlistRefreshing', function(){
+            $('.js-show-filtered-products-btn').addClass('product-list-is-refreshing-by-filter');
+            refreshParamCheckedNum();
+        });
+        $(document).on('filterProductlistRefreshed', function(){
+            $('.js-show-filtered-products-btn').removeClass('product-list-is-refreshing-by-filter');
+        });
+        {% endif %}
+
+        function getSliderNumberFormat($thisGroup, dataId, aktMin, aktMax, defMin, defMax) {
+            let numberFormatted = [];
+            let $currencyRate = 1;
+            let $decimalLength = $thisGroup.data('decimal-length');
+
+            if ( dataId === 'price' ) {
+                $currencyRate = parseFloat(UNAS.shop.currency_rate);
+            }
+
+            numberFormatted['aktMin'] = number_format((parseFloat(aktMin) * $currencyRate),$decimalLength,money_dec,money_thousend);
+            numberFormatted['aktMax'] = number_format((parseFloat(aktMax) * $currencyRate),$decimalLength,money_dec,money_thousend);
+            numberFormatted['defMin'] = number_format(defMin,$decimalLength,money_dec,money_thousend);
+            numberFormatted['defMax'] = number_format(defMax,$decimalLength,money_dec,money_thousend);
+
+            return numberFormatted;
+        }
+
+        function refreshParamCheckedNum() {
+            let num = $('.js-filtered-tags--1').children().length;
+            if (num > 0) {
+                $(".js-param-checked-num").html(num);
+            } else {
+                $(".js-param-checked-num").html("");
+            }
+        }
+        function removeThisLabel(el){
+            filter_activate_delay('');
+            setTimeout(function (){
+                el.remove();
+            }, 100);
+        }
+        function createFilterLabels(){
+            let temp = $('.js-filtered-tags--1').children().clone();
+            $('.js-filtered-tags--2').append(temp);
+        }
+        function resetSliderFilter(obj){
+            let min = obj.slider("option", "min");
+            let max = obj.slider("option", "max");
+
+            obj.parent().find('.akt_min').val(min);
+            obj.parent().find('.akt_max').val(max);
+
+            if (obj.closest('.product_filter_group').attr('data-id') === 'price'){
+                obj.parent().find('.product_filter_num_from').val(number_format((min * parseFloat(UNAS.shop.currency_rate)),money_len,money_dec,money_thousend));
+                obj.parent().find('.product_filter_num_to').val(number_format((max * parseFloat(UNAS.shop.currency_rate)),money_len,money_dec,money_thousend));
+            } else {
+                obj.parent().find('.product_filter_num_from').val(number_format(min,obj.parent().find('.decimal_length').val(),money_dec,money_thousend));
+                obj.parent().find('.product_filter_num_to').val(number_format(max,obj.parent().find('.decimal_length').val(),money_dec,money_thousend));
+            }
+            obj.slider("values", [min, max]);
+            let text_before = obj.parent().find('.text_before').val();
+            let text_after = obj.parent().find('.text_after').val();
+            let text = text_before + String(min).replace(".",money_dec) + " - " + String(max).replace(".",money_dec) + text_after;
+
+            obj.parent().find('.product_filter_num_text').html(text);
+            obj.parents(".product_filter_content").removeClass("product_filter_content_checked");
+            obj.parents(".product_filter_group").removeClass("product_filter_group_checked");
+        }
+    </script>
+{% endset %}
+
+{% if filter_disp %}
+    {% if save_ajax %}
+        {{ savedFilters }}
+    {% else %}
+        {% if desktop_disp %}
+            {% if page_type != "cat" %} [% set filterExists = "1" %] {% endif %}
+
+            {% if not ajax_filter_load %}
+            <div id="box_container_shop_filter" class="box_container box_container_filter">
+                <div class="box">
+                    <div class="box__title box__title--filter-box h4">
+                        <span class="filter-box__title-text">{{ text.filter }}</span>
+                        {% if button_save_disp or button_delete_disp %}
+                        <div class="filter-buttons filter-box__buttons">
+                            {% if button_save_disp %}
+                            <button type="button" class="filter-box__save-btn-small btn btn-primary js-filter-save-btn" disabled onclick="$.mask.close(); setTimeout(function(){ handleCloseDropdowns(); {{ button_save_onclick|escape }} }, 500);" data-tippy="{{ text.save_filter }}" aria-label="{{ text.save_filter }}">
+                                <span class="icon--save"></span>
+                            </button>
+                            {% endif %}
+                            {% if button_delete_disp %}
+                            <button type="button" class="filter-box__delete-btn-small btn btn-primary js-filter-delete-btn" disabled onclick="{{ button_delete_onclick|escape }}" data-tippy="{{ text.delete_filter }}" aria-label="{{ text.delete_filter }}">
+                                <span class="icon--trash"></span>
+                            </button>
+                            {% endif %}
+                        </div>
+                        <script>
+                            $(document).on('filterSaveAllEnabled', function(){
+                                $('.js-filter-save-btn').prop("disabled", false);
+                            });
+                            $(document).on('filterSaveAllDisabled', function(){
+                                $('.js-filter-save-btn').prop("disabled", true);
+                            });
+                            $(document).on('filterDeleteEnabled', function() {
+                                $('.js-filter-delete-btn').prop("disabled", false);
+                            });
+                            $(document).on('filterDeleteDisabled', function() {
+                                $('.js-filter-delete-btn').prop("disabled", true);
+                            });
+                        </script>
+                        {% endif %}
+                    </div>
+                    <div class="box__content show">
+                        <div id="{{ prefix }}box_filter_content" class="js-filter-load-here js-filter-box js-product-list__filter-content product-list__filter-content-outer col-12 col-md-auto order-1"{% if prefix != '' %} data-prefix="{{ prefix }}"{% endif %}>
+                            {{ filterContent }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                {{ filterContent }}
+            {% endif %}
+        {% endif %}
+
+        {% if button_disp %}
+        <div id="{{ prefix }}box_filter_content">
+            {% set paramCheckedNum = 0 %}
+            {% for filter in filters if filter.group_checked %}
+                {% if filter.type_slider %}
+                    {% set paramCheckedNum = paramCheckedNum + 1 %}
+                {% else %}
+                    {% for param_value in filter.param_values if param_value.checked %}
+                    {% set paramCheckedNum = paramCheckedNum + 1 %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            <button class="filter-box__dropdown-btn btn dropdown__btn
+                           {%- if filter_button_position_with_three_settings == "0" %} type--sticky{% endif %}
+                           {%- if filter_button_position_with_three_settings == "1" and prefix == "desktop_" %} btn-primary type--inline{% endif %}"
+                    type="button" data-btn-for="#filter-dropdown" aria-label="{{ text.button_filter }}"
+            >
+                <span class="filter-box__dropdown-btn-text">{{ text.button_filter }}</span>
+                <span class="filter-box__dropdown-btn-icon dropdown__btn-icon icon--filter"></span>
+                <span class="filter-box__dropdown-btn-param-checked-num js-param-checked-num" data-text="{{ text.active }}">{% if paramCheckedNum > 0 %}{{ paramCheckedNum }}{% endif %}</span>
+            </button>
+        </div>
+        {% endif %}
+
+        {% if bar_disp %}
+        <div id="{{ prefix }}box_filter_content" class="js-filter-box filter-box-bar">
+            <div class="filter-box-bar__inner row no-gutters row-gap-10 align-items-center filtered-tags js-filtered-tags js-filtered-tags--2">
+                <button class="filter-box__dropdown-btn btn dropdown__btn btn-primary type--inline" type="button" data-btn-for="#filter-dropdown">
+                    <span class="filter-box__dropdown-btn-text">{{ text.button_filter }}</span>
+                    <span class="filter-box__dropdown-btn-icon dropdown__btn-icon icon--filter"></span>
+                </button>
+                {% if button_save_disp or button_delete_disp or backvar.custom_immediate_filter_disable %}
+                <div class="filter-box-bar__buttons-wrap">
+                    {% if immediate_filter_is_disabled %}
+                    <button type="button" onclick="filter_activate_delay('');"
+                            class="show-filtered-products-btn js-show-filtered-products-btn btn btn-secondary immediate-disabled icon--a-arrow-right"
+                    >{{ text.show_results }}</button>
+                    {% endif%}
+                    {% if button_save_disp %}
+                    <button type="button" class="filter__filter-save-btn btn btn-secondary js-filter-save-btn icon--a-save" disabled onclick="$.mask.close(); setTimeout(function(){ handleCloseDropdowns(); {{ button_save_onclick|escape }} }, 500);">{{ text.save_filter }}</button>
+                    {% endif %}
+                    {% if button_delete_disp %}
+                    <button type="button" class="filter__filter-delete-btn btn btn-secondary js-filter-delete-btn icon--a-trash" disabled onclick="product_filter_delete_all('');">{{ text.delete_filter }}</button>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {{ temp_selected_filters|replace({'reload1_': '','\n': '', '\r': '', '\t': ''})|trim }}
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+{% endif %}

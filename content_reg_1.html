@@ -1,0 +1,533 @@
+<div id="page_reg_content" class="page_content{% if not tabs_disp %} no-tab{% endif %}{% if no_reg %} no_reg{% endif %}{% if reg_type == 'reg' %} reg{% elseif reg_type == 'mod' %} mod{% endif %} js-validation">
+    <div class="main__title">
+        <div class="container">
+            <div class="main-title-wrapper d-flex flex-wrap align-items-center">
+                <h1 class="mb-0 mr-3"><span class="main-title">{% if reg_type == 'reg' %}{{ text.new_customer_registration }}{% elseif reg_type == 'mod' %}{{ text.profile }}{% endif %}{% if no_reg %}{{ text.customer_data }}{% endif %}</span></h1>
+                {% if tabs_disp %}<a class="reg__logout-btn btn btn-primary ml-auto" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    {# TABS NEW #}
+    {% if tabs_disp %}
+    <div id="nav-tab-accordion-1" class="nav-tabs-accordion">
+        <div class="nav-tabs-container nav-tabs-outer--2 container">
+            <ul class="nav nav-tabs reg-tabs" role="tablist">
+                {% if tab_orders_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-orders" rel="orders" href="{{ tab_orders_url }}">{{ text.orders }}</a></li>
+                {% endif %}
+
+                {% if tab_subscriptions_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-subscriptions" rel="subscriptions" href="{{ tab_subscriptions_url }}">{{ text.subscriptions }}</a></li>
+                {% endif %}
+
+                {% if tab_discount_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-discount" rel="discount" href="{{ tab_discount_url }}">{{ text.discounts }}</a></li>
+                {% endif %}
+
+                {% if tab_favourites_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-favourites" rel="favourites" href="{{ tab_favourites_url }}">{{ text.favourites }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_filters_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_filters" rel="saved_filters" href="{{ tab_saved_filters_url }}">{{ text.saved_filters }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_cards_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_cards" rel="saved_cards" href="{{ tab_saved_cards_url }}">{{ text.saved_cards }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_delivery_points_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_delivery_points" rel="saved_delivery_points" href="{{ tab_saved_delivery_points_url }}">{{ text.saved_delivery_points }}</a></li>
+                {% endif %}
+
+                {% if tab_customer_addresses_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-customer_addresses" rel="customer_addresses" href="{{ tab_customer_addresses_url }}">{{ text.customer_addresses }}</a></li>
+                {% endif %}
+
+                <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" aria-selected="true" aria-expanded="true" id="tab-reg" rel="reg" href="#">{{ text.data_modify }}</a></li>
+
+                <li class="nav-item d-none" role="presentation"><a class="nav-link" role="tab" id="tab_logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a></li>
+            </ul>
+        </div>
+        <div class="tab-panes pane-accordion container">
+            {% if tab_orders_disp %}
+            <div class="pane-header" id="pane-header-orders">
+                <a id="accordion-btn-orders" href="{{ tab_orders_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-orders">
+                    {{ text.orders }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_subscriptions_disp %}
+            <div class="pane-header" id="pane-header-subscriptions">
+                <a id="accordion-btn-subscriptions" href="{{ tab_subscriptions_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-subscriptions">
+                    {{ text.subscriptions }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_discount_disp %}
+            <div class="pane-header" id="pane-header-discount">
+                <a id="accordion-btn-discount" href="{{ tab_discount_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-discount">
+                    {{ text.discounts }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_favourites_disp %}
+            <div class="pane-header" id="pane-header-favourites">
+                <a id="accordion-btn-favourites" href="{{ tab_favourites_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-favourites">
+                    {{ text.favourites }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_filters_disp %}
+            <div class="pane-header" id="pane-header-saved_filters">
+                <a id="accordion-btn-saved_filters" href="{{ tab_saved_filters_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_filters">
+                    {{ text.saved_filters }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_cards_disp %}
+            <div class="pane-header" id="pane-header-saved_cards">
+                <a id="accordion-btn-saved_cards" href="{{ tab_saved_cards_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_cards">
+                    {{ text.saved_cards }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_delivery_points_disp %}
+            <div class="pane-header" id="pane-header-saved_delivery_points">
+                <a id="accordion-btn-saved_delivery_points" href="{{ tab_saved_delivery_points_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_delivery_points">
+                    {{ text.saved_delivery_points }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_customer_addresses_disp %}
+            <div class="pane-header" id="pane-header-customer_addresses">
+                <a id="accordion-btn-customer_addresses" href="{{ tab_customer_addresses_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-customer_addresses">
+                    {{ text.customer_addresses }}
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="pane-header" id="pane-header-reg">
+                <a id="accordion-btn-reg" href="#" onclick="return false;" class="pane-header-btn btn active" aria-expanded="true" aria-controls="pane-reg">
+                    {{ text.data_modify }}
+                </a>
+            </div>
+            <div class="tab-pane fades reg active show always-visible" id="pane-reg" role="tabpanel" aria-labelledby="pane-header-reg">
+                <div class="tab-pane__container container reg__content mb-5">
+                {% endif %}
+                    {% if not tabs_disp %}
+                    <section class="new-cust mb-4">
+                        <div class="container">
+                    {% endif%}
+                            {{ main_script }}
+
+                            {{ form_start }}
+                            <div class="new-cust__form-inner container-max-md px-0">
+                                {% if reg_disp %}
+                                <div class="new-cust__reg new-cust-section" id="newcust_reg">
+                                    <div class="new-cust__section-title h6 d-none"><div class="new-cust__section-title-inner">{{ text.customer_type }}</div></div>
+                                    {% if company_disp %}
+                                    <div class="new-cust-section-inner">
+                                        <div class="form-row">
+                                            <div class="col-12">
+                                                <div class="form-group new-customer__company mb-0" title="{{ text.customer_type }}">
+                                                    <label class="form-label d-none">{{ text.customer_type }}</label>
+                                                    <div class="custom-radio-group{% if choose_company_error_disp %} has-invalid-input{% endif %}">
+                                                        <div class="custom-control custom-radio custom-radio--button">
+                                                            <input class="custom-control-input{% if choose_company_error_disp %} is-invalid{% endif %}" id="is-company" type="radio" onclick="{% if billing_readonly %}return false;{% else %}handle_vat_on_click(1);{% endif %}" {% if company_checked %} checked="checked" {% endif %} name="choose_company" value="1" />
+                                                            <label class="custom-control-label" for="is-company">{{ text.company }}</label>
+                                                        </div>
+                                                        <div class="custom-control custom-radio custom-radio--button">
+                                                            <input class="custom-control-input{% if choose_company_error_disp %} is-invalid{% endif %}" id="is-person" type="radio" onclick="{% if billing_readonly %}return false;{% else %}handle_vat_on_click(0);{% endif %}" {% if not (company_checked or choose_company_disable_check) %} checked="checked" {% endif %} name="choose_company" value="0" />
+                                                            <label class="custom-control-label" for="is-person">{{ text.private_person }}</label>
+                                                        </div>
+                                                        {% if other_customers_without_vat_number_disp %}
+                                                            <div class="custom-control custom-radio custom-radio--button">
+                                                                <input class="custom-control-input{% if choose_company_error_disp %} is-invalid{% endif %}" id="is-other-person-with-tax-number" type="radio" onclick="{% if billing_readonly %}return false;{% else %}handle_vat_on_click(0);{% endif %}" {% if other_customers_without_vat_number_checked %} checked="checked" {% endif %} name="choose_company" value="2" />
+                                                                <label class="custom-control-label" for="is-other-person-with-tax-number">{{ text.other_customers_without_tax_number }}</label>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if choose_company_error_disp %}
+                                                    <div class="invalid-feedback">{{ choose_company_error_text }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <div class="new-cust__section-title h6"><div class="new-cust__section-title-inner">{{ text.registration_data }}</div></div>
+                                    <div class="new-cust-section-inner">
+                                        <div class="form-row">
+                                            {% if username_disp %}
+                                            <div class="col-12">
+                                                <div class="form-group new-customer__username">
+                                                    <label for="cust_username">{{ text.username }}</label>
+                                                    <input class="form-control check_username{% if username_error_disp %} is-invalid{% endif %}" name="temp_cust_username" autocomplete="username" placeholder="{{ text.username }}" id="cust_username" type="text" value="{{ username }}" maxlength="100"{% if username_readonly %} readonly{% endif %} data-invalid-empty="{{ text.error_required }}" />
+                                                    <div class="invalid-feedback">{{ username_error_text }}</div>
+                                                    <div class="in-progress-feedback"></div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if email_disp %}
+                                            <div class="col-12">
+                                                <div class="form-group new-customer__email">
+                                                    <label for="emai">{{ text.email }}</label>
+                                                    <input class="form-control check_email{% if email_error_disp %} is-invalid{% endif %}" id="emai" placeholder="{{ text.email }}" name="emai" autocomplete="email" type="email" value="{{ email }}" maxlength="100"{% if email_readonly %} readonly{% endif %} data-invalid-empty="{{ text.error_required }}" />
+                                                    <div class="invalid-feedback">{{ email_error_text }}</div>
+                                                    <div class="in-progress-feedback"></div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if password_disp %}
+                                            <div class="col-sm-6">
+                                                <div class="form-group new-customer__password">
+                                                    <label for="passwd1">{{ text.password }}</label>
+                                                    <input class="form-control check_passwd{% if password_error_disp %} is-invalid{% endif %}" name="passwd1" id="passwd1" type="password" autocomplete="new-password" value="{{ password }}" maxlength="100" data-invalid-empty="{{ text.error_required }}" />
+                                                    <div class="invalid-feedback">{{ password_error_text }}</div>
+                                                    <div class="in-progress-feedback"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group new-customer__password-again">
+                                                    <label for="passwd2">{{ text.password_again }}</label>
+                                                    <input class="form-control check_passwd{% if password_error_disp %} is-invalid{% endif %}" name="passwd2" id="passwd2" type="password" autocomplete="new-password" value="{{ password_again }}" maxlength="100" data-invalid-empty="{{ text.error_required }}" />
+                                                    <div class="invalid-feedback">{{ password_error_text }}</div>
+                                                    <div class="in-progress-feedback"></div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if customer_groups_disp %}
+                                            <div class="col-12">
+                                                <div class="form-group new-customer__customer-group">
+                                                    <label for="customer_group">{{ text.customer_group }}</label>
+                                                    <div class="form-select-group">
+                                                        <select name="customer_group" id="customer_group" class="form-control{% if customer_group_error_disp %} is-invalid{% endif %}">
+                                                            <option value="0" {% if not customer_groups_selected %}selected{% endif %}>{{ text.no_group }}</option>
+                                                            {% for customer_group in customer_groups %}
+                                                                <option value="{{ customer_group.id }}" {% if customer_group.selected %}selected{% endif %}>{{ customer_group.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="invalid-feedback">{{ customer_group_error_text }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if contact_disp %}
+                                <div class="new-cust__contact new-cust-section" id="newcust_contact">
+                                    {% if company_disp and no_reg %}
+                                    <div class="new-cust__section-title h6 d-none"><div class="new-cust__section-title-inner">{{ text.customer_type }}</div></div>
+                                    <div class="new-cust-section-inner">
+                                        <div class="form-row">
+                                            <div class="col-12">
+                                                <div class="form-group new-customer__company" title="{{ text.customer_type }}">
+                                                    <label class="form-label d-none">{{ text.customer_type }}</label>
+                                                    <div class="custom-radio-group{% if choose_company_error_disp %} has-invalid-input{% endif %}">
+                                                        <div class="custom-control custom-radio custom-radio--button">
+                                                            <input class="custom-control-input{% if choose_company_error_disp %} is-invalid{% endif %}" id="is-company" type="radio" onclick="{% if billing_readonly %}return false;{% else %}handle_vat_on_click(1);{% endif %}" {% if company_checked %} checked="checked" {% endif %} name="choose_company" value="1" />
+                                                            <label class="custom-control-label" for="is-company">{{ text.company }}</label>
+                                                        </div>
+                                                        <div class="custom-control custom-radio custom-radio--button">
+                                                            <input class="custom-control-input{% if choose_company_error_disp %} is-invalid{% endif %}" id="is-person" type="radio" onclick="{% if billing_readonly %}return false;{% else %}handle_vat_on_click(0);{% endif %}" {% if not (company_checked or choose_company_disable_check) %} checked="checked" {% endif %} name="choose_company" value="0" />
+                                                            <label class="custom-control-label" for="is-person">{{ text.private_person }}</label>
+                                                        </div>
+                                                        {% if other_customers_without_vat_number_disp %}
+                                                            <div class="custom-control custom-radio custom-radio--button">
+                                                                <input class="custom-control-input{% if choose_company_error_disp %} is-invalid{% endif %}" id="is-other-person-with-tax-number" type="radio" onclick="{% if billing_readonly %}return false;{% else %}handle_vat_on_click(0);{% endif %}" {% if other_customers_without_vat_number_checked %} checked="checked" {% endif %} name="choose_company" value="2" />
+                                                                <label class="custom-control-label" for="is-other-person-with-tax-number">{{ text.other_customers_without_tax_number }}</label>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if choose_company_error_disp %}
+                                                        <div class="invalid-feedback">{{ choose_company_error_text }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="new-cust__section-title h6"><div class="new-cust__section-title-inner">{{ text.contact_data }}</div></div>
+                                    <div class="new-cust-section-inner">
+                                        <div class="form-row">
+                                        {% if contact_email_disp %}
+                                        <div class="col-12">
+                                            <div class="form-group contact-email">
+                                                <label for="emai">{{ text.email }}</label>
+                                                <input class="form-control check_email{% if contact_email_error_disp %} is-invalid{% endif %}" id="emai" placeholder="{{ text.email }}" name="emai" autocomplete="email" type="email" value="{{ email }}" maxlength="100" data-invalid-empty="{{ text.error_required }}"/>
+                                                <div class="invalid-feedback">{{ contact_email_error_text }}</div>
+                                                <div class="in-progress-feedback"></div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if contact_name_disp %}
+                                        <div class="col-12">
+                                            <div class="form-group contact-name">
+                                                <label for="kap_nev">{{ text.name }}</label>
+                                                <input class="form-control{% if contact_name_error_disp %} is-invalid{% endif %}" id="kap_nev" placeholder="{{ text.name }}" name="kap_nev" autocomplete="name" type="text" value="{{ contact_name }}" maxlength="100" />
+                                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if contact_phone_disp %}
+                                        <div class="col-md-6">
+                                            <div class="form-group contact-phone">
+                                                <div class="labels-group">
+                                                    <label for="kap_tel_country">{{ text.phone_country }}</label>
+                                                    <label for="kap_tel_sub">{{ text.phone_number }}</label>
+                                                </div>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text phone-area-code-plus">+</span>
+                                                    </div>
+                                                    <input class="form-control{% if contact_phone_error_disp %} is-invalid{% endif%}"{% if fix_phone_country %} readonly{% endif %} name="kap_tel_country" placeholder="{{ text.phone_country }}" id="kap_tel_country" autocomplete="tel-country-code" type="number" value="{{ contact_phone_country }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 6" min="0" step="1" />
+                                                    <input class="form-control{% if contact_phone_error_disp %} is-invalid{% endif%}" name="kap_tel_sub" placeholder="{{ text.phone_number }}" id="kap_tel_sub" autocomplete="tel-national" type="number" value="{{ contact_phone_sub }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 20" min="0" step="1" />
+                                                    <div class="invalid-feedback"><span class="error-text">{{ contact_phone_error_text }}</span>{% if contact_phone_error_type != 2 %}<span class="error-text-wrong-format d-none">{{ text.error_wrong_format }}</span>{% endif %}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if contact_mobile_disp %}
+                                        <div class="col-md-6">
+                                            <div class="form-group contact-mobile">
+                                                <div class="labels-group">
+                                                    <label for="kap_mobile_country">{{ text.phone_country }}</label>
+                                                    <label for="kap_mobile_sub">{{ text.mobile_phone_number }}</label>
+                                                </div>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text phone-area-code-plus">+</span>
+                                                    </div>
+                                                    <input class="form-control{% if contact_mobile_error_disp %} is-invalid{% endif%}"{% if fix_mobile_country %} readonly{% endif %} name="kap_mobile_country" placeholder="{{ text.phone_country }}" id="kap_mobile_country" autocomplete="tel-country-code" type="number" value="{{ contact_mobile_country }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 6" min="0" step="1" />
+                                                    <input class="form-control{% if contact_mobile_error_disp %} is-invalid{% endif%}" name="kap_mobile_sub" placeholder="{{ text.mobile_phone_number }}" id="kap_mobile_sub" autocomplete="tel-national" type="number" value="{{ contact_mobile_sub }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 && this.value.length < 20" min="0" step="1" />
+                                                    <div class="invalid-feedback"><span class="error-text">{{ contact_mobile_error_text }}</span>{% if contact_mobile_error_type != 2 %}<span class="error-text-wrong-format d-none">{{ text.error_wrong_format }}</span>{% endif %}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if select_address_disp %} <input type="hidden" value="{{ primary_hidden_value }}" id="default"> {% endif %}
+
+                                {% if primary_disp %}
+                                    <div class="new-cust__default-mod new-cust-section" id="newcust_default_mod">
+                                        <div class="new-cust__section-title h6"><div class="new-cust__section-title-inner">{{ primary_title }}</div></div>
+                                        <div class="new-cust-section-inner">
+                                            {% set main_type = "primary" %}
+                                            {% set main_type_value = primary %}
+                                            {% set alt_type = "default" %}
+                                            {% embed common_vars.layout_urls.embed_reg_block_1 %}{% endembed %}
+                                        </div>
+                                    </div>
+                                    {% if same_address_disp %}
+                                    <div class="form-group {{ alt_type }}-same mb-0">
+                                        <div class="new-cust__section-title h6 mb-3"><div class="new-cust__section-title-inner">{{ same_address_title }}</div></div>
+                                        <div class="new-cust-section-inner py-3">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="shipping_same" id="shipping_same" type="checkbox" value="1" onclick="shipping_same_action();"{% if same_address_checked %} checked="checked"{% endif %}>
+                                                <label class="custom-control-label" for="shipping_same">{{ text.shipping_and_payment_addresses_same }}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if secondary_disp %}
+                                <div class="new-cust__other-mod new-cust-section" id="newcust_other_mod" {% if same_address_checked %} style="display:none;"{% endif %}>
+                                    <div class="new-cust__section-title h6{{ same_address_disp ? ' d-none' }}"><div class="new-cust__section-title-inner">{{ secondary_title }}</div></div>
+                                    <div class="new-cust-section-inner{{ same_address_disp ? ' pt-3' }}">
+                                        {% set main_type = "secondary" %}
+                                        {% set main_type_value = secondary %}
+                                        {% set alt_type = "other" %}
+                                        {% embed common_vars.layout_urls.embed_reg_block_1 %}{% endembed %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if customer_params_disp %}
+                                <div class="new-cust__other new-cust-section" id="newcust_other">
+                                    <div class="new-cust__section-title h6"><div class="new-cust__section-title-inner">{{ text.other_customer_data }}</div></div>
+                                    <div class="new-cust-section-inner">
+                                        <div class="form-row">
+                                            {% for param in customer_params %}
+                                                <div class="col-12" id='div_out_cust_param_{{ param.id }}'>
+                                                    {% if param.radio_disp %}
+                                                        {% if param.radio_appearance == 'select' %}
+                                                            <div class="form-group new-cust__param">
+                                                                <label for="{{ param.id }}">{{ param.title }}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}</label>
+                                                                <div class="form-select-group">
+                                                                    <select class="form-control{% if param.error_disp %} is-invalid{% endif %}" name="cust_param_{{ param.id }}" id="{{ param.id }}">
+                                                                        <option selected{% if param.required %} disabled{% endif %} value="">{{ text.please_select }}</option>
+                                                                        {% for option in param.radio_options %}
+                                                                            <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.text }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <div class="invalid-feedback">{{ text.error_required }}</div>
+                                                                </div>
+                                                            </div>
+                                                        {% else %}
+                                                            <fieldset class="form-group new-cust__param">
+                                                                <legend>{{ param.title }}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}</legend>
+                                                                {% for option in param.radio_options %}
+                                                                    <div class="custom-control custom-radio cust_param_radio_wrap_{{ option.value }}">
+                                                                        <input class="custom-control-input{% if param.error_disp %} is-invalid{% endif %}" id="cust_param_radio_{{ param.id }}_{{ option.value }}" name="cust_param_{{ param.id }}" type="radio" value="{{ option.value }}" {% if option.checked %}checked="checked"{% endif %}/>
+                                                                        <label class="custom-control-label" for="cust_param_radio_{{ param.id }}_{{ option.value }}">{{ option.text }}</label>
+                                                                        {% if loop.last %}<div class="invalid-feedback">{{ text.error_required }}</div>{% endif %}
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </fieldset>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <div class="form-group new-cust__param">
+                                                            <label for="cust_param_{{ param.id }}">{{ param.title }}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}</label>
+                                                            <input class="form-control{% if param.error_disp %} is-invalid{% endif %}" type="text" name="cust_param_{{ param.id }}" id="cust_param_{{ param.id }}" value="{{ param.value }}" maxlength="100" />
+                                                            <div class="invalid-feedback">{{ text.error_required }}</div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if checkbox_disp %}
+                                <div class="new-cust__terms">
+                                    <div class="new-cust-section-inner py-0">
+                                        {% if newsletter_disp %}
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input {% if newsletter_error_disp %} is-invalid{% endif %}" name="news_mail" id="news_mail" type="checkbox" value="1" {% if newsletter_checked %}checked="checked"{% endif %}>
+                                                <label class="custom-control-label" for="news_mail">{{ text.subscribe_shop_newsletter }}</label>
+                                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% if profile_disp %}
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input{% if profile_error_disp %} is-invalid{% endif %}" name="profile_allow" id="profile_allow" type="checkbox" value="1" {% if profile_checked %}checked="checked"{% endif %}>
+                                                <label class="custom-control-label" for="profile_allow">{{ text.allow_profiling }}</label>
+                                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        {% if terms_disp %}
+                                        <div class="form-group">
+                                            {% if terms_checkbox_disp %}
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input{% if terms_error_disp %} is-invalid{% endif %}" name="terms" id="terms" type="checkbox" value="1"{% if terms_checked %} checked="checked"{% endif %}>
+                                                    <label class="custom-control-label" for="terms">{{ text.accept_terms_and_privacy_policy }}</label>
+                                                    <div class="invalid-feedback">{{ text.error_required }}</div>
+                                                </div>
+                                            {% else %}
+                                                <div class="new-cust__terms-accept">
+                                                    {{ text.accept_terms_and_privacy_policy }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="new-cust__buttons">
+                                    <div class="new-cust-section-inner pt-0">
+                                        <div class="row no-gutters {% if reg_decide_on_form %}col-gap-5 row-gap-10{% else %}col-gap-10 row-gap-20{% endif %} mt-4">
+                                            {% if reg_decide_on_form %}
+                                                <button class="new-cust__decide-reg-btn btn btn-outline-primary" onclick="reg_decide('reg');" type="button">{{ text.button_continue_with_registration }}</button>
+                                                <button class="new-cust__decide-noreg-btn btn btn-primary" onclick="reg_decide('no_reg');" type="button">{{ text.button_continue_without_registration }}</button>
+                                            {% else %}
+                                                {% if no_reg %}
+                                                <button class="new-cust__no-reg-btn btn orderflow-main-btn" id="button_next">{{ text.button_next }}</button>
+                                                {% else %}
+                                                    {% if reg %}
+                                                    <button class="new-cust__reg-btn btn btn-primary icon--a-pen-line" id="button_reg">{{ text.registration }}</button>
+                                                    {% endif %}
+                                                    {% if mod %}
+                                                    <button class="new-cust__modify-btn btn btn-primary icon--a-edit" id="button_mod">{{ text.button_modify }}</button>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% if select_address_disp %}
+                                            <a type="button" class="btn btn-primary icon--a-location" href="{{ customer_addresses_link }}">{{ text.customer_addresses }}</a>
+                                            {% endif %}
+
+                                            {% if delete_customer %}
+                                            <button type="button" class="btn btn-secondary icon--a-trash" id="button_del" onclick="delete_customer()">{{ text.button_delete_profile }}</button>
+                                            <script>
+                                                function delete_customer(){
+                                                    $("#overlay_delete_customer").overlay().load();
+                                                }
+                                            </script>
+                                            {% endif %}
+                                        </div>
+                                        {% if facebook_disp or google_disp %}
+                                        <div class="container-max-sm px-0 mt-5">
+                                            <div class="row gutters-5">
+                                                {% if facebook_disp %}
+                                                <div class="col">
+                                                    {% embed common_vars.layout_urls.embed_facebook_login_1 %}{% endembed %}
+                                                </div>
+                                                {% endif %}
+                                                {% if google_disp %}
+                                                <div class="col">
+                                                    {% embed common_vars.layout_urls.embed_google_login_1 %}{% endembed %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {{ form_end }}
+
+                            {% if not tabs_disp %}
+                        </div>
+                    </section>
+                    {% endif %}
+    {% if tabs_disp %}
+                </div>
+            </div>
+            <div class="pane-header d-none" id="pane-header-logout">
+                <a id="accordion-btn-logout" href="{{ tab_logout_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-logout">
+                    {{ text.logout }}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>
+
+{# EMBED TAB SCRIPT #}
+{% set tab_default = 'reg' %}
+{% set custom_tab_scroll_enabled = true %}
+{% embed common_vars.layout_urls.embed_tab_script_1 %}{% endembed %}

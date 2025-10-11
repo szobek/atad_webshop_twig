@@ -1,0 +1,103 @@
+{% if element_disp %}
+    {% set tempCss %}
+        {% for slide in slides %}
+            {% if slide.img_default_disp %}
+                {# LOOP FOR TEXT LAYER STYLING #}
+                {% for text in slide.texts %}
+                    {% set tempTextContent = "" %}
+                    {% set tempTextContent %}
+                        {% if text.font_color_disp %}color:{{ text.font_color }};{% endif %}
+                        {% if text.bg_color_disp %}background-color:{{ text.bg_color }}; background:{{ text.bg_color }};{% endif %}
+                        {% if text.border_color_disp %}border-color:{{ text.border_color }};{% endif %}
+                        {% if text.border_style_disp and text.border_style !="none" %}border-style:{{ text.border_style }};{% endif %}
+                        {% if text.border_width_disp %}border-width:{{ text.border_width }};{% endif %}
+                    {% endset %}
+                    {% if tempTextContent|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+                        #{{ name }}_{{ text.id }} { {{ tempTextContent }} }
+                    {% endif %}
+                    {% if text.hover_disp %}
+                        #{{ name }}_{{ text.id }}:hover {
+                        {% if text.bg_color_hover_disp %}
+                            background-color:{{ text.bg_color_hover }};
+                            background:{{ text.bg_color_hover }};
+                        {% endif %}
+                        {% if text.font_color_hover_disp %}
+                            color:{{ text.font_color_hover }};
+                        {% endif %}
+                        }
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endset %}
+    {% if tempCss != "" %}
+        <style>{{ tempCss }}</style>
+    {% endif %}
+
+    [% set {{ name }} %]
+        {% for slide in slides|slice(0,1) %}
+            {% set tempBgSet %}
+                {% if slide.img_small_disp or slide.img_small_retina_disp %}
+                    {% set need_pipe = true %}
+                    {% if slide.img_small_disp %}{{ slide.img_small_url }}{% endif %}
+                    {% if slide.img_small_disp and slide.img_small_retina_disp %}1x , {% endif %}
+                    {% if slide.img_small_retina_disp %}{{ slide.img_small_retina_url }} 2x{% endif %} {% if slide.img_medium_disp or slide.img_medium_retina_disp or slide.img_large_disp or slide.img_large_retina_disp or slide.img_default_disp or slide.img_default_retina_disp %}[(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)] {% endif %}
+                {% endif %}
+                {% if slide.img_medium_disp or slide.img_medium_retina_disp %}
+                    {% if need_pipe == true %} | {% endif %}
+                    {% set need_pipe = true %}
+                    {% if slide.img_medium_disp %}{{ slide.img_medium_url }}{% endif %}
+                    {% if slide.img_medium_disp and slide.img_medium_retina_disp %}1x , {% endif %}
+                    {% if slide.img_medium_retina_disp %}{{ slide.img_medium_retina_url }} 2x{% endif %} {% if slide.img_large_disp or slide.img_large_retina_disp or slide.img_default_disp or slide.img_default_retina_disp %}[(max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px)] {% endif %}
+                {% endif %}
+                {% if slide.img_large_disp or slide.img_large_retina_disp %}
+                    {% if need_pipe == true %} | {% endif %}
+                    {% set need_pipe = true %}
+                    {% if slide.img_large_disp %}{{ slide.img_large_url }}{% endif %}
+                    {% if slide.img_large_disp and slide.img_large_retina_disp %}1x , {% endif %}
+                    {% if slide.img_large_retina_disp %}{{ slide.img_large_retina_url }} 2x{% endif %} {% if slide.img_default_disp or slide.img_default_retina_disp %}[(max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px)] {% endif %}
+                {% endif %}
+                {% if slide.img_default_disp or slide.img_default_retina_disp %}
+                    {% if need_pipe == true %} | {% endif %}
+                    {% set need_pipe = true %}
+                    {% if slide.img_default_disp %}{{ slide.img_default_url }}{% endif %}
+                    {% if slide.img_default_disp and slide.img_default_retina_disp %}1x , {% endif %}
+                    {% if slide.img_default_retina_disp %}{{ slide.img_default_retina_url }} 2x{% endif %}
+                {% endif %}
+            {% endset %}
+            {% if slide.img_link_disp %}
+                <a class="layout--{{ layout }} js-element" data-element-name="{{ name }}" href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+            {% endif %}
+                <div class="{% if not slide.img_link_disp %}layout--{{ layout }} js-element {% endif %}{{ name }} lazyload{% if class != "" %} {{ class }}{% endif %}" {% if not slide.img_link_disp %}data-element-name="{{ name }}" {% endif %}role="img" aria-label="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}" data-alt="{{ slide.alt }}" data-bgset="{{ tempBgSet }}">
+                    {% if slide.texts %}
+                        <div class="texts--layer">
+                            <div class="texts__container">
+                                {% for text in slide.texts %}
+                                    {% if text.font_size == 'button' %}
+                                        {% if text.link_disp %}
+                                            <a class="btn btn-primary btn-lg text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}" href="{{ text.url }}" {% if text.target_blank %} target="_blank"{% endif %}>{{ text.value }}</a>
+                                        {% else %}
+                                            <div class="btn btn-primary btn-lg text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}">{{ text.value }}</div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="text" id="{{ name }}_{{ text.id }}">
+                                            {% if text.link_disp %}<a href="{{ text.url }}" {% if text.target_blank %} target="_blank"{% endif %}>{% endif %}
+                                                {{ text.value }}
+                                            {% if text.link_disp %}</a>{% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% elseif slide.html_disp %}
+                        <div class="texts--layer html-text">
+                            <div class="texts__container">{{ slide.html }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% if slide.img_link_disp %}
+                </a>
+            {% endif %}
+        {% endfor %}
+    [% endset %]
+{% endif %}

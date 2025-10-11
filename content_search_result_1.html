@@ -1,0 +1,80 @@
+<div id="page_search_content" class="page_content">
+    {% if complex_disp %}
+    <div class="btn-new-search-wrap container">
+        <a class="btn-new-search btn btn-secondary icon--a-search mb-4" href="{{ complex_url }}">{{ text.button_new_search }}</a>
+    </div>
+    {% endif %}
+
+    [% if filterExists == "1" and filter_button_position_with_three_settings == "2" %]
+    {% embed common_vars.layout_urls.embed_filter_bar_1 %}{% endembed %}
+    [% endif %]
+
+    [% set inner_content %]
+        {% if no_product %}
+        <div class="product-list-wrapper container">
+            <div class="no-product alert alert-info icon--b-info" role="alert">{{ text.search_no_product }}</div>
+        </div>
+        {% endif %}
+
+        {% if too_many %}
+        <div class="too-many-product alert alert-info icon--b-info" role="alert">{{ text.too_many_search_result }}</div>
+        {% endif %}
+
+        {% if too_short %}
+        <div class="too-short-expression alert alert-warning icon--b-" role="alert">{{ text.too_short_search_word }}</div>
+        {% endif %}
+
+        {% if fuzzy_suggestion_disp or query_suggestion_disp %}
+        <div class="container">
+            <div class="row gutters-10 my-3">
+                {% if fuzzy_suggestion_disp %}
+                    <div class="suggestion col-12 col-sm-auto mb-3">
+                        <div class="suggestion-inner px-4 py-3 p-sm-4">
+                            <div class="row gutters-5">
+                                <div class="col-12 col-sm-auto mb-2 mb-sm-0 icon--b-question2">{{ text.fuzzy_suggestion }}</div>
+                                {% for fuzzy_suggestion in fuzzy_suggestions %}
+                                    <div class="col-auto mb-2 mb-sm-0">
+                                        <a href="shop_search.php?search={{ fuzzy_suggestion.urlencoded|escape }}">{{ fuzzy_suggestion.highlighted }}</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if query_suggestion_disp %}
+                    <div class="suggestion col-12 col-sm-auto mb-3">
+                        <div class="suggestion-inner px-4 py-3 p-sm-4">
+                            <div class="row gutters-5">
+                                <div class="col-12 col-sm-auto mb-2 mb-sm-0 icon--b-search">{{ text.query_suggestion }}</div>
+                                {% for query_suggestion in query_suggestions %}
+                                    <div class="col-auto mb-2 mb-sm-0">
+                                        <a href="shop_search.php?search={{ query_suggestion.urlencoded|escape }}">{{ query_suggestion.highlighted }}</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {{ product_list }}
+
+        {% if retargeting_div_search_disp %}
+            {{ retargeting_div_search }}
+        {% endif %}
+    [% endset %]
+
+    [% if filterExists != '1' %]
+        [[ inner_content ]]
+    [% else %]
+        [% if filter_box_in_sidebar == "0" %]
+        [[ inner_content ]]
+        [% else %]
+            {% embed common_vars.layout_urls.embed_filter_sidebar_1 %}
+                {% block rest_content %}[[ inner_content ]]{% endblock %}
+            {% endembed %}
+        [% endif %]
+    [% endif %]
+</div>

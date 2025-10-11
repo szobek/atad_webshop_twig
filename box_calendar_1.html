@@ -1,0 +1,35 @@
+{{ script }}
+<div id="box_calendar_content" class="box_content w-100 text-center">
+    <div class="box_calendar_header_outer">
+        <div class="box_calendar_header w-100">
+            <div class="box_calendar_header_left"><a aria-label="{{ text.previous }}" href="javascript:get_month('{{ month_before }}');" class="icon--arrow-left pl-3 text-left py-3 d-block"></a></div>
+            <div class="box_calendar_header_center py-3 font-s">{{ month_actual }}</div>
+            <div class="box_calendar_header_right"><a aria-label="{{ text.next }}" href="javascript:get_month('{{ month_after }}');" class="icon--arrow-right pr-3 text-right py-3 d-block"></a></div>
+        </div>
+    </div>
+    <div class="box_calendar_week py-3 px-0 w-100 fs-0 border-bottom">
+        {% if week_start_sunday %}<div class="box_calendar_week_outer">{{ text.sunday }}</div>{% endif %}
+        <div class="box_calendar_week_outer">{{ text.monday }}</div>
+        <div class="box_calendar_week_outer">{{ text.tuesday }}</div>
+        <div class="box_calendar_week_outer">{{ text.wednesday }}</div>
+        <div class="box_calendar_week_outer">{{ text.thursday }}</div>
+        <div class="box_calendar_week_outer">{{ text.friday }}</div>
+        <div class="box_calendar_week_outer">{{ text.saturday }}</div>
+        {% if not week_start_sunday %}<div class="box_calendar_week_outer">{{ text.sunday }}</div>{% endif %}
+    </div>
+    {% for week in weeks %}
+        <div class="box_calendar_week_days">
+            {% for day in week.days %}
+                <div class="box_calendar_week_day{% if day.have_news %} has-news{% endif %}{% if day.today %} is-today{% endif %}">
+                    {% if day.empty %}
+                        &nbsp;
+                    {% else %}
+                        {% if day.have_news %}<a href="{{ day.url }}" class="w-100 d-block">{% endif %}
+                            <span class="day-num">{{ day.num }}</span>
+                        {% if day.have_news %}</a>{% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>

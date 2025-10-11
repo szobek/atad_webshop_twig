@@ -1,0 +1,42 @@
+<div id="customer-address__card-{{ address.id }}" class="{{ grid }} customer-address__card js-customer-address-card{% if (address.is_default_billing_address and not address.default_billing_address_is_disabled) or address.is_default_shipping_address %} js-customer-address-delete-hidden{% endif %}">
+    <div class="customer-address__card-inner">
+        {% if address.zip_disp %}
+        <div class="customer-address__zip text-left mb-4">{{ address.zip }}</div>
+        {% endif %}
+        <div class="customer-address__city font-xxl font-weight-bold">{{ address.city }}</div>
+        <div class="customer-address__street font-xl font-weight-bold mb-4">{{ address.street }}</div>
+        <div class="customer-address__data mb-4">
+            <div class="customer-address__name">{{ address.name }}{% if customer_type_disp %} <span class="customer-address__customer-type round-bracket-around">{{ address.customer_type }}</span>{% endif %}</div>
+            {% if address.vat_number_disp %}
+            <div class="customer-address__tax-number">{{ address.vat_number }}</div>
+            {% endif %}
+            {% if address.eu_vat_number_disp %}
+            <div class="customer-address__eu-tax-number">{{ address.eu_vat_number }}</div>
+            {% endif %}
+        </div>
+        <div class="customer-address__default-addresses">
+            {% if customer_can_choose_only_one_address %}
+            <div class="customer-address__default-address customer-address__default-{{ address_type }}-address js-customer-default-address-radio js-customer-default-{{ address_type }}-address-radio {% if address.is_default_shipping_address or address.is_default_billing_address %}is-checked{% endif %}"
+                 role="button" data-address-type="{{ address_type }}" data-address-id="{{ address.id }}">
+                {{ text.default_address }}
+            </div>
+            {% else %}
+            <div class="customer-address__default-address customer-address__default-shipping-address js-customer-default-address-radio js-customer-default-shipping-address-radio {% if address.is_default_shipping_address %}is-checked{% endif %}"
+                 role="button" data-address-type="shipping" data-address-id="{{ address.id }}">
+                {{ text.default_shipping_address }}
+            </div>
+            <div class="customer-address__default-address customer-address__default-billing-address js-customer-default-address-radio js-customer-default-billing-address-radio {% if address.is_default_billing_address and not address.default_billing_address_is_disabled %}is-checked{% endif %}{% if address.default_billing_address_is_disabled %}is-disabled{% endif %}"
+                 {% if address.default_billing_address_is_disabled %}
+                 onclick="overlay_load('error default_customer_address_error', '{{ address.error_title_billing_address_required }}','{{ address.error_message_billing_address_required }}');"
+                 {% endif %}
+                 role="button" data-address-type="billing" data-address-id="{{ address.id }}">
+                {{ text.default_billing_address }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="customer-address__buttons">
+            <a class="customer-address__modify-btn btn btn-square icon--edit" type="button" href="{{ address.details_url }}" title="{{ text.button_modify }}" aria-label="{{ text.button_modify }}"></a>
+            <button class="customer-address__delete-button btn btn-square icon--trash" type="button" title="{{ text.delete }}" aria-label="{{ text.delete }}"{% if not address.is_default_billing_address and not address.is_default_shipping_address %} onclick="customer_address_delete_overlay({{ address.id }});"{% endif %}></button>
+        </div>
+    </div>
+</div>

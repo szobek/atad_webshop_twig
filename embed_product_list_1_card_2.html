@@ -1,0 +1,378 @@
+{% import common_vars.layout_urls.macro_average_rating_1 as rating %}
+
+{% for product in _context[productsArray] %}
+    {% if product.variants_disp %}
+        {% set variant_classes = " js-has-variant has-unselected-variant " %}
+    {% else %}
+        {% set variant_classes = " " %}
+    {% endif %}
+
+    <{{ subver >= 2 ? (not carousel_enabled ? 'div role="listitem"' : 'div') : 'article' }} class="{{ grid_col }} {{ listItemType }} product list-1-card-2 js-product {{ variant_classes }}{{ product.class }}" id="{{ listMainType }}{% if product.id == ''%}{{ loop.index }}{% else %}{{ product.id }}{% endif %}" data-sku="{{ product.sku }}">
+        <div class="product__inner" role="group" aria-label="{{ loop.index ~ '. ' ~ text.product ~ ':' ~ product.name }}">
+            <div class="product__badges">
+                {% block new %}
+                    {% if product.new_disp %}
+                    <div class="product__badge-new badge badge--new">{{ text.status_new }}</div>
+                    {% endif %}
+                {% endblock %}
+
+                {% block sale %}
+                    {% if product.sale_disp %}
+                    <div class="product__badge-sale badge badge--sale">
+                        <span id="price_save_{{ product.id }}" data-percent="%">{{ product.sale_percent }}</span>
+                    </div>
+                    {% endif %}
+                {% endblock %}
+            </div>
+            {% if block('bundle_qty') is not empty or block('gift_badge') is not empty %}
+            <div class="product__badges2">
+                {% block bundle_qty %}{% endblock %}
+                {% block gift_badge %}{% endblock %}
+            </div>
+            {% endif %}
+            <div class="product__name-wrap">
+                <h2 class="product__name">
+                    <a class="product__name-link {{ product_measure_class }}" data-sku="{{ product.sku }}" href="{{ product.url }}">{{ product.name }}</a>
+                </h2>
+                {% block review %}
+                    {% if product.review_enabled %}
+                    <div class="product__review-wrap">
+                        {% if product.review_percent != "" %}
+                        <a class="product__review" href="{{ product.url }}#artdet__product-reviews" aria-label="{{ text.reviews_count }} {{ product.review_count }}"
+                            title="{{ text.reviews_avg }} {{ product.review_avg|replace({',': '.'}) }}" data-review-count="{{ product.review_count }}">
+                            {{ rating.avg_stars(product.review_percent, product.review_avg) }}
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endblock %}
+            </div>
+            {% if block('stock') is not empty or block('price') is not empty or block('cart') is not empty %}
+            <div class="product__prices-wrap">
+                <div class="row gutters-5 row-gap-10">
+                    <div class="product__stock-price-col col">
+                        {% block stock %}
+                            {% if product.stock_disp and product.product_type_params_disp and show_stock_with_product_types_on_product_list == "1" or product.stock_disp and not product.product_type_params_disp %}
+                            <div class="product__stock stock{% if not product.sale_disp and not product.new_disp %} only_stock_status{% endif %}{% if product.stock_available %} on-stock{% else %}{% if product.no_stock_but_buyable_disp %} to-order{% else %} no-stock{% endif %}{% endif %}">
+                                    <div class="product__stock-text product-stock-text">
+                                        {% if product.stock_available %}
+                                            <div class="stock__content icon--b-on-stock">
+                                                {% if not product.stock_interval_text_exists %}
+                                                    <span class="stock__text">{{ text.status_on_stock }}</span>
+                                                {% endif %}
+                                                {% if not product.stock_text_only %}
+                                                    <span class="stock__qty-and-unit{% if product.stock_interval_text_exists %} is-text{% endif %}">
+                                                {% if not product.stock_interval_text_exists %}({% endif %}{{ product.stock_qty }}{% if not product.stock_interval_text_exists %}&nbsp;{{ product.unit }}){% endif %}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            {% if product.no_stock_but_buyable_disp %}
+                                                <div class="stock__content icon--b-to-order">{{ text.status_orderable }}</div>
+                                            {% else %}
+                                                <div class="stock__content icon--b-no-stock">{{ text.status_no_stock }}</div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+
+                        {% block price %}
+                        {% if product.price_disp %}
+                        <div class="product__prices row no-gutters{% if product.price_sale_disp %} has-price-sale{% endif %}"{{ product.variants_disp ? ' role="status"' }}>
+                            <div class="col">
+                                <span class="product__price-base product-price--base"{% if product.price_normal_info_text_disp %} tabindex="0" data-tippy="{{ product.price_normal_info_text }}"{% endif %}>
+                                    {{ product.price_normal_text }}<span class="product__price-base-value{% if product.price_line_through and product.sale_disp %} text-line-through{% endif %}">{{ product.price }}</span>{% if product.price_normal_info_text_disp %}&nbsp;<span class="icon--info"></span>{% endif %}
+                                </span>
+
+                                {% if product.price_sale_disp %}
+                                <div class="product__price-sale product-price--sale">
+                                    {{ product.price_discounted_text }}
+                                    {{ product.price_sale }}
+                                </div>
+                                {% endif %}
+
+                                {% block price_unit %}
+                                    {% if price_unit_enabled and price_unit_exists and product.price_unit_disp %}
+                                    <div class="product__price-unit-wrap">
+                                        <div class="product__price-unit product-price--unit-price">{{ text.unit_price }}: {{ product.price_unit }}</div>
+                                    </div>
+                                    {% endif %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endblock %}
+
+                        {# az árak megtekintéséhez be kell lépni #}
+                        {% block loginNeeded %}
+                            {% if login_needed and not product.inquire_disp %}
+                            <button class="product__price-login-btn btn btn-text font-s" type="button" aria-haspopup="dialog" onclick="overlay_login()">
+                                {{ text.need_login_to_prices }}
+                            </button>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+
+                    {% block cart %}
+                    <div class="product__main-wrap-col col-auto">
+                        {% if product.cart_disp %}
+                            {# átirányítás a részletek oldalra, mert összevont termék vagy van változata (config) #}
+                            {% if attribute(product,redirectToDetails) %}
+                            <button class="product__main-btn product__details-btn btn icon--details" onclick="{{ attribute(product,cartOnClick) }}" type="button" data-text="{{ text.button_details }}" title="{{ text.button_details }}" aria-label="{{ text.button_details }}"></button>
+                            {% else %}
+                            <div class="product__main-btn-group btn-group" role="group">
+                                {# a terméknek van változata #}
+                                {% if product.variants_disp or quantity_input_on_product_list_1 == "1" %}
+                                <button class="product__main-btn product__open-inputs-btn btn icon--cart" onclick="openInputsOverlay(this)" type="button"
+                                        data-cartadd="{{ attribute(product,cartOnClick) }}" data-text="{{ attribute(product,cartBtnText) }}"
+                                        aria-label="{{ attribute(product,cartBtnText) }}" title="{{ product.name ~ ' ' ~ text.product }}"
+                                ></button>
+                                <div class="product__inputs-group btn-group" role="group">
+                                    <button class="product__inputs-dropdown-toggle-btn js-inputs-dropdown-toggle-btn btn btn-primary dropdown-toggle" type="button"
+                                            onclick="openInputsOverlay(this)" data-toggle="dropdown" aria-haspopup="true" aria-label="{{ text.product_variants ~ ' ' ~ text.open_and_close }}"
+                                    ></button>
+                                    <div class="product__inputs dropdown-menu js-inputs{% if product.variants_disp %} has-variant{% endif %}">
+                                        <button class="product__inputs-btn-close js-inputs-close-btn d-none" type="button" title="{{ text.button_close }}" onclick="closeInputsOverlay(this);"></button>
+                                        {% set inputHidden %}{# rejtett input létrehozása arra az esetre, mikor nincs mennyiségi beviteli mező #}
+                                        <input name="{{ product.cart_input_name }}" id="{{ product.cart_input_id }}" type="hidden" value="{{ product.cart_input_value_number }}" data-min="{{ product.cart_input_data_min }}" data-max="{{ product.cart_input_data_max }}" data-step="{{ product.cart_input_data_step }}"/>
+                                        {% endset %}
+                                        {% if quantity_input_on_product_list_1 == "1" %}
+                                            {% block cartInput %}
+                                                {% if quantity_input_unit_position_with_two_settings == "1" %}
+                                                <div class="product__cart-input-col quantity-unit-type--under">
+                                                    <div class="product__cart-input-wrap page_qty_input_outer">
+                                                        <input name="{{ product.cart_input_name }}" id="{{ product.cart_input_id }}" type="number" value="{{ product.cart_input_value_number }}" class="page_qty_input form-control" step="{{ product.cart_input_data_step }}" data-min="{{ product.cart_input_data_min }}" data-max="{{ product.cart_input_data_max }}" data-step="{{ product.cart_input_data_step }}" aria-label="{{ text.quantity }}">
+                                                        <div class="product__qty-buttons">
+                                                            <button type="button" class="qtyplus_common" aria-label="{{ text.plus }}"></button>
+                                                            <button type="button" class="qtyminus_common qty_disable" aria-label="{{ text.minus }}"></button>
+                                                        </div>
+                                                        {% if cart_unit_disp %}<div class="product__cart-unit product-price--unit">{{ product.unit }}</div>{% endif %}
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <div class="product__cart-input-col quantity-unit-type--tippy">
+                                                    <div class="product__cart-input-wrap page_qty_input_outer"{% if cart_unit_disp %} data-tippy="{{ product.unit }}"{% endif %}>
+                                                        <input name="{{ product.cart_input_name }}" id="{{ product.cart_input_id }}" type="number" value="{{ product.cart_input_value_number }}" class="page_qty_input form-control" step="{{ product.cart_input_data_step }}" data-min="{{ product.cart_input_data_min }}" data-max="{{ product.cart_input_data_max }}" data-step="{{ product.cart_input_data_step }}" aria-label="{{ text.quantity }}">
+                                                        <div class="product__qty-buttons">
+                                                            <button type="button" class="qtyplus_common" aria-label="{{ text.plus }}"></button>
+                                                            <button type="button" class="qtyminus_common qty_disable" aria-label="{{ text.minus }}"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            {% endblock %}
+                                            {% if block('cartInput') is empty %}{# input hidden felhasználása, mert nincs engedélyezve a beiteli mező #}
+                                                {{ inputHidden }}
+                                            {% endif %}
+                                        {% else %}{# input hidden felhasználása, mert nincs bekapolcsva a beiteli mező #}
+                                            {{ inputHidden }}
+                                        {% endif %}
+
+                                        {% block variant %}
+                                            {% if product.variants_disp %}{# Has one variant at least #}
+                                                {{ product.variants_hidden }}
+
+                                                {% if product.variant_3_disp %}
+                                                    {% set variantCount = 3 %}
+                                                {% elseif product.variant_2_disp %}
+                                                    {% set variantCount = 2 %}
+                                                {% else %}
+                                                    {% set variantCount = 1 %}
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% if not attribute(product,redirectToDetails) and (variantCount is defined) and product.cart_disp %}{# Not redirect to det, has one variant at least, and has cart btn #}
+                                            <div class="product__variants">
+                                                {% for index in 1..variantCount %}
+                                                <div class="product__variant-wrap form-group form-group-sm js-variant-wrap">
+                                                    {{ attribute(product,"variant_"~ index ~ "_hidden") }}
+                                                    <label class="product__variant-label" for="egyeb_list{{ index }}_{{ product.id }}">{{ attribute(product,"variant_"~ index ~ "_title") }}</label>
+                                                    <div class="form-select-group form-select-group-sm">
+                                                    <select name="egyeb_list{{ index }}_{{ product.id }}" id="egyeb_list{{ index }}_{{ product.id }}" class="page_artlist_other_select product__variant-select form-control form-control-sm" onchange="changeVariant(this);">
+                                                        {% for option in attribute(product,"variant_"~ index ~ "_options") %}
+                                                        <option value="{{ option.value }}"{% if option.disabled %} style="display:none" disabled="disabled"{% endif %}{% if option.selected %} selected="selected"{% endif %}{% if option.price_raw != "" %} data-price-gross="{{ option.price_raw }}" data-price-net="{{ option.price_net_raw }}"{% endif %}>{{ option.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        {% endblock %}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <button class="product__main-btn product__cart-btn btn icon--cart" onclick="{{ attribute(product,cartOnClick) }}" type="button" data-text="{{ attribute(product,cartBtnText) }}" aria-label="{{ attribute(product,cartBtnText) }}"></button>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        {% else %}{# Nincs kosár #}
+                            {% if product.inquire_disp %}{# Érdeklődjön státusz #}
+                            <button class="product__main-btn product__inquire-btn btn icon--inquire" type="button" aria-haspopup="dialog" onclick="popup_question_dialog('{{ product.sku }}');" data-text="{{ text.button_inquire }}" title="{{ text.button_inquire }}" aria-label="{{ text.button_inquire }}"></button>
+                            {% else %}
+                                {% if product.no_buyable_disp %}{# Aktív, nem vásárolható #}
+                                <a class="product__main-btn product__not-buyable-btn btn icon--details" href="{{ product.url }}" data-text="{{ text.status_not_buyable }}" title="{{ text.button_details }}" aria-label="{{ text.button_details }}"></a>
+                                {% else %}
+                                    {% if product.no_stock_disp %}{# Nincs raktáron #}
+                                        {% if product.stock_disp %}{# Nincs raktárkijelzés #}
+                                        <a class="product__main-btn product__to-details-btn btn icon--details" href="{{ product.url }}" data-text="{{ text.button_details }}" title="{{ text.button_details }}" aria-label="{{ text.button_details }}"></a>
+                                        {% else %}
+                                        <a class="product__main-btn product__no-stock-btn btn icon--details" href="{{ product.url }}" data-text="{{ text.status_no_stock }}" title="{{ text.button_details }}" aria-label="{{ text.button_details }}"></a>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if not login_needed %}{# Kosárba helyezéshez be kell lépni #}
+                                        <div class="product__cart-login-btn-wrap">
+                                            <button class="product__cart-login-btn btn btn-text" type="button" aria-haspopup="dialog" onclick="overlay_login()">{{ text.need_login_to_cart }}</button>
+                                        </div>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endblock %}
+                </div>
+            </div>
+            {% endif %}
+            <div class="product__img-outer">
+                {% include [common_vars.layout_urls.embed_product_stickers_1,"@base/002400/embed_product_stickers_1.html"] with { stickers: product.stickers, position_array: ['above'] } %}
+                <div class="product__img-wrap product-img-wrapper">
+                    {% include [common_vars.layout_urls.embed_product_stickers_1,"@base/002400/embed_product_stickers_1.html"] with { stickers: product.stickers, position_array: ['on_top_left','on_top_right','on_bottom_left','on_bottom_right'], on_image: true, type: 'list' } %}
+                    <a class="{{ product_measure_class }}" data-sku="{{ product.sku }}" href="{{ product.url }}" title="{{ product.name }}" tabindex="-1">
+                        <picture>
+                            {% if product.img_thumbnail_url != '' %}
+                                {% set custom_mobile_img_retina_datas = '' %}
+                                {% if product.img_thumbnail_retina_exists and backvar.main_img_thumbnail_maxwidth and product.img_thumbnail_retina_size[:-1] >= 2 %}
+                                    {% set custom_mobile_img_retina_size = (backvar.main_img_thumbnail_maxwidth * custom_mobile_retina_ratio)|round(0, 'floor') %}
+                                    {% set custom_mobile_img_retina_datas = product.img_thumbnail_retina_url|resize(backvar.custom_img_width_retina_mobile|default(custom_mobile_img_retina_size),backvar.custom_img_height_retina_mobile|default(custom_mobile_img_retina_size)) ~ ' ' ~ custom_mobile_retina_ratio ~ 'x' %}
+                                {% endif %}
+                            <source srcset="{{ product.img_thumbnail_url }} 1x{% if product.img_thumbnail_retina_exists %},{{ custom_mobile_img_retina_datas ? custom_mobile_img_retina_datas ~ ',' }}{{ product.img_thumbnail_retina_url }} {{ product.img_thumbnail_retina_size }}{% endif %}"
+                                    media="(max-width: {{ common_vars.thumbnail_breakpoint - 0.02 }}px)"
+                            >
+                            {% endif %}
+                            <source srcset="{{ product.img_url }} 1x{% if product.img_retina_exists %}, {{ product.img_retina_url }} {{ product.img_retina_size }} {% endif %}">
+                            <img class="product__img product-img js-main-img" id="{{ product.img_id }}" width="{{ img_width }}" height="{{ img_height }}"
+                                 src="{{ product.img_url }}" alt="{{ product.img_alt }}" title="{{ product.img_alt }}"
+                                 {%- if loop.index > custom_img_lazyload_limit %} loading="lazy"{% else %} decoding="async" fetchpriority="high"{% endif -%}
+                            >
+                        </picture>
+                    </a>
+                </div>
+                {% include [common_vars.layout_urls.embed_product_stickers_1,"@base/002400/embed_product_stickers_1.html"] with { stickers: product.stickers, position_array: ['under'] } %}
+            </div>
+
+            {% if product.product_type_params_disp %}
+            <div class="product__types" aria-label="{{ text.product_types }}" role="group">
+                {% for product_type_param in product.product_type_params %}
+                <div class="product__type-wrap">
+                    <div class="product__type type--{{ product_type_param.type }}" role="group" data-tippy="{{ product_type_param.title }}">
+                    {% for value_attribute in product_type_param.value_attributes %}
+                        <a href="{{ value_attribute.url }}" class="product__type-value{% if value_attribute.sku == product.sku %} itself{% endif %}" data-sku="{{ value_attribute.sku }}"
+                            {%- if 'color' in product_type_param.type %}{% if product_type_param.type == 'color_text' %} title="{{ value_attribute.color_text }}"{% endif %}
+                            {%- elseif 'pic' not in product_type_param.type and 'icon' not in product_type_param.type %} aria-label="{{ value_attribute.option_name }}"{% endif %}
+                            {%- if value_attribute.sku == product.sku %} aria-current="true"{% endif -%}
+                        >
+                            {% if product_type_param.type in ['color','color_text'] %}
+                            <div class="product__type-option--color" style="{% if value_attribute.color_code|lower == "#ffffff" %}color:#dddddd;{% else %}color:{{ value_attribute.color_code }};{% endif %}background-color:{{ value_attribute.color_code }};"></div>
+                            {% else %}
+                            {{ value_attribute.option_name }}
+                            {% endif %}
+                        </a>
+                        {% if loop.last and product_type_param.value_count_rest > 0 %}
+                        <div class="product__type-value product__type-more">+ {{ product_type_param.value_count_rest }}</div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block params %}
+                {% if product.params_disp %}
+                <div class="product__params font-xs font-sm-s{% if product.product_type_params_disp %} has-types{% endif %}" aria-label="{{ text.search_product_parameters }}" role="group">
+                    <div class="product__params-inner">
+                        {% for param in product.params %}
+                        <div class="product__param row gutters-5" data-param-type="{{ param.type }}">
+                            {% if param.disp %}
+                            <div class="product__param-title-col col-6">
+                                <span class="product__param-title"
+                                     {%- if param.direct_filter_disp %} id="list-param-title-{{ param.id }}-{{ product.sku }}"{% endif %}
+                                     {%- if param.description_disp %} tabindex="0" data-tippy="<span class='product__param-title-tippy'>{{ param.title }}</span>{{ param.description|escape }}"{% endif -%}
+                                >{{ param.title }}{% if param.description_disp %}&nbsp;<span class="param-details-icon icon--info"></span>{% endif %}:</span>
+                            </div>
+                            <div class="product__param-value col-6{% if param.type in ['color','color_text'] %} d-inline-flex align-items-start{% endif %}"{% if param.type=='color_text' %} title="{{ param.value2 }}"{% endif %}>
+                                {% if 'color' in param.type %}
+                                    {%- if param.direct_filter_disp -%}<a aria-{{ param.type == 'color' ? 'labelledby' :'describedby' }}="list-param-title-{{ param.id }}-{{ product.sku }}" class="direct-filter-link" rel="nofollow" href="{{ param.direct_filter_url }}">{% endif %}
+                                        {% if param.type == 'color_text' %}<span class="product__param-type--color-text">{{ param.value2 }}</span>{% endif %}
+                                        <div class="product__param-type--color" style="{% if param.value == "#ffffff" %}color:#dddddd;{% else %}color:{{ param.value }};{% endif %}background-color:{{ param.value }};"></div>
+                                    {%- if param.direct_filter_disp -%}</a>{% endif %}
+                                {% else %}
+                                    {{ param.value }}
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endblock %}
+
+            {% block custom_badges %}
+                {% if product.status_1_disp or product.status_2_disp or product.status_3_disp %}
+                    <div class="product__custom-statuses">
+                        {% if product.status_1_disp %}
+                        <div class="product__custom-status badge--2 badge--custom-1{% if status_1_link_disp %} has-link{% endif %}">
+                            {% if status_1_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=3" aria-label="{{ text.product_status }}:{{ product.status_1 }}">{% endif %}
+                            <div class="product__custom-text product-custom-text">{{ product.status_1 }}</div>
+                            {% if status_1_link_disp %}</a>{% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if product.status_2_disp %}
+                        <div class="product__custom-status badge--2 badge--custom-2{% if status_2_link_disp %} has-link{% endif %}">
+                            {% if status_2_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=4" aria-label="{{ text.product_status }}:{{ product.status_2 }}">{% endif %}
+                            <div class="product__custom-text product-custom-text">{{ product.status_2 }}</div>
+                            {% if status_2_link_disp %}</a>{% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if product.status_3_disp %}
+                        <div class="product__custom-status badge--2 badge--custom-3{% if status_3_link_disp %} has-link{% endif %}">
+                            {% if status_3_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=5" aria-label="{{ text.product_status }}:{{ product.status_3 }}">{% endif %}
+                            <div class="product__custom-text product-custom-text">{{ product.status_3 }}</div>
+                            {% if status_3_link_disp %}</a>{% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endblock %}
+
+            {% block functions %}
+                {% if product.favourites_disp or product_tooltip_enabled or product.compare_disp %}
+                <div class="product__function-btns">
+                        {% if product.compare_disp %}
+                        <button type="button" class="product__func-btn product__btn-compare icon--compare page_art_func_compare page_art_func_compare_{{ product.sku_id }}{% if product.compare_checked %} page_art_func_compare_checked{% endif %}" aria-label="{{ text.comparison }}"  onclick="{{ product.compare_onclick|escape }}" {% if product.compare_checked %}data-tippy="{{ text.delete_from_compare }}"{% else %}data-tippy="{{ text.comparison }}"{% endif %}></button>
+                        {% endif %}
+                        {% if product.favourites_disp %}
+                            {% if favourites_page %}{# Kedvencek oldal (törlés a kedvencek közül) #}
+                            <button type="button" class="product__func-btn product__btn-remove-fav icon--favo favourites_item_del" onclick="{{ product.favourite_del_onclick|escape }}" aria-label="{{ product.favourite_text }}" data-tippy="{{ product.favourite_text }}"></button>
+                            {% else %}
+                            <button type="button" class="product__func-btn favourites-btn icon--favo page_artdet_func_favourites_{{ product.sku_id }} page_artdet_func_favourites_outer_{{ product.sku_id }}{% if product.favourites_checked %} added remove_favourites{% endif %}" id="page_artlist_func_favourites_{{ product.sku_id }}" onclick="{{ product.favourite_onclick|escape }}" aria-label="{{ product.favourite_text }}" data-tippy="{{ product.favourite_text }}"> </button>
+                            {% endif %}
+                        {% endif %}
+                        {% if product_tooltip_enabled %}
+                        <button type="button" class="product__func-btn product__btn-tooltip icon--search-plus js-product-tooltip-click" aria-haspopup="dialog" aria-label="{{ text.preview }}" data-sku="{{ product.sku_id }}" data-tippy="{{ text.preview }}"></button>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endblock %}
+
+            {# A felugró "Ajánlom ismerősömnek" ablakban van használva, Törlés gomb #}
+            {% block recommendDel %}{% endblock %}
+        </div>
+    </{{ subver >= 2 ? 'div' : 'article' }}>
+{% endfor %}

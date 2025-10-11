@@ -1,0 +1,61 @@
+<div class="page_popuplist_content">
+    {{ start_script }}
+    {% if products_disp %}
+        <div class='page_popuplist_list'>
+            {% for product in products %}
+                <div class='page_popuplist_item {{ product.class }}' id='page_popuplist_{{ product.id }}'>
+                    <table border="0" cellpadding="0" cellspacing="0" class="page_popuplist_table">
+                        <tr>
+                            <td class="page_popuplist_left">
+                                <a href="{{ product.url }}" class="page_artlist_image_link product_link_normal {% if tooltip_disp %}page_PopupTrigger{% endif %}" title="{{ product.name }}" data-sku="{{ product.sku }}">
+                                    <img src="{{ product.img_url }}" alt="{{ product.img_alt }}" title="{{ product.img_alt }}" id="{{ product.img_id }}" width="{{ backvar.main_img_maxwidth }}" height="{{ backvar.main_img_maxheight }}" />
+                                </a>
+                            </td>
+                            <td class="page_popuplist_right">
+                                <div class="page_popuplist_name">{{ product.name }}</div>
+                                <div class="page_popuplist_price">
+                                    <div class='page_popuplist_price-base'>
+                                        {% if product.price_disp %}
+                                            {{ product.price_normal_text }}
+                                            <span class="page_popuplist_price_net"{% if product.price_line_through %} style="text-decoration: line-through;"{% endif %}>{{ product.price }}</span>
+                                            {% if product.price_sale_disp %}
+                                                {% if product.is_price_appearance_rrp and product.price_rrp_info_text_exists %}
+                                                    *
+                                                {% elseif product.is_price_appearance_sale and product.price_sale_info_text_exists %}
+                                                    {% if is_any_rrp %}*{% endif %}*
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class=page_popuplist_price-sale'>
+                                        {% if product.price_sale_disp %}
+                                            {{ product.price_discounted_text }}
+                                            <span class="page_popuplist_price_akcio">
+                                                <strong>{{ product.price_sale }}</strong>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if product.cart_disp %}
+                                    <div class="page_popuplist_cart bg_color_dark3">
+                                        <div class="page_popuplist_cart_inner bg_color_light2">
+                                            <a class="page_popuplist_cart_link bg_color_dark1" href="#" onclick="{{ popup_cart_onclick_value }}">
+                                                <span class="text_color_white">{{ popup_button_text }}</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endfor %}
+            {% if is_any_sale or is_any_rrp %}
+                <div style="margin: 15px 0;font-size: 12px;">
+                    {% if is_any_rrp %}<div>* {{ text.price_rrp_info_text }}</div>{% endif %}
+                    {% if is_any_sale %}<div>{% if is_any_rrp %}*{% endif %}* {{ text.price_sale_info_text }}</div>{% endif %}
+                </div>
+            {% endif %}
+        </div>{#page_popuplist_list#}
+    {% endif %}
+</div>{#page_popuplist_content#}

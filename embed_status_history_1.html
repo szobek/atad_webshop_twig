@@ -1,0 +1,16 @@
+{% if status_histories_disp %}
+<div class="order-status-history icon--a-history"
+    data-tippy="
+    <div class='order-status-histories font-s line-height-12'>
+        {% for status in status_histories %}
+        <div class='order-status-history-row'>
+            <div class='row gutters-10'>
+                <div class='col-6'><div class='history-date'>{{ status.date }}</div></div>
+                <div class='col-6'><div class='history-status'>{{ status.name }}</div></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    ">
+</div>
+{% endif %}

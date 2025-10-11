@@ -1,0 +1,41 @@
+[[ banner_start_small ]]
+
+[[ banner_start_1 ]]
+
+[[ box|name:product_top;product_list_layout:carousel_1;prefix_key:top; ]]
+
+[[ banner_start_2 ]]
+
+{% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+{% if ref_disp %}
+    {{ ref_product_list }}
+{% endif %}
+
+[% if banner_start_3|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or banner_start_4|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or banner_start_5|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+<div class="banner_start_3_4_5 start-block">
+    <div class="container">
+        <div class="row gutters-5 gutters-md-10 gutters-xxl-20 row-gap-10 row-gap-md-20 row-gap-xxl-40">
+            [[ banner_start_3 ]]
+
+            [[ banner_start_4 ]]
+
+            [[ banner_start_5 ]]
+        </div>
+    </div>
+</div>
+[% endif %]
+
+[[ box|name:product_ref;product_list_layout:carousel_1;prefix_key:ref; ]]
+
+[[ box|name:page;limit:{{ backvar.custom_blog_limit }};filter:blog;layout:blog_1; ]]
+
+[[ start_brand_slider ]]
+
+[[ banner_start_6 ]]
+
+{% if retargeting_div_home_disp %}
+    {{ retargeting_div_home }}
+{% endif %}
+
+{% include common_vars.layout_urls.embed_custom_content_bottom_1 %}

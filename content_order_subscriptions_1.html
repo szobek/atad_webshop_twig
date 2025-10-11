@@ -1,0 +1,220 @@
+<div id="page_order_subscriptions_content" class="page_content">
+    <div class="main__title main__title--profile">
+        <div class="container">
+            <div class="main-title-wrapper d-flex flex-wrap align-items-center">
+                <h1 class="mb-0 mr-3"><span class="main-title main-title--profile">{{ text.profile }}</span></h1>
+                <a class="order-track__logout-btn btn btn-primary ml-auto" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a>
+            </div>
+        </div>
+    </div>
+
+    {% if tabs_disp %}
+    <div id="nav-tab-accordion-1" class="nav-tabs-accordion">
+        <div class="nav-tabs-container nav-tabs-outer--2 container">
+            <ul class="nav nav-tabs subscriptions-tabs" role="tablist">
+                {% if tab_orders_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-orders" rel="orders" href="{{ tab_orders_url }}">{{ text.orders }}</a></li>
+                {% endif %}
+
+                <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" aria-selected="true" aria-expanded="true" id="tab-subscriptions" rel="subscriptions" href="#">{{ text.subscriptions }}</a></li>
+
+                {% if tab_discount_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-discount" rel="discount" href="{{ tab_discount_url }}">{{ text.discounts }}</a></li>
+                {% endif %}
+
+                {% if tab_favourites_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-favourites" rel="favourites" href="{{ tab_favourites_url }}">{{ text.favourites }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_filters_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_filters" rel="saved_filters" href="{{ tab_saved_filters_url }}">{{ text.saved_filters }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_cards_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_cards" rel="saved_cards" href="{{ tab_saved_cards_url }}">{{ text.saved_cards }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_delivery_points_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_delivery_points" rel="saved_delivery_points" href="{{ tab_saved_delivery_points_url }}">{{ text.saved_delivery_points }}</a></li>
+                {% endif %}
+
+                {% if tab_customer_addresses_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-ustomer_addresses" rel="customer_addresses" href="{{ tab_customer_addresses_url }}">{{ text.customer_addresses }}</a></li>
+                {% endif %}
+
+                {% if tab_modify_disp %}
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-reg" rel="reg" href="{{ tab_modify_url }}">{{ text.data_modify }}</a></li>
+                {% endif %}
+
+                <li class="nav-item d-none" role="presentation"><a class="nav-link" role="tab" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a></li>
+            </ul>
+        </div>
+        <div class="tab-panes pane-accordion container">
+            {% if tab_orders_disp %}
+            <div class="pane-header" id="pane-header-orders">
+                <a id="accordion-btn-orders" href="{{ tab_orders_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-orders">
+                    {{ text.orders }}
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="pane-header" id="pane-header-subscriptions">
+                <a id="accordion-btn-subscriptions" href="#" onclick="return false;" class="pane-header-btn btn active" aria-expanded="true" aria-controls="pane-subscriptions">
+                    {{ text.subscriptions }}
+                </a>
+            </div>
+            <div class="tab-pane fades subscriptions active show always-visible" id="pane-subscriptions" role="tabpanel" aria-labelledby="pane-header-subscriptions">
+                <div class="tab-pane__container container subscriptions__content mb-5">
+                    {% if subscriptions_disp %}
+                        {% if paging_disp %}
+                            <nav class="order-track-paging d-flex align-items-center justify-content-center my-2" aria-label="pagination">
+                                {{ paging_content }}
+                            </nav>
+                        {% endif %}
+                        <div class="order-track__subscriptions-table line-height-12 mt-3">
+                            <div class="order-track__subscriptions-header font-weight-bold p-3 d-none d-lg-block">
+                                <div class="row gutters-10 align-items-center">
+                                    <div class="col order-track__header-name-col order-track__subscription-product-name-col">{{ text.product_name }}</div>
+                                    <div class="col order-track__header-qty-col order-track__subscription-qty-col">{{ text.qty_short }}</div>
+                                    <div class="col order-track__header-price-col order-track__subscription-price-col text-center">{{ text.price }}</div>
+                                    <div class="col order-track__header-period-col order-track__subscription-period-col">{{ text.subscription_period }}</div>
+                                    <div class="col order-track__header-date-col order-track__subscription-date-col text-lg-center">{{ text.subscription_start }}</div>
+                                    <div class="col order-track__header-expiration-col order-track__subscription-expiration-col text-lg-center">{{ text.subscription_due }}</div>
+                                </div>
+                            </div>
+                            {% for subscription in subscriptions %}
+                                <div class="order-track__subscription" id="subscription_id_{{ subscription.id }}">
+                                    <div class="row gutters-10 row-gap-10 align-items-end align-items-xl-center">
+                                        <div class="col-12 col-lg order-track__subscription-col order-track__subscription-product-name-col">
+                                            <div class="order-track__subscription-inner">
+                                                <div class="subscription-list__title">{{ text.product_name }}:</div>
+                                                <div class="subscription-list__value font-weight-bold">{{ subscription.product_name }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg order-track__subscription-col order-track__subscription-qty-col">
+                                            <div class="order-track__subscription-inner">
+                                                <div class="subscription-list__title">{{ text.qty_short }}:</div>
+                                                <div class="subscription-list__value">{{ subscription.qty }}&nbsp;{{ subscription.product_unit }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg order-track__subscription-col order-track__subscription-price-col">
+                                            <div class="order-track__subscription-inner">
+                                                <div class="subscription-list__title">{{ text.price }}:</div>
+                                                <div class="subscription-list__value font-weight-bold text-lg-center">{{ subscription.price_gross }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg order-track__subscription-col order-track__subscription-period-col">
+                                            <div class="order-track__subscription-inner">
+                                                <div class="subscription-list__title">{{ text.subscription_period }}:</div>
+                                                <div class="subscription-list__value">{{ subscription.period }}&nbsp;{{ text.day }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg order-track__subscription-col order-track__subscription-date-col">
+                                            <div class="order-track__subscription-inner">
+                                                <div class="subscription-list__title">{{ text.subscription_start }}:</div>
+                                                <div class="subscription-list__value text-lg-center">{{ subscription.date }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg order-track__subscription-col order-track__subscription-expiration-col">
+                                            <div class="order-track__subscription-inner">
+                                                <div class="subscription-list__title">{{ text.subscription_due }}:</div>
+                                                <div class="subscription-list__value font-weight-bold text-lg-center">{{ subscription.expiration }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-track__subscription-second-row row gutters-10 row-gap-10 mt-3 mt-lg-4 pt-lg-3">
+                                        <div class="col-12 col-lg-auto order-track__subscription-col order-track__subscription-shipping-col d-lg-flex align-items-center">
+                                            <div class="order-track__subscription-inner d-md-flex align-items-center font-lg-s">
+                                                <div class="subscription-list__title pr-2 icon--b-truck d-block">{{ text.shipping_method }}:</div>
+                                                <div class="subscription-list__value">{{ subscription.shipping_method }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg-auto order-track__subscription-col order-track__subscription-payment-col ml-lg-4 d-lg-flex align-items-center">
+                                            <div class="order-track__subscription-inner d-md-flex align-items-center font-lg-s">
+                                                <div class="subscription-list__title pr-2 icon--b-money d-block">{{ text.payment_method }}:</div>
+                                                <div class="subscription-list__value">{{ subscription.payment_method }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-lg-auto px-0 px-lg-3 mt-3 mt-lg-0 ml-auto subscription__buttons">
+                                            <button class="subscription__delete-button btn btn-sm py-1 btn-primary" type="button" aria-label="{{ text.button_subscription_delete }}" onclick="subscription_delete_overlay('{{ subscription.id }}');">{{ text.button_subscription_delete }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="order-track__no-orders alert alert-info icon--b-info" role="alert">{{ text.no_subscriptions }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if tab_discount_disp %}
+            <div class="pane-header" id="pane-header-discount">
+                <a id="accordion-btn-discount" href="{{ tab_discount_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-discount">
+                    {{ text.discounts }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_favourites_disp %}
+            <div class="pane-header" id="pane-header-favourites">
+                <a id="accordion-btn-favourites" href="{{ tab_favourites_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-favourites">
+                    {{ text.favourites }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_filters_disp %}
+            <div class="pane-header" id="pane-header-saved_filters">
+                <a id="accordion-btn-saved_filters" href="{{ tab_saved_filters_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_filters">
+                    {{ text.saved_filters }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_saved_cards_disp %}
+                <div class="pane-header" id="pane-header-saved_cards">
+                    <a id="accordion-btn-saved_cards" href="{{ tab_saved_cards_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_cards">
+                        {{ text.saved_cards }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_saved_delivery_points_disp %}
+            <div class="pane-header" id="pane-header-saved_delivery_points">
+                <a id="accordion-btn-saved_delivery_points" href="{{ tab_saved_delivery_points_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved-delivery_points">
+                    {{ text.saved_delivery_points }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_customer_addresses_disp %}
+            <div class="pane-header" id="pane-header-customer_addresses">
+                <a href="{{ tab_customer_addresses_url }}" id="accordion-btn-customer_addresses" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-customer_addresses">
+                    {{ text.customer_addresses }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_modify_disp %}
+            <div class="pane-header" id="pane-header-reg">
+                <a href="{{ tab_modify_url }}" id="accordion-btn-reg" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-reg">
+                    {{ text.data_modify }}
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="pane-header d-none" id="pane-header-logout">
+                <a id="accordion-btn-logout" href="{{ tab_logout_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-logout">
+                    {{ text.logout }}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{# EMBED TAB SCRIPT #}
+{% set tab_default = 'subscriptions' %}
+{% set custom_tab_scroll_enabled = true %}
+{% embed common_vars.layout_urls.embed_tab_script_1 %}{% endembed %}

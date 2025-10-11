@@ -1,0 +1,462 @@
+{{ backvar(main_img_maxwidth,285) }}
+{{ backvar(main_img_maxheight,285) }}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body').css('background-color','#ffffff');
+        //right_click
+        $(document).bind("contextmenu",function(e){
+            //return false;
+        });
+
+        //copy
+        var omitformtags=["input", "textarea", "select"];
+        omitformtags=omitformtags.join("|");
+
+        function disableselect(e) {
+            if (omitformtags.indexOf(e.target.tagName.toLowerCase())==-1) return false;
+            if (omitformtags.indexOf(e.target.tagName.toLowerCase())==2) return false;
+        }
+
+        function reEnable() {
+            return true;
+        }
+
+        if (typeof document.onselectstart!="undefined") {
+            document.onselectstart=new Function ("return false");
+        } else {
+            document.onmousedown=disableselect;
+            document.onmouseup=reEnable;
+        }
+
+        //button
+        $("#printing_button").click(function () {
+            window.focus();
+            window.print();
+            return false;
+        });
+    });
+</script>
+
+<div class="art_print_outer text-dark">
+    <div class="artdet-print-btn-wrap text-center mb-3 mt-5">
+        <button id="printing_button" class="artdet-print-btn btn btn-primary">{{ text.printing }}</button>
+    </div>
+    <div id="page_artdet_content_print_1" class="p-4 overflow-hidden">
+        <div class="row">
+            <div class="artdet-print__img-outer col-6">
+                <div class="artdet-print__img-inner position-relative">
+                    <div class="artdet-print__img-wrapper">
+                        <figure class="artdet-print__img-main-wrap text-center">
+                            <img class="artdet-print__img-main" src="{{ img_url }}" alt="{{ img_alt }}" title="{{ img_alt }}" id="main_image" />
+                        </figure>
+                    </div>
+                </div>
+            </div>
+            <div class="artdet-print__data-outer col-6">
+                <h1 class="artdet-print__name font-weight-bold">{{ name }}</h1>
+                <div class="artdet-print__properties position-relative">
+                    {% if sale_disp or new_disp or status_1_disp or status_2_disp or status_3_disp %}
+                        <div class="row gutters-10">
+                            <div class="col-4">
+                                <span class="print-list-title">{{ text.product_status }}:</span>
+                            </div>
+                            <div class="col-8">
+                                {% if sale_disp %}
+                                    <span class="print-list">-<span class="js-sale-percent-{{ sku_id }}">{{ sale_percent }}</span>%</span>
+                                {% endif %}
+
+                                {% if new_disp %}
+                                    <span class="print-list">{{ text.status_new }}</span>
+                                {% endif %}
+
+                                {% if status_1_disp %}
+                                    <span class="print-list">{{ status_1 }}</span>
+                                {% endif %}
+
+                                {% if status_2_disp %}
+                                    <span class="print-list">{{ status_2 }}</span>
+                                {% endif %}
+
+                                {% if status_3_disp %}
+                                    <span class="print-list">{{ status_3 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if stock_disp %}
+                    <div class="artdet__stock-text product-stock-text">
+                        <div class="row gutters-10">
+                            <div class="col-4">
+                                <span class="print-list-title">{{ text.stock_status }}:</span>
+                            </div>
+                            <div class="col-8">
+                                {% if stock_available %}
+                                    <span class="stock__content">
+                                        {{ text.status_on_stock }}{% if not variants_stock_enabled and not stock_text_only %}:&nbsp;{{ stock }}{% endif %}
+                                    </span>
+                                {% else %}
+                                    {% if no_stock_but_buyable_disp %}
+                                        <span class="artdet__stock-title stock__content">{{ text.status_orderable }}</span>
+                                    {% else %}
+                                        <span class="artdet__stock-title stock__content">{{ text.status_no_stock }}</span>
+                                    {% endif %}
+                                {% endif %}
+                                {% if variants_disp and variants_stock_enabled %}
+                                    <ul>
+                                        {% for variant in stock_variant %}
+                                            {# SZÖVEGES KIJELZÉS (Raktáron, Rendelhető, Nincs raktáron) #}
+                                            {% if stock_text_only %}
+                                                <li class="stock-variant">
+                                                    <span class="stock-variant__title">{{ variant.title }}:</span>
+                                                    <span class="stock-variant__qty">
+                                             {% if variant.available and variant.reach_min_qty %}
+                                                 {{ text.status_on_stock }}
+                                             {% else %}
+                                                 {% if no_stock_but_buyable_disp %}
+                                                     {{ text.status_orderable }}
+                                                 {% else %}
+                                                     {{ text.status_no_stock }}
+                                                 {% endif %}
+                                             {% endif %}
+                                            </span>
+                                                </li>
+                                                {# DARABSZÁMOS KIJELZÉS #}
+                                            {% else %}
+                                                {% if (variant.available and variant.reach_min_qty) or no_stock_visible %}{# csak akkor ha vásárolható, vagy "vásárolható akkor is, ha nincs raktáron" #}
+                                                    <li class="stock-variant">
+                                                        <span class="stock-variant__title">{{ variant.title }}:</span>
+                                                        <span class="stock-variant__qty">{{ variant.qty }}&nbsp;<span class="stock-variant__unit">{{ unit }}</span></span>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if variants_disp %}
+                <div id="artdet-print__other" class="product-variants">
+                    {% if variant_1_disp %}
+                    <div class="product-variant product-variant--1 row gutters-10 mb-2">
+                        <div class="col-4">
+                            <div class="print-list-title">{{ variant_1_title }}:</div>
+                        </div>
+                        <div class="col-8">
+                            {% for option in variant_1_options %}
+                                {% if not option.selected %}
+                                    <span class="print-list">{{ option.name }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if variant_2_disp %}
+                    <div class="product-variant product-variant--2 row gutters-10 mb-2">
+                        <div class="col-4">
+                            <div class="print-list-title">{{ variant_2_title }}:</div>
+                        </div>
+                        <div class="col-8">
+                            {% for option in variant_2_options %}
+                                {% if not option.selected %}
+                                    <span class="print-list">{{ option.name }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if variant_3_disp %}
+                    <div class="product-variant product-variant--3 row gutters-10 mb-2">
+                        <div class="col-4">
+                            <div class="print-list-title">{{ variant_3_title }}:</div>
+                        </div>
+                        <div class="col-8">
+                            {% for option in variant_3_options %}
+                                {% if not option.selected %}
+                                    <span class="print-list">{{ option.name }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if params_spec_disp %}
+                <div id="artdet-print__param-spec" class="artdet-print__spec-params">
+                    {% for param_spec in params_spec %}
+                    <div class="artdet-print__spec-param mb-2">
+                        <div class="row gutters-10 align-items-center">
+                            <div class="col-4">
+                                <div class="print-list-title">{{ param_spec.title }}:</div>
+                            </div>
+                            <div class="col-8">
+                                <div class="artdet-print__spec-param-value">
+                                    {% if (param_spec.type not in ['cust_input_text', 'cust_input_select', 'cust_input_file']) %}
+                                        {{ param_spec.value }}
+                                    {% else %}
+                                        {% if param_spec.type == 'cust_input_text' %}
+                                            -
+                                        {% elseif param_spec.type == 'cust_input_file' %}
+                                            {{ text.no_file_selected }}
+                                        {% elseif param_spec.type == 'cust_input_select' %}
+                                            {% for option in _context["param_" ~ param_spec.id ~ "_options"] %}
+                                                {% if not option.selected %}
+                                                    <span class="print-list">{{ option.text }}</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if product_type_disp %}
+                <div id="artdet__type" class="product-type{% if product_type_price %} has-price{% endif %}">
+                    {% for product_type in product_types %}
+                    <div class="ardet-print__product-type-item mb-2" id="page_artdet_product_type_{{ product_type.id }}">
+                        <div class="row gutters-10 align-items-center">
+                            <div class="col-4">
+                                <div class="print-list-title">
+                                    {{ product_type.title }}:
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                {% for type_value in product_type.type_values %}
+                                <span class="print-list{% if type_value.selected %} print-list-active{% endif %}{% if product_type.type == "color" or product_type.type == "color_text" %} list-color"{% endif %}"><span class="print-list-value{% if product_type.type == "color" or product_type.type == "color_text" %} list-color" style="background-color:#{{ type_value.value_orig }};"{% else %}"{% endif %}">{{ type_value.value }}</span>
+                                    {% if product_type.type == "color" or product_type.type == "color_text" %}<span class="product-type__value--color-text ml-0">{{ type_value.title }}</span>(#{{ type_value.value_orig }})
+                                    {% endif %}
+                                    {% if product_type_price %}
+                                        <span class="product-type__price font-xs round-bracket-around ml-3">{{ type_value.price }}</span>
+                                    {% endif %}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Plus service BEGIN -->
+                {% if plus_service_disp %}
+                <div id="artdet-print__service-plus" class="plus-service border-top border-bottom py-2">
+                    {% for service in plus_services %}
+                    <div class="row gutters-10 align-items-center">
+                        <span class="col-4 print-list-title">{{ service.name }}:</span>
+                        <span class="col-8 plus-service__price">{{ service.price }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <!-- Plus service END -->
+
+                {% if prices_disp %}
+                <div id="artdet-print__price" class="artdet-print__price mb-4">
+                    <div class="artdet__prices my-3">
+                        <div class="artdet__price-base-and-sale with-rrp row gutters-5 align-items-baseline{% if price_sale_disp %} has-price-sale{% endif %}">
+                            {% if price_sale_disp %}
+                                <div class="artdet__price-discount product-price--sale">
+                                    {{ price_discounted_text }}
+                                    {{ price_sale }}
+                                </div>
+                            {% endif %}
+                            {% if price_disp %}
+                                <div class="artdet__price-base product-price--base">
+                                    {{ price_normal_text }}
+                                    <span class="artdet__price-base-value{% if price_line_through and sale_disp %} text-line-through{% endif %}">{{ price }}</span>
+                                    {% if price_normal_info_text_disp %}
+                                        *
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if price_normal_info_text_disp %}
+                            <div class="info-text my-2 font-s">* {{ price_normal_info_text }}</div>
+                        {% endif %}
+
+                        {% if price_unit_disp %}
+                            <div class="artdet__price-unit">{{ text.unit_price }}: {{ price_unit }}</div>
+                        {% endif %}
+                    </div>
+
+                    {% if sale_text_disp %}
+                    <div class="artdet-print__price-discount-period mb-1">
+                        <span class="artdet-print__price-discount-period-start"><strong>{{ text.start }}: </strong>{{ sale_start }}</span>&nbsp;&nbsp;
+                        <span class="artdet-print__price-discount-period-end">
+                            {% if sale_have_end %}
+                                <strong>{{ text.end }}: </strong>{{ sale_end }}
+                            {% else %}
+                                {{ text.while_stock_lasts }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    {% if point_highlighted_disp %}
+                    <div class="artdet-print__virtual-point-highlighted mb-1">{{ text.points_for_purchase }}: {{ point }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if short_desc_disp %}
+                <div id="artdet-print__short-descrition" class="artdet-print__short-descripton py-3 font-s">
+                    {{ short_desc }}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if warehouses_disp %}
+            <div class="col-12">
+                {% include "embed_warehouse_list_1.html" with { print: true } %}
+            </div>
+            {% endif %}
+
+            <div id="page_artdet_print_details" class="col-12">
+
+                {% if details_disp %}
+                <div id="page_artdet_tulaj" class="mb-3">
+                    <div class="sub_titles">{{ text.details }}</div>
+                    <div class="sub_text mt-3 text-justify font-s">{{ details_content }}</div>
+                </div>
+                {% endif %}
+
+                {% if qty_discount_disp %}
+                <div id="artdet__discount" class="discount mb-5">
+                    <div class="row no-gutters discount__content align-items-center p-3">
+                        <div class="col-12 justify-content-center d-flex">
+                            <div class="discount__title">{{ text.quantity_discount }}</div>
+                        </div>
+                        <div class="col font-s">
+                            {% for row in qty_discount_rows %}
+                                <div class="row no-gutters text-center align-items-center">
+                                    <div class="col" data-label="{{ text.quantity }}">
+                                        <div class="discount__from-wrap font-s">
+                                            <span class="discount__from">{{ row.from }}+</span>
+                                            <span class="discount__unit">&nbsp;{{ unit }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col font-s" data-label="{{ text.discount }}">
+                                        {% if row.no_discount %}
+                                            <span class="discount__text-no-discount">-</span>
+                                        {% else %}
+                                            {% if row.percent %}
+                                                <span class="discount__amount percent-based">-{{ row.discount_amount }}</span>%
+                                            {% else %}
+                                                <span class="discount__amount amount-based">-{{ row.discount_amount }}</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="col text-cn font-weight-bold font-m font-md-l text-right" data-label="{{ text.product_price }}">
+                                        {{ row.discount_price }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if data_disp %}
+                    <div class="sub_titles">{{ text.data }}</div>
+                    <div id="page_artdet_datas" class="py-3">
+                        {% for param in params if params_disp %}
+                        <div class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ param.title }}</div>
+                            <div class="data_values col-8">
+                                <div class="artdet__param-value">
+                                {% if param.type in ['color','color_text'] %}
+                                    {% if _context["param_" ~ param.id ~ "_disp"] %}
+                                        {% if param.type == 'color_text' %}<span class="artdet__param-type--color-text">{{ _context["param_" ~ param.id ~ "_color_text"] }}</span>{% endif %}
+                                        <div class="artdet__param-type--color" style="{% if _context["param_" ~ param.id ~ "_color_code"] == "#ffffff" %}color:#dddddd;{% else %}color:{{ _context["param_" ~ param.id ~ "_color_code"] }};{% endif %}background-color:{{ _context["param_" ~ param.id ~ "_color_code"] }};"></div>
+                                    {% endif %}
+                                {% elseif param.type in ['icon','iconmore'] %}
+                                    {% if _context["param_" ~ param.id ~ "_disp"] %}
+                                        {% for icon in _context["param_" ~ param.id ~ "_icons"] %}
+                                            <img class="page_artdet_product_param_icon lazyload" width="{{ param_icon_width }}" height="{{ param_icon_height }}" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ icon.img_url }}" alt="{{ icon.img_alt }}" title="{{ icon.img_alt }}">
+                                        {% endfor %}
+                                    {% endif %}
+                                {% else %}
+                                    {{ param.value }}
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% if data_1_disp %}
+                        <div id="page_artdet_data1" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ data_1_title }}:</div>
+                            <div class="data_values col-8">{{ data_1_value }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if data_2_disp %}
+                        <div id="page_artdet_data2" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ data_2_title }}:</div>
+                            <div class="data_values col-8">{{ data_1_value }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if data_3_disp %}
+                        <div id="page_artdet_data3" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ data_3_title }}:</div>
+                            <div class="data_values col-8">{{ data_1_value }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if sku_disp %}
+                        <div id="page_artdet_cikk" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ text.sku }}:</div>
+                            <div class="data_values col-8">{{ sku }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if link_disp %}
+                        <div id="page_artdet_link" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ text.website }}:</div>
+                            <div class="data_values col-8"><a href="{{ link_url }}" target="_blank" rel="nofollow">{{ link_text }}</a></div>
+                        </div>
+                        {% endif %}
+
+                        {% if weight_disp %}
+                        <div id="page_artdet_weight" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ text.weight }}:</div>
+                            <div class="data_values col-8">{{ weight }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if point_disp %}
+                        <div id="page_artdet_virtpont" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ text.points_for_purchase }}:</div>
+                            <div class="data_values col-8">{{ point }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if min_qty_disp %}
+                        <div id="page_artdet_minmenny" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ text.minimum_order_quantity }}:</div>
+                            <div class="data_values col-8">{{ min_qty }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if unit_step_disp %}
+                        <div id="page_artdet_unitstep" class="artdet-print__data-row py-1 d-flex">
+                            <div class="data_titles col-4">{{ text.available_quantities }}:</div>
+                            <div class="data_values col-8">{{ unit_step }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div><!--page_artdet_content-->
+</div>

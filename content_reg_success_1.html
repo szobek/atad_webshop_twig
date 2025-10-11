@@ -1,0 +1,157 @@
+<div id="page_reg_ok_content" class="page_content">
+    <div class="main__title">
+        <div class="container">
+            <div class="main-title-wrapper d-flex flex-wrap align-items-center">
+                <h1 class="mb-0 mr-3"><span class="main-title">{{ text.profile }}</span></h1>
+                {% if tabs_disp %}<a class="reg__logout-btn btn btn-primary ml-auto" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    {% if tabs_disp %}
+    <div id="nav-tab-accordion-1" class="nav-tabs-accordion">
+        <div class="nav-tabs-container nav-tabs-outer--2 container">
+            <ul class="nav nav-tabs reg-tabs" role="tablist">
+                {% if tab_orders_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-orders" rel="orders" href="{{ tab_orders_url }}">{{ text.orders }}</a></li>
+                {% endif %}
+
+                {% if tab_subscriptions_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-subscriptions" rel="subscriptions" href="{{ tab_subscriptions_url }}">{{ text.subscriptions }}</a></li>
+                {% endif %}
+
+                {% if tab_discount_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-discount" rel="discount" href="{{ tab_discount_url }}">{{ text.discounts }}</a></li>
+                {% endif %}
+
+                {% if tab_favourites_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-favourites" rel="favourites" href="{{ tab_favourites_url }}">{{ text.favourites }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_filters_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_filters" rel="saved_filters" href="{{ tab_saved_filters_url }}">{{ text.saved_filters }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_cards_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_cards" rel="saved_cards" href="{{ tab_saved_cards_url }}">{{ text.saved_cards }}</a></li>
+                {% endif %}
+
+                {% if tab_saved_delivery_points_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-saved_delivery_points" rel="saved_delivery_points" href="{{ tab_saved_delivery_points_url }}">{{ text.saved_delivery_points }}</a></li>
+                {% endif %}
+
+                {% if tab_customer_addresses_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-customer_addresses" rel="customer_addresses" href="{{ tab_customer_addresses_url }}">{{ text.customer_addresses }}</a></li>
+                {% endif %}
+
+                {% if tab_modify_disp %}
+                    <li class="nav-item" role="presentation"><a class="nav-link" role="tab" id="tab-reg" rel="reg" href="{{ tab_modify_url }}">{{ text.data_modify }}</a></li>
+                {% endif %}
+
+                <li class="nav-item d-none" role="presentation"><a class="nav-link" role="tab" id="tab-logout" rel="logout" href="{{ tab_logout_url }}">{{ text.logout }}</a></li>
+            </ul>
+        </div>
+        <div class="tab-panes pane-accordion container">
+            {% if tab_orders_disp %}
+                <div class="pane-header" id="pane-header-orders">
+                    <a id="accordion-btn-orders" href="{{ tab_orders_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-orders">
+                        {{ text.orders }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_subscriptions_disp %}
+                <div class="pane-header" id="pane-header-subscriptions">
+                    <a id="accordion-btn-subscriptions" href="{{ tab_subscriptions_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-subscriptions">
+                        {{ text.subscriptions }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_discount_disp %}
+                <div class="pane-header" id="pane-header-discount">
+                    <a id="accordion-btn-discount" href="{{ tab_discount_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-discount">
+                        {{ text.discounts }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_favourites_disp %}
+                <div class="pane-header" id="pane-header-favourites">
+                    <a id="accordion-btn-favourites" href="{{ tab_favourites_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-favourites">
+                        {{ text.favourites }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_saved_filters_disp %}
+                <div class="pane-header" id="pane-header-saved_filters">
+                    <a id="accordion-btn-saved_filters" href="{{ tab_saved_filters_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_filters">
+                        {{ text.saved_filters }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_saved_cards_disp %}
+                <div class="pane-header" id="pane-header-saved_cards">
+                    <a id="accordion-btn-saved_cards" href="{{ tab_saved_cards_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_cards">
+                        {{ text.saved_cards }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_saved_delivery_points_disp %}
+            <div class="pane-header" id="pane-header-saved_delivery_points">
+                <a id="accordion-btn-saved_delivery_points" href="{{ tab_saved_delivery_points_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-saved_delivery_points">
+                    {{ text.saved_delivery_points }}
+                </a>
+            </div>
+            {% endif %}
+
+            {% if tab_customer_addresses_disp %}
+                <div class="pane-header" id="pane-header-customer_addresses">
+                    <a id="accordion-btn-customer_addresses" href="{{ tab_customer_addresses_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-customer_addresses">
+                        {{ text.customer_addresses }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if tab_modify_disp %}
+                <div class="pane-header" id="pane-header-reg">
+                    <a id="accordion-btn-reg" href="{{ tab_modify_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-reg">
+                        {{ text.data_modify }}
+                    </a>
+                </div>
+            {% endif %}
+
+            <div class="pane-header d-none" id="pane-header-logout">
+                <a id="accordion-btn-logout" href="{{ tab_logout_url }}" class="pane-header-btn btn" aria-expanded="false" aria-controls="pane-logout">
+                    {{ text.logout }}
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="reg-ok__texts mb-5">
+        <div class="container">
+            <div class="reg-ok-alert alert alert-success icon--b-check" role="alert">{{ info_text }}</div>
+            {% if need_admin_accept %}
+                <div class="reg-ok__control-admin alert alert-warning icon--b-exclamation" role="alert">{{ text.registration_need_activation }}</div>
+            {% endif %}
+            {% if loggedin_disp %}
+                <div class="reg-ok__logged-in alert alert-info icon--b-info" role="alert">{{ text.auto_login_after_registration }}</div>
+            {% endif %}
+            {% if cart_disp %}
+                <div class="reg-ok__cart mb-3 text-center">
+                    <strong>{{ text.order_not_sent }}</strong>
+                </div>
+            {% endif %}
+            <div class="reg-ok__quest">{{ text.contact_admin_on_problem }}</div>
+        </div>
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>

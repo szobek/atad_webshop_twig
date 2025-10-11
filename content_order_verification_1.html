@@ -1,0 +1,60 @@
+<div id="page_order_control_content" class="page_content shipping_method_{{ shipping_method_id }} payment_method_{{ payment_method_id }} js-validation">
+    {{ orderflow }}
+
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    <div class="container">
+        <div class="row gutters-10">
+            <div class="order-left-content">
+                {{ script }}{{ form }}
+
+                <div class="order-control__main" id="page_order_control_main">
+                    <div class="row gutters-5">
+                        {% embed common_vars.layout_urls.embed_order_content_1 %}{% endembed %}
+                        <div class="col-12 order-control-section__col pt-4">
+                        {% embed common_vars.layout_urls.embed_cart_content_1 %}
+                            {% block qtyInput %}{% endblock %}
+                        {% endembed %}
+                        </div>
+
+                        {% if stock_alert_disp %}
+                        <div class="cart-alerts mb-5 d-none">
+                            <div class="cart-stock-alert alert alert-warning icon--b-exclamation" role="alert">{{ text.stock_alert }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% for plus_content in plus_contents %}
+                        <div class="mb-5">
+                            {{ plus_content.content }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="order-right-content">
+                {% embed common_vars.layout_urls.embed_summary_box_1 %}
+                    {% block nextStepOnCart %}{% endblock %}
+                    {% block nextStepOnMethods %}{% endblock %}
+                    {% block comment %}{% endblock %}
+                    {% block coupon %}{% endblock %}
+                    {% block paymentMethod %}{% endblock %}
+                    {% block shippingMethod %}{% endblock %}
+                    {% block scriptMods %}{% endblock %}
+                {% endembed %}
+            </div>
+        </div>
+    </div>
+
+    {% if retargeting_div_checkout_disp %}
+        <div class="container">
+        {{ retargeting_div_checkout }}
+        </div>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+
+    <div class="order-control__back-btn-wrap">
+        <div class="container">
+            <button class="order-control__back-btn btn btn--back" id="button_back" type="button" onclick="order_control_back();">{{ text.button_back }}</button>
+        </div>
+    </div>
+</div>

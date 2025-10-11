@@ -1,0 +1,311 @@
+<div id="page_order_return_content" class="page_content">
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    <div class="order-return__container container">
+        <div class="order-return__btn-back-wrap mb-5">
+            <a class="btn btn--back" href="{{ back_url }}">{{ text.button_back }}</a>
+        </div>
+
+    {{ form_start }}
+
+        <section class="order-return-items row gutters-10 gutters-xxl-20 row-gap-20 row-gap-xxl-40 mb-5">
+            {% for product in products %}
+                {% if product.plus_item %}
+                    <span class="order-return-plus-item__wrapper">
+                        {% if product.type == "service_plus" %}
+                        <div class="cart-plus-item__plus-service d-flex align-items-center">
+                            <span class="cart-plus-item__plus-service-icon mr-2 mr-sm-3 icon--plus-circle"></span>
+                            <span class="cart-plus-item__plus-service-text d-none">{{ text.plus_service }}: </span>
+                            <span class="cart-plus-item__plus-service-name-and-qty-wrap" data-qty="{{ product.qty }} {{ product.unit }}">{{ product.name }}</span>
+                        </div>
+                        {% else %}
+                        <div class="cart-plus-item__plus-discount d-flex align-items-center">
+                            <span class="cart-plus-item__discount-icon mr-3 {% if product.type == 'gift' %}icon--gift{% else %}icon--percent{% endif %}"></span>
+                            {% if product.variant_1_disp %}
+                                <div class="cart-plus-item__name d-none">{{ product.name }}</div>
+                                <div class="cart-plus-item__discount">
+                                    {% if product.type == "gift" %}
+                                        <span class="cart-plus-item__discount-type">{{ product.variant_1_title }}</span>
+                                        <span class="cart-plus-item__discount-for-sku ml-1 d-none">{{ product.variant_1_value }}</span>
+                                    {% else %}
+                                        <span class="cart-plus-item__discount-value">
+                                            <span class="plus-item-coupon-text pr-1">{{ text.coupon_code }}:</span>
+                                            <span class="plus-item-coupon-value">{{ product.variant_1_value }}</span>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="order-return-item__qty-and-unit d-none">
+                                    <span class="order-return-item__qty">{{ product.qty }}</span>
+                                    <span class="order-return-item__unit">{{ product.unit }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <div class="order-return-item__sum-prices text-right ml-auto" data-text="{{ text.total_amount }}">
+                            {% if price_net_disp %}
+                            <div class="order-return-item__price-net product-price--base price-net-format" data-text="{{ text.net }}">
+                                {{ product.total_price_net }}
+                            </div>
+                            {% endif %}
+                            <div class="order-return-item__price-gross product-price--base price-gross-format" data-text="{{ text.gross }}">
+                                {{ product.total_price_gross }}
+                            </div>
+                        </div>
+                        <input class="custom-control-input return_item d-none" type="checkbox" id="return_item_checkbox_{{ product.num }}" name="{{ product.return_item_input_name }}" value="{{ order_key }}¤{{ product.num }}¤{{ product.qty }}" data-sku="{{ product.data_sku }}" {% if product.checked %} checked{% endif %}>
+                    </span>
+                    <input class="custom-control-input return_item d-none" type="checkbox" id="return_item_checkbox_{{ product.num }}" name="{{ product.return_item_input_name }}" value="{{ order_key }}¤{{ product.num }}¤{{ product.qty }}" data-index="{{ product.num }}" data-sku="{{ product.data_sku }}" {% if product.checked %} checked{% endif %}>
+                {% else %}
+
+                    {% if not loop.first %}
+                        </div>
+                    </article>
+                    {% endif %}
+                    <article class="col-sm-6 col-md-4 col-xl-3 order-return-item{% if product.plus_item %} order-return-item--plus{% if product.type == "service_plus" %} order-return-item--service-plus{% else %} order-return-item--discount{% endif %}{% else %} order-return-item--product{% endif %}{% if product.error_disp %} is-invalid{% endif %}">
+                        <div class="order-return-item__inner">
+                            <div class="order-return-item__inner2">
+                                <div class="order-return__checkbox custom-control custom-checkbox no-label-text">
+                                    <input class="custom-control-input return_item" type="checkbox" id="return_item_checkbox_{{ product.num }}" data-index="{{ product.num }}" name="{{ product.return_item_input_name }}" value="{{ order_key }}¤{{ product.num }}¤{{ product.qty }}" data-sku="{{ product.data_sku }}" {% if product.checked %} checked{% endif %}>
+                                    <label class="custom-control-label" for="return_item_checkbox_{{ product.num }}"></label>
+                                </div>
+
+                                <div class="order-return-item__img-outer">
+                                    <div class="order-return-item__img-wrap product-img-wrapper">
+                                        <img class="order-return-item__img product-img lazyload" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ product.img_url }}"{% if product.img_retina_exists %} data-srcset="{{ product.img_retina_url }} {{ product.img_retina_size }}"{% endif %} alt="{{ product.img_alt }}" title="{{ product.img_alt }}" width="{{ backvar.img_maxwidth }}" height="{{ backvar.img_maxheight }}" />
+                                        <div class="loading-spinner"></div>
+                                    </div>
+                                </div>
+                                <div class="order-return-item__name-wrap mb-3">
+                                    <a class="order-return-item__name" href="{{ product.url }}">{{ product.name }}</a>
+                                    <div class="order-return-item__sku product__sku font-s" title="{{ text.sku }}">{{ product.sku }}</div>
+                                </div>
+
+                                {% if product.variant_1_disp %}{#it has variant(s)#}
+                                <div class="order-return-item__variants mt-3 font-s line-height-12">
+                                    {% set variantCount = 1 %}
+
+                                    {% if product.variant_3_disp %}
+                                        {% set variantCount = 3 %}
+                                    {% elseif product.variant_2_disp %}
+                                        {% set variantCount = 2 %}
+                                    {% endif %}
+
+                                   {% for index in 1..variantCount %}
+                                   <div class="order-return-item__variant order-return-item__variant-{{ index }}">
+                                       <span class="order-return-item__variant-title">{{ attribute(product,"variant_"~ index ~ "_title") }}:</span>
+                                       <span class="order-return-item__variant-value">{{ attribute(product,"variant_"~ index ~ "_value") }}</span>
+                                   </div>
+                                   {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if product.params_disp %} {#it has product param #}
+                                <div class="order-return-item__params mt-3 font-s">
+                                    {% for param in product.params %}
+                                    <div class="order-return-item__param order-return-item__param-{{ param.id }}">
+                                        <span class="order-return-item__param-name">{{ param.name }}:</span>
+                                        <span class="order-return-item__param-value">{{ param.value }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                <div class="order-return-item__prices-wrap d-flex justify-content-between mb-4">
+                                    <div class="order-return-item__qty" data-text="{{ text.quantity }}">
+                                        <span class="order-return-item__qty-value">{{ product.qty }}</span>
+                                        <span class="order-return-item__qty-unit">&nbsp;{{ product.unit }}</span>
+                                    </div>
+
+                                    <div class="order-return-item__sum-prices text-right ml-auto" data-text="{{ text.total_amount }}">
+                                        {% if price_net_disp %}
+                                        <div class="order-return-item__sum-price-net product-price--base price-net-format" data-text="{{ text.net }}">
+                                            {{ product.total_price_net }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="order-return-item__sum-price-gross product-price--base price-gross-format" data-text="{{ text.gross }}">{#current sum gross price #}
+                                            {{ product.total_price_gross }}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if return_cause_type == 'options' %}
+                                    {% if product.input_return_cause_disp %}
+                                    <div class="form-group mb-4">
+                                        <label for="return_item_{{ product.input_return_cause_id }}" class="font-s">{{ text.product_return_cause }}:</label>
+                                        <div class="form-select-group">
+                                            <select disabled="disabled" class="js-return-cause-input form-control" placeholder="{{ text.product_return_cause }}" name="{{ product.input_return_cause_name }}" id="return_item_{{ product.input_return_cause_id }}">
+                                                {% for option in product.return_cause_options %}
+                                                <option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <input type="hidden" name="{{ product.input_return_cause_name }}" value="">
+                                    {% endif %}
+                                {% else %}
+                                    {% if product.input_return_cause_disp %}
+                                    <div class="form-group form-text-area-group mb-4">
+                                        <label class="font-s" for="return_item_{{ product.input_return_cause_id }}">{{ text.product_return_cause }}:</label>
+                                        <textarea class="form-control js-return-cause-input" type="text" placeholder="{{ text.product_return_cause }}" id="return_item_{{ product.input_return_cause_id }}" name="{{ product.input_return_cause_name }}" rows="3" readonly>{{ product.input_return_cause_value }}</textarea>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                    {% endif %}
+                {% if loop.last %}
+                    </div>
+                </article>
+                {% endif %}
+            {% endfor %}
+        </section>
+
+        {% if shipping_method_disp or payment_method_disp %}
+        <div class="order-mods__main mb-5">
+            <div class="row gutters-10 gutters-xxl-20 row-gap-20 row-gap-xxl-40">
+                {% if shipping_method_disp %}
+                <div class="col-12 col-lg-6 order-mods-section">
+                    <div class="order-mods-section__outer">
+                        <section class="order-mods-section">
+                            <div class="order-mods__main-title">{{ text.shipping_method }}</div>
+                            {% for method in shipping_methods %}
+                            <div class="form-group order-mods__item js-order-mods-item{% if method.checked %} order-mods--active{% endif %}">
+                                <div class="custom-control custom-radio clearfix">
+                                    <input class="custom-control-input" type="radio" id="szall_id_{{ method.id }}" name="szall" value='{{ method.input_value }}' {% if method.radio_checked %} checked{% endif %}>
+                                    <label class="custom-control-label order-mods__name" for="szall_id_{{ method.id }}">{{ method.name }}</label>
+                                </div>
+                                {% if method.details_disp %}
+                                <div class="order-mods__details my-3 js-order-mods-details"{% if method.checked %} style="display:block;"{% endif %}>{{ method.details }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </section>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if payment_method_disp %}
+                <div class="col-12 col-lg-6 order-mods-section">
+                    <div class="order-mods-section__outer">
+                        <section class="order-mods-section">
+                            <div class="order-mods__main-title">{{ text.payment_method }}</div>
+                            {% for method in payment_methods %}
+                            <div class="form-group order-mods__item js-order-mods-item{% if method.checked %} order-mods--active{% endif %}">
+                                <div class="custom-control custom-radio clearfix">
+                                    <input class="custom-control-input payment_radio" id="fiz_id_{{ method.id }}" data-type="{{ method.input_hidden_value }}" type="radio" name="fiz" value='{{ method.input_value }}¤{{ method.input_hidden_value }}'{% if method.radio_checked %} checked{% endif %}>
+                                    <label class="custom-control-label order-mods__name" for="fiz_id_{{ method.id }}">{{ method.name }}</label>
+                                </div>
+                                {% if method.details_disp %}
+                                <div class="order-mods__details my-3 js-order-mods-details"{% if method.checked %} style="display:block;"{% endif %}>{{ method.details }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </section>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if customer_params_disp %}
+                <div class="col-12 col-lg-6 order-mods-section" id="bank_account_data">
+                    <div class="order-mods-section__outer">
+                        <section class="order-mods-section">
+                            <div class="order-mods__main-title">{{ text.more_customer_data }}</div>
+                            {% for param in customer_params %}
+                                {% if param.disp %}
+                                <div class="order-return__customer-parameter mb-3" data-payment-type="{{ param.payment_type }}">
+                                    {% if param.type == 'radio' %}
+                                        <fieldset class="form-group">
+                                            <legend>{{ param.name }}</legend>
+                                            <input type="hidden" name="cust_param[]" id="cust_param_hidden_{{ param.id }}" value="">
+                                            {% for option in param.options %}
+                                                <div class="custom-control custom-radio">
+                                                    <input class="custom-control-input{% if param.error_disp %} is-invalid{% endif %}" id="cust_param_radio_{{ param.id }}_{{ option.num }}" name="cust_param_{{ param.id }}" type="radio" value="{{ option.text }}" {% if option.checked %}checked="checked"{% endif %}/>
+                                                    <label class="custom-control-label" for="cust_param_radio_{{ param.id }}_{{ option.num }}">{{ option.text }}</label>
+                                                    {% if loop.last %}<div class="invalid-feedback">{{ text.error_required }}</div>{% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </fieldset>
+                                    {% else %}
+                                        <div class="form-group" id="customer_parameter_{{ param.id }}">
+                                            <label for="{{ param.id }}">{{ param.name }}</label>
+                                            <input class="form-control{% if param.error_disp %} is-invalid{% endif %}" type="text" name="cust_param[]" id="{{ param.id }}" value="{{ param.value }}" placeholder="{{ param.name }}">
+                                            <div class="invalid-feedback">{{ text.error_required }}</div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </section>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="col-12 col-lg-6 order-mods-section">
+                    <div class="order-mods-section__outer">
+                        <section class="order-mods-section">
+                            <div class="form-group" id="return-order__comment">
+                                <label for="input_customer_comment" class="order-mods__main-title mb-4">{{ text.note }}</label>
+                                <textarea name="input_customer_comment" class="form-control" id="input_customer_comment" placeholder="{{ text.note }}" rows="5">{{ comment_value }}</textarea>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="form-group d-flex flex-wrap gap-10">
+            <a class="btn btn--back" href="{{ back_url }}">{{ text.button_back }}</a>
+            <button id="order_return_send" class="btn btn-primary" type="button" onclick="$('#return_order').submit();">{{ text.button_order_return_start }}</button>
+        </div>
+    {{ form_end }}
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>
+
+<script>
+    $(document).ready(function () {
+        var returnViewHandler = new returnOrderViewHandler({
+            returnItem:"[id^='return_item_checkbox_']",
+            rowItem: ".order-return-item",
+            typeInput: parseInt($("#type_input").val()),
+            inputItem: ".js-return-cause-input",
+            errorClass: "is-invalid",
+            customerParamRowClass:".order-return__customer-parameter",
+            customerParamWrapper:"#bank_account_data",
+            paymentRadioClass:".payment_radio",
+            paymentTypeAttr:"data-payment-type",
+            visibleClass:"js_visible_mod",
+            notVisibleClass:"js_not_visible_mod",
+            returnSendButton:"#order_return_send",
+            customerParameterRadio: "[id^=cust_param_radio_]",
+            convertClickedIndex:false
+        });
+
+        returnViewHandler.returnItemClick();
+        returnViewHandler.filterMods($(".payment_radio:checked").attr("data-type"));
+        returnViewHandler.paymentRadioClick();
+        returnViewHandler.isAnyChecked(1);
+        returnViewHandler.customerParameterRadioClick();
+
+        // Add active class on page load to selected item
+        /*
+        var checkedRadio = $(".js-order-mods-item input[type=radio]:checked");
+        checkedRadio.closest(".js-order-mods-item").addClass("order-mods--active").find('.js-order-mods-details').slideDown();*/
+
+        function removeActiveClassFromOrderMods(section) {
+            var $orderModsSection = section.closest('.order-mods-section');
+            $(".js-order-mods-item", $orderModsSection).each(function() {
+                var $this = $(this);
+                if ($this.hasClass('order-mods--active')) {
+                    $this.removeClass('order-mods--active').find('.js-order-mods-details').slideUp();
+                }
+            })
+        }
+
+        $('.js-order-mods-item input[type=radio]').on('change', function() {
+            var $this = $(this);
+            removeActiveClassFromOrderMods($this);
+            $this.closest(".js-order-mods-item").addClass("order-mods--active").find('.js-order-mods-details').slideDown();
+        });
+    });
+</script>

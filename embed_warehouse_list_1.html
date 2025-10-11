@@ -1,0 +1,58 @@
+<div id="artdet__warehouses" class="artdet__warehouses my-5">
+    {% for warehouse in warehouses %}
+        <div class="artdet__warehouse warehouse-{{ warehouse.id}} mb-2 pb-2{% if not loop.last %} border-bottom{% endif %}">
+            <div class="artdet__warehouse--inner d-flex no-gutters">
+                <div class="artdet__warehouse-left col">
+                    <div class="artdet__warehouse-name text-bold font-l{% if warehouse.info != "" %} mb-2{% endif %}">{{ warehouse.name }}</div>
+                </div>
+                <div class="artdet__warehouse-right col-auto d-flex align-items-center">
+                    <div class="artdet__warehouse-quantity text-right w-100">
+                        {% if warehouse.stock_text_disp %}
+                            {% if warehouse.quantity > 0 %}
+                                {{ text.status_on_stock }}
+                            {% else %}
+                                {{ text.status_no_stock }}
+                            {% endif %}
+                        {% else %}
+                            {% if warehouse.quantity > 0 %}
+                                {{ warehouse.quantity }} {{ unit }}
+                            {% else %}
+                                0 {{ unit }}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if warehouse.variant_infos is iterable and not print %}
+                            <span class="artdet__warehouse-info icon--info mr-2"
+                                  data-tippy="{% for variant_info in warehouse.variant_infos %}
+                                    <div class='artdet__warehouse-variant-info mb-2 pb-2 d-flex flex-nowrap justify-content-between'>
+                                        <div class='artdet__warehouse-variant-info-name'>{{ variant_info.name}}</div>
+                                        <div class='artdet__warehouse-variant-info-quantity'>
+                                            {% if variant_info.stock_text_disp %}
+                                                {% if variant_info.quantity > 0 %}
+                                                    {{ text.status_on_stock }}
+                                                {% else %}
+                                                    {{ text.status_no_stock }}
+                                                {% endif %}
+                                            {% else %}
+                                                {% if variant_info.quantity > 0 %}
+                                                    {{ variant_info.quantity }} {{ unit }}
+                                                {% else %}
+                                                    0 {{ unit }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}"></span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if warehouse.info != "" %}
+            <div class="artdet__warehouse-info-warapper d-flex no-gutters">
+                <div class="artdet__warehouse-info font-m">{{ warehouse.info }}</div>
+            </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

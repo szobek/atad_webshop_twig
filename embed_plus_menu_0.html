@@ -1,0 +1,29 @@
+{% if menu_disp %}
+    {% if level == 0 %}
+        {% set tempUlClass = 'nav nav--menu js-navbar-nav' %}
+        {% set tempLinkClass = 'nav-link' %}
+    {% elseif level == 1 %}
+        {% set tempUlClass = 'dropdown-menu dropdown--menu dropdown-level--' ~ level %}
+        {% set tempLinkClass = 'dropdown-item' %}
+    {% else %}
+        {% set tempUlClass = 'submenu dropdown-menu dropdown-level--' ~ level %}
+        {% set tempLinkClass = 'dropdown-item' %}
+    {% endif %}
+
+    <ul aria-label="{{ level > 0 ? parent_name ~ ' ' ~ text.menu_item : text.menu_items }}"{% if level == 0 %} id="nav--menu"{% endif %} class="{{ tempUlClass }}">
+        {% for menu_item in menu_list %}
+        <li class="nav-item{% if menu_item.menu_sub_disp %} dropdown{% endif %}{% if level == 0 %} nav--main{% endif%} js-nav-item-{{ menu_item.id }}">
+            [% if header_menu_click == "1" %]
+            <a class="{{ tempLinkClass }}{% if menu_item.menu_sub_disp %} dropdown-toggle{% endif %}" href="{{ menu_item.url }}"{% if menu_item.target_blank %} target="_blank"{% endif %} {% if menu_item.menu_sub_disp %}role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
+            [% else %]
+            <a class="{{ tempLinkClass }}{% if menu_item.menu_sub_disp %} dropdown-toggle{% endif %}" {% if menu_item.menu_sub_disp %}href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% else %}href="{{ menu_item.url }}"{% if menu_item.target_blank %} target="_blank"{% endif %}{% endif %}>
+            [% endif %]
+                {{ menu_item.name }}
+            </a>
+            {% if menu_item.menu_sub_disp %}
+            {{ menu_item.menu_sub_list }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}

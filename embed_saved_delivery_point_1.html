@@ -1,0 +1,20 @@
+<div id="saved-delivery-point__card-{{ shipping_method.id }}" class="{{ grid }} saved-delivery-point__card js-saved-delivery-point-card">
+    <div class="saved-delivery-point__card-inner position-relative overflow-hidden">
+        <div class="saved-delivery-point__method-name font-xl font-weight-bold mb-4 pr-5">{{ shipping_method.name }}</div>
+
+        {% if shipping_method.point_selected %}
+            <div class="saved-delivery-point__mod-name-and-zip mb-4 font-weight-bold font-l">{{ shipping_method.selected_point_name }}</div>
+            <div class="saved-delivery-point__mod-city">{{ shipping_method.selected_point_zip_code }} {{ shipping_method.selected_point_city }}</div>
+            <div class="saved-delivery-point__mod-street mb-3 font-s">{{ shipping_method.selected_point_street }}</div>
+        {% else %}
+            <div class="saved-delivery-point__mod-name font-s mt-auto">
+                {{ text.no_point_selected_in_this_method }}
+            </div>
+        {% endif %}
+
+        <div class="saved-delivery-point__buttons">
+            <a class="saved-delivery-point__modify-btn btn btn-square icon--edit" type="button" href="{{ shipping_method.details_url }}" title="{{ text.button_modify }}" aria-label="{{ text.button_modify }}"></a>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,93 @@
+{% if type == 'list' %}
+	{% set font_sizes = { 'very_small': '6px', 'small': '8px', 'medium': '10px', 'large': '12px', 'very_large': '14px' } %}
+	{% set sticker_sizes = { 'very_small': '30px', 'small': '50px', 'medium': '70px', 'large': '90px', 'very_large': '110px', 'original': '100%' } %}
+{% else %}
+	{% set font_sizes = { 'very_small': '9px', 'small': '11px', 'medium': '13px', 'large': '15px', 'very_large': '17px' } %}
+	{% set sticker_sizes = { 'very_small': '70px', 'small': '90px', 'medium': '110px', 'large': '130px', 'very_large': '150px', 'original': '100%' } %}
+{% endif %}
+{% if stickers != '' %}
+	{% set stickers_output %}
+		{% for position in position_array %}
+			{% if stickers[position] != '' %}
+				<div class="stickers" data-orientation="{{ sticker_orientations[position] }}" data-position="{{ position }}">
+					{% for sticker in stickers[position] %}
+						{% set correction = "" %}
+						{% if sticker.type == "preset_image" %}
+							{% if sticker.config.preset_image_index == "1" %}{% set correction = 'padding: 7% 2%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "2" %}{% set correction = 'padding: 7% 2%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "3" %}{% set correction = 'padding-right: 15%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "4" %}{% set correction = 'padding: 5% 20%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "7" %}{% set correction = 'padding: 3% 15%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "8" %}{% set correction = 'padding: 3% 15%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "9" %}{% set correction = 'padding: 20% 3%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "10" %}{% set correction = 'padding: 20% 10%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "11" %}{% set correction = 'padding: 20% 15%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "12" %}{% set correction = 'padding: 5% 10% 32%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "18" %}{% set correction = 'padding: 20%' %}{% endif %}
+							{% if sticker.config.preset_image_index == "20" %}{% set correction = 'padding: 3% 6% 32%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "21" %}{% set correction = 'padding: 0 4% 34%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "22" %}{% set correction = 'padding-bottom: 22%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "24" %}{% set correction = 'padding: 20% 22%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "25" %}{% set correction = 'padding-bottom: 16%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "26" %}{% set correction = 'padding-bottom: 10%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "27" %}{% set correction = 'padding-bottom: 10%;' %}{% endif %}
+							{% if sticker.config.preset_image_index == "34" %}{% set correction = 'padding: 3% 10% 30%;' %}{% endif %}
+						{% endif %}
+						{% if (sticker.type == "text" and sticker.caption != "") or sticker.type != "text" %}
+							<div data-id="{{ sticker.sticker_id }}" class="sticker{% if sticker.type == 'text' %} badge{% elseif sticker.tooltip != '' %} has-img{% endif %}"
+								 {% if sticker.type == "preset_image" %}
+									data-preset-image-index="{{ sticker.config.preset_image_index }}"
+								 {% endif %}
+								 {% if sticker.tooltip != '' %}
+								    tabindex="0" data-tippy="{{ sticker.tooltip }}"
+								 {% endif %}
+								 {% set sticker_style %}
+									 order: {{ sticker.order }};
+									 {% if sticker.type == 'image' %}
+										 {% if sticker.config.image_extension|lower != 'svg' %}max-{% endif %}width: {{ sticker_sizes[sticker.config.sticker_size] }};
+									 {% elseif sticker.type == 'preset_image' %}
+										 width: {{ sticker_sizes[sticker.config.sticker_size] }};
+										 color: {{ sticker.config.bg_color }};
+									 {% elseif sticker.type == 'text' %}
+										 color: {{ sticker.config.font_color }};
+										 font-weight: {{ sticker.config.font_weight }};
+										 font-size: {{ font_sizes[sticker.config.sticker_size] }};
+										 background-color: {{ sticker.config.bg_color }};
+										 border: {% if sticker.config.border_style != "none" %}{{ sticker.config.border_width }}px {{ sticker.config.border_style }} {{ sticker.config.border_color }}{% else %}none{% endif %};
+									 {% endif %}
+								 {% endset %}
+								 style="{{ sticker_style|replace({'\n':'','\r':'','\t':''})|trim }}"
+								 data-type="{{ sticker.type }}">
+
+								{% if sticker.type == 'image' %}
+									<img src='{{ storage_url }}/product_sticker/sticker_{{ sticker.sticker_id }}.{{ sticker.config.image_extension }}' alt="{{ sticker.img_alt }}" />
+								{% elseif sticker.type == 'preset_image' %}
+									{{ sticker.config.preset_image|replace({'gradient-':prefix~'gradient-'}) }}
+								{% endif %}
+
+								{% set caption_style %}
+									color: {{ sticker.config.font_color }};
+									font-weight: {{ sticker.config.font_weight }};
+									font-size: {{ font_sizes[sticker.config.font_size] }};
+									{% if sticker.type == "preset_image" %}{{ correction }}{% endif %}
+								{% endset %}
+
+								{% if sticker.type in ['image','preset_image'] %}<span class="sticker-caption" style="{{ caption_style|replace({'\n':'','\r':'','\t':''})|trim }}">{% endif %}{{ sticker.caption }}{% if sticker.type in ['image','preset_image'] %}</span>{% endif %}
+							</div>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% endif %}
+		{% endfor %}
+	{% endset %}
+
+	{% if on_image %}
+		{% if has_stickers_on_image or (type == 'list' and product.has_stickers_on_image) %}
+			<div class="stickers-wrap">
+				{{ stickers_output }}
+			</div>
+		{% endif %}
+	{% else %}
+		{{ stickers_output }}
+	{% endif %}
+{% endif %}

@@ -1,0 +1,77 @@
+{% if start_disp %}
+    <div class="col align-self-stretch">
+	    <section class="subscribe-newsletter h-100" id="subscribe-newsletter">
+    	<div class="subscribe-newsletter__container container container-max-lg px-5 h-100 d-flex flex-column justify-content-center">
+            [[ start_newsletter_title ]]
+            [[ start_newsletter_text ]]
+            <div class="subscribe-newsletter__box--box subscribe-newsletter__box-input-count-{{ field_num }}{% if address_disp %} has-address{% endif %}">
+                {{ normal_form_start }}
+
+                {% if name_disp %}
+                <div class="subscribe-newsletter-box__name">
+                    <div class="form-group">
+                        <label for="news_name">{{ text.name }}</label>
+                        <input class="subscribe-newsletter-box__name form-control" value="{{ name_value }}" name="news_name" placeholder="{{ text.name }}" id="news_name" type="text" maxlength="200">
+                    </div>
+                </div>
+                {% endif %}
+                {% if address_disp %}
+                <div class="subscribe-newsletter-box__address">
+                    <div class="form-group">
+                        <label for="news_addr">{{ text.address }}</label>
+                        <input class="subscribe-newsletter-box__address form-control" value="{{ address_value }}" name="news_addr" placeholder="{{ text.address }}" id="news_addr" type="text" maxlength="200">
+                    </div>
+                </div>
+                {% endif %}
+                <div class="subscribe-newsletter-box__email">
+                    <div class="form-group">
+                        <label for="news_emai">{{ text.email }}</label>
+                        <input class="subscribe-newsletter-box__email form-control" value="{{ email_value }}" id="news_emai" placeholder="{{ text.email }}" name="news_emai" type="email" maxlength="200">
+                    </div>
+                </div>
+                <div class="subscribe-newsletter-box__privacy-group form-group text-center">
+                    <div class="custom-control custom-checkbox d-inline-block subscribe-newsletter-box__privacy_policy font-xs">
+                        <input class="custom-control-input" name="news_privacy_policy" id="news_privacy_policy_{{ box_num }}" type="checkbox" value="1">
+                        <label class="custom-control-label text-left" for='news_privacy_policy_{{ box_num }}'>{{ text.accept_privacy_policy }}</label>
+                    </div>
+                </div>
+                <div class="subscribe-newsletter-box__button-up-wrap text-center">
+                    <button class="subscribe-newsletter-box__button-up btn btn-primary btn-lg" type="button" onclick="newsletter{{ box_num }}_submit();">{{ text.button_subscribe }}</button>
+                </div>
+
+                {{ end_script }}
+                {{ normal_form_end }}
+            </div>
+        </div>
+    </section>
+    </div>
+{% else %}
+    <div class='newsletter__box--box newsletter__box-input-count-{{ field_num }}'>
+        {{ normal_form_start }}
+        {% if name_disp %}
+        <div class="form-group subscribe-newsletter-box__name">
+            <label for="news_name">{{ text.name }}</label>
+            <input class="subscribe-newsletter-box__name form-control" value="{{ name_value }}" name="news_name" placeholder="{{ text.name }}" id="news_name" type="text" maxlength="200">
+        </div>
+        {% endif %}
+        {% if address_disp %}
+        <div class="form-group subscribe-newsletter-box__address">
+            <label for="news_addr">{{ text.address }}</label>
+            <input class="subscribe-newsletter-box__address form-control" value="{{ address_value }}" name="news_addr" placeholder="{{ text.address }}" id="news_addr" type="text" maxlength="200">
+        </div>
+        {% endif %}
+        <div class="form-group subscribe-newsletter-box__email">
+            <label for="news_emai">{{ text.email }}</label>
+            <input class="subscribe-newsletter-box__email form-control" value="{{ email_value }}" id="news_emai" placeholder="{{ text.email }}" name="news_emai" type="email" maxlength="200">
+        </div>
+        <div class='custom-control custom-checkbox d-inline-block subscribe-newsletter-box__privacy_policy font-xs'>
+            <input class="custom-control-input" name="news_privacy_policy" id="news_privacy_policy_{{ box_num }}" type="checkbox" value="1">
+            <label class="custom-control-label" for='news_privacy_policy_{{ box_num }}'>{{ text.accept_privacy_policy }}</label>
+        </div>
+        <div class="subscribe-newsletter-box__button-up-wrap py-2 text-center">
+            <button class="subscribe-newsletter-box__button-up btn btn-primary" type="button" onclick="newsletter{{ box_num }}_submit();">{{ text.button_subscribe }}</button>
+        </div>
+        {{ end_script }}
+        {{ normal_form_end }}
+    </div>
+{% endif %}

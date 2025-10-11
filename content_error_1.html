@@ -1,0 +1,15 @@
+<div id="page_fault_content" class="page_content container">
+    {% if error_cookie %}
+        <div class="alert-cookie alert alert-danger" role="alert">
+            <div class="alert-cookie__title alert-heading icon--b-exclamation">{{ text.error_cookie_title }}</div>
+            <div class="alert-cookie__sub-title">{{ text.error_cookie_subtitle }}</div>
+        </div>
+    {% endif %}
+
+    {% if error_master %}
+        <div class="alert-master alert alert-warning" role="alert">
+            <div class="alert-master__title alert-heading icon--b-exclamation">{{ text.error_master_title }}</div>
+            <div class="alert-master__sub-title">{{ text.error_master_subtitle }}</div>
+        </div>
+    {% endif %}
+</div>

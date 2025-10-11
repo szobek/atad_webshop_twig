@@ -1,0 +1,30 @@
+<div class="dropdown__content-inner search-box__inner position-relative js-search browser-is-{{ browser }}{% if search_smart_enabled %} search-smart-enabled{% endif %}"
+     id="box_search_content{{ suffix }}">
+    {{ form_start }}
+    <div class="search-box__form-inner d-flex flex-column">
+        <div class="form-group box-search-group mb-0 js-search-smart-insert-after-here">
+            <input data-stay-visible-breakpoint="1280" id="box_search_input{{ suffix }}" class="search-box__input ac_input js-search-input form-control"
+                   name="search" pattern="{{ '.{' ~ min_len ~ ',100}' }}" aria-label="{{ text.search }}" title="{{ text.search_pattern_length }}"
+                   placeholder="{{ text.search }}" type="search" maxlength="100" autocomplete="off" required{% if browser == "safari" %} readonly{% endif %}
+                   role="combobox" aria-autocomplete="list" aria-expanded="false"
+                   {% if search_smart_enabled %}
+                   aria-controls="search-smart-suggestions search-smart-actual-query search-smart-categories search-smart-contents search-smart-products"
+                   {% else %}
+                   aria-controls="autocomplete-categories autocomplete-products"
+                   {% endif %}
+            >
+            <div class="search-box__search-btn-outer input-group-append" title="{{ text.button_search }}">
+                <button class="btn search-box__search-btn" aria-label="{{ text.button_search }}">
+                    <span class="search-box__search-btn-icon icon--search"></span>
+                </button>
+            </div>
+            <div class="search__loading">
+                <div class="loading-spinner--small"></div>
+            </div>
+        </div>
+        <div class="ac_results{{ suffix }}">
+            <span class="ac_result__caret"></span>
+        </div>
+    </div>
+    {{ form_end }}
+</div>

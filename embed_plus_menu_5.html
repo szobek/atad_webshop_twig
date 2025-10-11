@@ -1,0 +1,30 @@
+{% if menu_disp %}
+    {% if level > 0 %}
+    <div class="nav-list-breadcrumb">
+        {% if parent_disp %}
+        <a class="nav-list-breadcrumb-main-link" href="[unas_shop_url]"></a>
+        <a class="nav-list-parent-link" href="{{ parent_url }}">{{ parent_name }}</a>
+        {% endif %}
+    </div>
+    <div class="nav-list-sub-btn-back-wrap">
+        <button class="nav-list-sub-btn-back btn btn--back" type="button" data-belongs-to-level="{{ level - 1 }}" onclick="catBack(this);">{{ text.button_back }}</button>
+    </div>
+    {% endif %}
+    <ul aria-label="{{ level > 0 ? parent_name ~ ' ' ~ text.menu_item : text.menu_items }}" class="nav-list-mobile nav-list-sub nav-list-mobile--{{ level }}" data-level="{{ level }}">
+        {% for menu_item in menu_list %}
+        <li id="nav-item-{{ menu_item.id }}--m" class="nav-item js-nav-item-{{ menu_item.id }}">
+            <a class="nav-link" href="{{ menu_item.url }}"{% if menu_item.target_blank %} target="_blank"{% endif %}>
+                <span class="nav-link__text">
+                    {{ menu_item.name }}
+                </span>
+            </a>
+            {% if menu_item.menu_sub_disp %}
+            <button class="btn btn-text nav-button" type="button" aria-label="{{ text.show_more }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="handleSub2(this,'{{ menu_item.id }}');"></button>
+            <div class="nav-list-menu nav-list-menu--sub">
+                {{ menu_item.menu_sub_list }}
+            </div>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}

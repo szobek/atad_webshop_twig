@@ -1,0 +1,189 @@
+{% if result_exists %}{% set global_index = 0 %}
+    <div class="search-smart-arrow"></div>
+    <div class="search-smart-autocomplete{% block type %} type--3{% endblock %}" role="region" aria-labelledby="search-smart-autocomplete-title">
+        <span class="sr-only" id="search-smart-autocomplete-title">{{ text.search_results }}</span>
+        <div class="row gutters-10">
+            <div class="d-flex flex-column{% if mobile_disp %} col-12{% else %} col-left{% endif %}">
+                {% if search_query_exists %}
+                <section class="search-smart-autocomplete-search-query search-smart-section">
+                    <div class="search-smart-title" id="search-smart-autocomplete-search-query-title">{{ text.autocomplete_query }}</div>
+                    <div class="search-queries d-flex flex-wrap gap-5" role="listbox" aria-label="{{ text.autocomplete_query }}" id="search-smart-suggestions">
+                    {% for search_query in search_queries %}
+                        {% set global_index = global_index + 1 %}
+                        <a class="search-query icon--b-search js-search-result" href="{{ url_full }}shop_search.php?search={{ search_query.name_urlencoded }}"
+                            data-type="text" data-index="{{ global_index }}" data-value="{{ search_query.name }}" id="result-{{ global_index }}" role="option"
+                        >
+                            <span class="search-name">{{ search_query.name_highlighted }}</span>
+                        </a>
+                    {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if query is not empty %}
+                <section class="search-smart-actual-query search-smart-section">
+                    {% set global_index = global_index + 1 %}
+                    <span class="mr-3">{{ text.results_for_this }}</span>
+                    <div class="search-smart-actual-query-wrapper" role="listbox" aria-label="{{ text.results_for_this }}" id="search-smart-actual-query">
+                        <a class="search-smart-actual-query-url icon--b-search js-search-result"
+                          data-type="text" data-index="{{ global_index }}" data-value="{{ query }}" role="option"
+                          href="{{ url_full }}shop_search.php?search={{ query_urlencoded }}" id="result-{{ global_index }}"
+                        >
+                            {{ query }}
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
+
+                {% if mobile_disp %}
+                    {% if product_exists %}
+                    <section class="search-smart-autocomplete-product search-smart-section search-smart-mobile{% if not price_disp %} no-price{% endif %}">
+                        <div class="search-smart-title">{{ text.autocomplete_product }}</div>
+                        <div class="row gutters-5 search-products row-gap-10 search-smart-list" role="listbox" aria-label="{{ text.autocomplete_product }}" id="search-smart-products">
+                        {% for product in products %}
+                            {% set global_index = global_index + 1 %}
+                            <a class="col-6 col-xs-4 col-sm-3 js-search-result search-product" data-index="{{ global_index }}" data-value="{{ product.name }}"
+                               id="result-{{ global_index }}" role="option" href="{{ product.url }}"
+                            >
+                                <div class="search-product__inner">
+                                    <div class="search-smart-product-img" aria-hidden="true">
+                                        <img class="mr-auto" src="{{ product.img_url }}" {% if product.img_retina_exists %} srcset="{{ product.img_retina_url }} {{ product.img_retina_size }}"{% endif %} alt="{{ product.img_alt }}" width="{{ backvar.img_maxwidth }}" height="{{ backvar.img_maxheight }}" />
+                                    </div>
+                                    <div class="search-name">{{ product.name_highlighted }}</div>
+                                    {% if price_disp %}
+                                    <div class="search-smart-prices mt-auto{% if product.price_sale_disp %} has-price-sale{% endif %}">
+                                        {% if product.sale_disp %}
+                                        <div class="search-smart-sale-percent badge badge--sale"><span data-percent="%">{{ product.sale_percent }}</span></div>
+                                        {% endif %}
+                                        <span class="search-smart-price-base product-price--base"{% if product.price_normal_info_text_disp %} tabindex="0" data-tippy="{{ product.price_normal_info_text }}"{% endif %}>
+                                            {{- product.price_normal_text -}}
+                                            <span class="search-smart-price-base-value{% if product.sale_disp and product.price_line_through %} text-line-through{% endif %}">{{ product.price }}</span>
+                                            {%- if product.price_normal_info_text_disp -%}&nbsp;<span class="icon--info">{{ icon.use('circle-info') }}</span>{%- endif -%}
+                                        </span>
+                                        {% if product.price_sale_disp %}
+                                        <div class="search-smart-price-sale product-price--sale">
+                                            {{ product.price_discounted_text }}
+                                            {{ product.price_sale }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        {% endfor %}
+                        </div>
+                    </section>
+                    {% endif %}
+                {% endif %}
+
+                {% if category_exists %}
+                <section class="search-smart-autocomplete-category search-smart-section{% if not price_disp %} no-price{% endif %}">
+                    <div class="search-smart-title">{{ text.autocomplete_category }}</div>
+                    <div class="search-smart-list search-smart-categories d-flex flex-column row-gap-10" role="listbox" aria-label="{{ text.autocomplete_category }}" id="search-smart-categories">
+                    {% set anyCatHasImg = 0 %}
+                    {% for category in categories %}
+                        {% if category.img_exists %}
+                            {% set anyCatHasImg = 1 %}
+                        {% endif %}
+                        {% set global_index = global_index + 1 %}
+                        <a class="search-category js-search-result{% if anyCatHasImg == 0 %} none-has-image{% else %} any-has-image{% endif %}"
+                           href="{{ category.url }}" id="result-{{ global_index }}" data-index="{{ global_index }}" data-value="{{ category.name }}"
+                           role="option"
+                        >
+                            <div class="search-category-img-col" aria-hidden="true">
+                                {% if category.img_exists %}
+                                <img src="{{ category.img_url }}"{% if category.img_retina_exists %} srcset="{{ category.img_retina_url }} {{ category.img_retina_size }}"{% endif %} alt="{{ category.img_alt }}" width="{{ backvar.cat_img_maxwidth }}" height="{{ backvar.cat_img_maxwidth }}">
+                                {% endif %}
+                            </div>
+                            <div class="search-category-name"><span class="search-name">{{ category.name_highlighted }}</span></div>
+                        </a>
+                    {% endfor %}
+                    </ul>
+                </section>
+                {% endif %}
+
+                {% if content_exists %}
+                <section class="search-smart-autocomplete-content search-smart-section">
+                    <div class="search-smart-title">{{ text.autocomplete_content }}</div>
+                    <div class="search-smart-list d-flex flex-column row-gap-10" role="listbox" aria-label="{{ text.autocomplete_content }}" id="search-smart-contents">
+                    {% for content in contents %}
+                        {% set global_index = global_index + 1 %}
+                        <a href="{{ content.url }}" data-index="{{ global_index }}" data-value="{{ content.name }}" class="js-search-result search-content"
+                           role="option" id="result-{{ global_index }}"
+                        >
+                            <span class="search-name">{{ content.name_highlighted }}</span>
+                        </a>
+                    {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+
+            {% if not mobile_disp %}
+            <div class="col-right">
+                {% if product_exists %}
+                <section class="search-smart-autocomplete-product search-smart-section{% if not price_disp %} no-price{% endif %}">
+                    <div class="row gutters-5 search-products row-gap-10 search-smart-list" role="listbox" id="search-smart-products"
+                         aria-label="{{ text.autocomplete_product }}"
+                    >
+                    {% for product in products %}
+                        {% set global_index = global_index + 1 %}
+                        <a class="col-3 col-xl-2 js-search-result search-product" role="option" href="{{ product.url }}"
+                           data-index="{{ global_index }}" data-value="{{ product.name }}" id="result-{{ global_index }}"
+                        >
+                            <div class="search-product__inner">
+                                <div class="search-smart-product-img" aria-hidden="true">
+                                    <img class="mr-auto" src="{{ product.img_url }}" {% if product.img_retina_exists %} srcset="{{ product.img_retina_url }} {{ product.img_retina_size }}"{% endif %} alt="{{ product.img_alt }}" width="{{ backvar.img_maxwidth }}" height="{{ backvar.img_maxheight }}" />
+                                </div>
+                                <div class="search-name">{{ product.name_highlighted }}</div>
+                                {% if price_disp %}
+                                <div class="search-smart-prices mt-auto{% if product.price_sale_disp %} has-price-sale{% endif %}">
+                                    {% if product.sale_disp %}
+                                    <div class="search-smart-sale-percent badge badge--sale"><span data-percent="%">{{ product.sale_percent }}</span></div>
+                                    {% endif %}
+                                    <span class="search-smart-price-base product-price--base"{% if product.price_normal_info_text_disp %} tabindex="0" data-tippy="{{ product.price_normal_info_text }}"{% endif %}>
+                                        {{- product.price_normal_text -}}
+                                        <span class="search-smart-price-base-value{% if product.sale_disp and product.price_line_through %} text-line-through{% endif %}">{{ product.price }}</span>
+                                        {%- if product.price_normal_info_text_disp -%}&nbsp;<span class="icon--info">{{ icon.use('circle-info') }}</span>{%- endif -%}
+                                    </span>
+                                    {% if product.price_sale_disp %}
+                                    <div class="search-smart-price-sale product-price--sale">
+                                        {{ product.price_discounted_text }}
+                                        {{ product.price_sale }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% block script %}
+    <script>
+        SEARCH_INPUT = $('.js-search-input');
+
+        function initSmartSearch() {
+            if ($('#container').hasClass('nav-position-bottom') && $('#nav--mobile-bottom').is(':visible')) {
+                var exceptions = ['#box_search_content.js-search'];
+                search_smart_autocomplete_make_visible(15, 'up', exceptions);
+            } else {
+                search_smart_autocomplete_make_visible(20);
+            }
+            SEARCH_INPUT.attr('aria-expanded','true');
+        }
+        $(document).on('smartSearchCreate smartSearchOpen smartSearchKeyup', function(){
+            initTippy();
+            initSmartSearch();
+        });
+        $(document).ready(function(){
+            initSmartSearch();
+        });
+    </script>
+    {% endblock %}
+{% endif %}

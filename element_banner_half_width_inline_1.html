@@ -1,0 +1,248 @@
+{% if element_disp %}
+    {% set hasImage = false %}  {# there is no slide yet that has an image #}
+    {% set tempCss %}
+        {% for slide in slides %}
+            {% if slide.img_default_disp %}
+               {% if hasImage != true %} {# the first slide that has an image for global formatting #}
+                    .{{ name }}__slide-inner {
+                        margin: 0 auto;
+                    }
+                    .{{ name }}__img-wrap {
+                        position: relative;
+                    }
+                    .{{ name }}__img-wrap img {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    }
+                    {% set hasImage = true %}
+                {% endif %}
+
+                .{{ name }}--slide-{{ slide.num }} .{{ name }}__slide-inner {
+                    max-width: {{ width }}px;
+                }
+                .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                    padding-top: {{ (slide.img_default_height / slide.img_default_width * 100) }}%;
+                }
+                {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px) {
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__slide-inner {
+                            max-width: {{ slide.img_large_width }}px;
+                        }
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                            padding-top: {{ (slide.img_large_height / slide.img_large_width * 100) }}%;
+                        }
+                    }
+                {% endif %}
+                {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px){
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__slide-inner {
+                            max-width: {{ slide.img_medium_width }}px;
+                        }
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                            padding-top: {{ (slide.img_medium_height / slide.img_medium_width * 100) }}%;
+                        }
+                    }
+                {% endif %}
+                {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                    @media (max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px){
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__slide-inner {
+                            max-width: {{ slide.img_small_width }}px;
+                        }
+                        .{{ name }}--slide-{{ slide.num }} .{{ name }}__img-wrap {
+                            padding-top: {{ (slide.img_small_height / slide.img_small_width * 100) }}%;
+                        }
+                    }
+                {% endif %}
+            {% endif %}
+
+            {# LOOP FOR TEXT LAYER STYLING #}
+            {% set tempImgLinkButton = false %}
+            {% for text in slide.texts %}
+                {% if not tempImgLinkButton and text.font_size != 'button' and text.font_color_disp %}
+                    {% set tempImgLinkButton = true %}
+                    #{{ name }}-{{ slide.num }}-img-link-btn {
+                        color:{{ text.font_color }};
+                    }
+                {% endif %}
+                {% set tempTextContent = "" %}
+                {% set tempTextContent %}
+                    {% if text.font_color_disp %}color:{{ text.font_color }};{% endif %}
+                    {% if text.bg_color_disp %}background-color:{{ text.bg_color }}; background:{{ text.bg_color }};{% endif %}
+                    {% if text.border_color_disp %}border-color:{{ text.border_color }};{% endif %}
+                    {% if text.border_style_disp and text.border_style !="none" %}border-style:{{ text.border_style }};{% endif %}
+                    {% if text.border_width_disp %}border-width:{{ text.border_width }};{% endif %}
+                {% endset %}
+                {% if tempTextContent|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %}
+                    #{{ name }}_{{ text.id }} { {{ tempTextContent }} }
+                {% endif %}
+                {% if text.hover_disp %}
+                    #{{ name }}_{{ text.id }}:hover {
+                    {% if text.bg_color_hover_disp %}
+                        background-color:{{ text.bg_color_hover }};
+                        background:{{ text.bg_color_hover }};
+                    {% endif %}
+                    {% if text.font_color_hover_disp %}
+                        color:{{ text.font_color_hover }};
+                    {% endif %}
+                    }
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endset %}
+    {% if tempCss != "" %}
+        <style>{{ tempCss }}</style>
+    {% endif %}
+
+    [% set {{ name }} %]
+    {% if animation_on_scroll == "1" %}
+        {# get default aos animation type #}
+        {% set global_aos = animation_on_scroll_type %}
+
+        {# get default aos delay #}
+        {% set global_aos_delay = animation_on_scroll_delay %}
+
+        {# get default normal duration (slow/fast) #}
+        {% set global_aos_duration_text = animation_on_scroll_duration %}
+
+        {# get default multipliers for slow and fast duration #}
+        {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+        {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+        {% set aos_multiplier = 1 %}
+
+        {% if global_aos_duration_text == 'slow' %}
+            {% set aos_multiplier = global_slow_multiplier %}
+        {% elseif global_aos_duration_text == 'fast' %}
+            {% set aos_multiplier = global_fast_multiplier %}
+        {% endif %}
+    {% endif %}
+
+    {% if grid_class != '' %}
+    <div class="{{ grid_class }}">
+    {% endif %}
+        {% for slide in slides %}
+        <div class="{{ name }}{% if grid_col_class != '' %} {{ grid_col_class }}{% endif %} {{ name }}--slide-{{ slide.num }} layout--{{ layout }} js-element" data-element-name="{{ name }}" {% if animation_on_scroll == "1" and backvar.custom_aos_on_slide_odd != '0' and backvar.custom_aos_on_slide_even != '0' %}
+                {% if loop.index is odd %}
+                    {% set temp_aos_odd %}
+                        {% if backvar.custom_aos_on_slide_odd != '' %}
+                            {{ backvar.custom_aos_on_slide_odd }}
+                        {% else %}
+                            {{ global_aos }}
+                        {% endif %}
+                    {% endset %}
+                    data-aos="{{ temp_aos_odd|trim }}"
+                {% else %}
+                    {% set temp_aos_even %}
+                        {% if backvar.custom_aos_on_slide_even != '' %}
+                            {{ backvar.custom_aos_on_slide_even }}
+                        {% else %}
+                            {{ global_aos }}
+                        {% endif %}
+                    {% endset %}
+                    data-aos="{{ temp_aos_even|trim }}"
+                {% endif %}
+
+                {% set temp_aos_delay_on_slide %}
+                    {% if backvar.custom_aos_delay_on_slide != '' %}
+                        {{ backvar.custom_aos_delay_on_slide }}
+                    {% else %}
+                        {{ global_aos_delay }}
+                    {% endif %}
+                {% endset %}
+
+                {% set temp_aos_delay_between_title_and_slides %}
+                    {% if backvar.custom_aos_delay_between_title_and_slides != '' %}
+                        {{ backvar.custom_aos_delay_between_title_and_slides }}
+                    {% else %}
+                        {{ global_aos_delay }}
+                    {% endif %}
+                {% endset %}
+                {% if temp_aos_delay_on_slide|trim != '0' %}
+                data-aos-delay="{{ (((temp_aos_delay_between_title_and_slides|trim * aos_multiplier) / 50|round) * 50) + ((((temp_aos_delay_on_slide|trim * aos_multiplier ) / 50|round) * 50) * loop.index0 ) }}"
+                {% endif %}
+                {% if backvar.custom_aos_duration_on_slide != '' %}
+                data-aos-duration="{{ backvar.custom_aos_duration_on_slide }}"
+                {% endif %}
+                {% if backvar.custom_aos_offset_on_slide != '' %}
+                data-aos-offset="{{ backvar.custom_aos_offset_on_slide }}"
+                {% endif %}
+            {% endif %}
+        >
+            <div class="{{ name }}__slide-inner element-slide-inner{% if slide.img_default_disp %} img-effect-on-hover{% if slide.img_link_disp %} has-img-link{% endif %}{% endif %}">
+                {% if slide.img_default_disp %}
+                <div class="{{ name }}__img-wrap element-img-wrap">
+                    {% if slide.img_link_disp %}
+                    <a class="has-img" href="{{ slide.img_link_url }}"{% if slide.target_blank %} target="_blank"{% endif %}>
+                    {% endif %}
+                        <picture>
+                        {% if slide.img_xxsmall_disp %}
+                            <source width="{{ slide.img_xxsmall_width }}" height="{{ slide.img_xxsmall_height }}" media="(max-width: {{ common_vars.grid_breakpoints.xxs - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xxsmall_url }} 1x{% if slide.img_xxsmall_retina_disp %}, {{ slide.img_xxsmall_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        {% if slide.img_xsmall_disp %}
+                            <source width="{{ slide.img_xsmall_width }}" height="{{ slide.img_xsmall_height }}" media="(max-width: {{ common_vars.grid_breakpoints.xs - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xsmall_url }} 1x{% if slide.img_xsmall_retina_disp %}, {{ slide.img_xsmall_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        {% if slide.img_small_disp and slide.img_small_url not in [slide.img_medium_url,slide.img_large_url,slide.img_default_url] %}
+                            <source width="{{ slide.img_small_width }}" height="{{ slide.img_small_height }}" media="(max-width: {{ common_vars.grid_breakpoints.sm - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_small_url }} 1x{% if slide.img_small_retina_disp %}, {{ slide.img_small_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        {% if slide.img_medium_disp and slide.img_medium_url not in [slide.img_large_url,slide.img_default_url] %}
+                            <source width="{{ slide.img_medium_width }}" height="{{ slide.img_medium_height }}" media="(max-width: {{ common_vars.grid_breakpoints.md - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_medium_url }} 1x{% if slide.img_medium_retina_disp %}, {{ slide.img_medium_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        {% if slide.img_large_disp and slide.img_large_url not in [slide.img_default_url] %}
+                            <source width="{{ slide.img_large_width }}" height="{{ slide.img_large_height }}" media="(max-width: {{ common_vars.grid_breakpoints.lg - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_large_url }} 1x{% if slide.img_large_retina_disp %}, {{ slide.img_large_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        {% if slide.img_xlarge_disp %}
+                            <source width="{{ slide.img_xlarge_width }}" height="{{ slide.img_xlarge_height }}" media="(max-width: {{ common_vars.grid_breakpoints.xl - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xlarge_url }} 1x{% if slide.img_xlarge_retina_disp %}, {{ slide.img_xlarge_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        {% if slide.img_xxlarge_disp %}
+                            <source width="{{ slide.img_xxlarge_width }}" height="{{ slide.img_xxlarge_height }}" media="(max-width: {{ common_vars.grid_breakpoints.xxl - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xxlarge_url }} 1x{% if slide.img_xxlarge_retina_disp %}, {{ slide.img_xxlarge_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        {% if slide.img_xxxlarge_disp %}
+                            <source width="{{ slide.img_xxxlarge_width }}" height="{{ slide.img_xxxlarge_height }}" media="(max-width: {{ common_vars.grid_breakpoints.xxxl - 0.02 }}px)" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_xxxlarge_url }} 1x{% if slide.img_xxxlarge_retina_disp %}, {{ slide.img_xxxlarge_retina_url }} 2x{% endif %}" />
+                        {% endif %}
+                        <source width="{{ slide.img_default_width }}" height="{{ slide.img_default_height }}" srcset="[unas_shop_url]/main_pic/space.gif" data-srcset="{{ slide.img_default_url }} 1x{% if slide.img_default_retina_disp %}, {{ slide.img_default_retina_url }} 2x{% endif %}" />
+                        <img class="lazyload" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ slide.img_default_url }}" alt="{% if slide.alt_disp %}{{ slide.alt }}{% else %}{{ service_name }}{% endif %}"/>
+                    </picture>
+                    {% if slide.img_link_disp %}
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if slide.img_default_disp and slide.img_link_disp %}
+                <button class="btn btn-square-lg img-link-btn icon--arrow-right" id="{{ name }}-{{ slide.num }}-img-link-btn" type="button" aria-hidden="true" tabindex="-1"></button>
+                {% endif %}
+
+                {% if slide.texts or slide.html_disp %}
+                <div class="texts{% if slide.img_default_disp %} texts--layer{% else %} texts--no-layer{% endif %}">
+                    <div class="texts__container">
+                        {% if slide.html_disp %}
+                            <div class="html-text">{{ slide.html }}</div>
+                        {% endif %}
+
+                        {% for text in slide.texts %}
+                            {% if text.font_size == 'button' %}
+                                {% if text.link_disp %}
+                                    <a class="btn btn-primary btn-lg text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}" href="{{ text.url }}" {% if text.target_blank %} target="_blank"{% endif %}>{{ text.value }}</a>
+                                {% else %}
+                                    <div class="btn btn-primary btn-lg text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}">{{ text.value }}</div>
+                                {% endif %}
+                            {% else %}
+                                <div class="text text--{{ text.font_size }}" id="{{ name }}_{{ text.id }}">
+                                    {% if text.link_disp %}<a href="{{ text.url }}" {% if text.target_blank %} target="_blank"{% endif %}>{% endif %}
+                                        {{ text.value }}
+                                        {% if text.link_disp %}</a>{% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% if grid_class != '' %}
+    </div>
+    {% endif %}
+    [% endset %]
+{% endif %}

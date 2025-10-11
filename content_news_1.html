@@ -1,0 +1,68 @@
+<div id="page_news_content" class="container page_content">
+    {% if news_list_disp %}
+        {% if paging_disp %}
+        <nav class="news-paging paging--top d-flex align-items-center justify-content-center py-3 border-bottom" aria-label="{{ text.top ~ ' ' ~ text.pagination }}">
+            {{ paging_content }}
+        </nav>
+        {% endif %}
+        <div class="row gutters-10 gutters-xl-20">
+            {% for news_item in news %}
+            <div class="news-item col-12 col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-3 col-xxl-3 mb-5">
+                <div class="news-item__inner h-100 d-flex flex-column">
+                    {% if news_item.img_disp %}
+                    <div class="news-item__img-outer" style="width:100%;max-width:{{ common_vars.blog.img_width }}px;margin:0 auto;">
+                        <div class="news-item__img-wrap" style="padding-top: {{ common_vars.blog.img_height / common_vars.blog.img_width * 100 }}%;">
+                            <a class="news-item__img-link" href="{{ news_item.url }}">
+                                <img class="news-item__img lazy-img lazyload" width="{{ common_vars.blog.img_width }}" height="{{ common_vars.blog.img_height }}" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ news_item.img_url }}" alt="{{ news_item.title }}" />
+                                <div class="news-item__date-layer position-absolute font-xxxl">{{ news_item.date }}</div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="news-item__data">
+                        <div class="news-item__title line-clamp--2-12 font-l">
+                            <a href="{{ news_item.url }}">{{ news_item.title }}</a>
+                        </div>
+                        <div class="news-item__details-btn-wrap mt-auto">
+                            <a class="news-item__details-btn btn btn-primary" href="{{ news_item.url }}">{{ text.button_details }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if paging_disp %}
+        <nav class="news-paging paging--bottom d-flex align-items-center justify-content-center py-3 border-bottom" aria-label="{{ text.bottom ~ ' ' ~ text.pagination }}">
+            {{ paging_content }}
+        </nav>
+        {% endif %}
+    {% endif %}
+    {% if news_item__disp %}
+        <div class="page__news-item">
+            <div class="page__news-header font-xl font-weight-bold mb-4">
+                <div class="row no-gutters align-items-baseline">
+                    <div class="col-lg-4 order-lg-2 mb-4 mb-lg-0">
+                        <div class="page__news-date-and-time d-flex justify-content-lg-end font-s">
+                            <div class="page__news-date-and-time line-height-1">
+                                <span class="page__news-date">{{ news_item__date }}</span>
+                                {% if news_item__time_disp %}<span class="page__news-time">{{ news_item__time }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 order-lg-1">
+                        <h1 class="page__news-title">{{ news_item__title }}</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="page__news-content clearfix">
+                {% if news_item__img_exists %}
+                    <div class="page__news-img-wrap mr-sm-4 mb-4 float-sm-left text-center">
+                        <img class="lazyload page__news-img" src="[unas_shop_url]/main_pic/space.gif" data-src="{{ news_item__img_url }}" alt="{{ news_item__title }}">
+                    </div>
+                {% endif %}
+                {{ news_item__content }}
+            </div>
+        </div>
+        <a class="page-news__btn-back btn btn--back" href="[unas_shop_url]/shop_news.php">{{ text.button_back }}</a>
+    {% endif %}
+</div>

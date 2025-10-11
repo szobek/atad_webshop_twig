@@ -1,0 +1,36 @@
+{% if compare_disp %}
+    {% if btn_disp and compare_box_disp %}
+    <button class="box-compare__dropdown-btn btn dropdown__btn js-box-compare-dropdown-btn" onclick="popup_compare_dialog(''); return false;" name="button" type="button" aria-label="{{ text.comparison }}">
+        <span class="box-compare__dropdown-btn-icon dropdown__btn-icon icon--compare">
+            <span class="bubble box-compare__dropdown-btn-item-num">{{ product_count }}</span>
+        </span>
+    </button>
+    {% endif %}
+
+    {% if sticky_disp %}
+        {% if compare_box_disp %}
+        <div class="box-compare__wrapper d-inline-flex align-items-center">
+            <button class="box-compare__compare-btn btn btn-primary icon--a-compare flex-shrink-0 js-box-compare-item-num" name="button" type="button" onclick="popup_compare_dialog(''); return false;" aria-label="{{ text.comparison }}" data-count="{{ product_count }}">{{ text.comparison }}</button>
+            <div class="box-compare__products d-none d-sm-flex col-gap-20">
+                {% for product in products %}
+                <div class="box-compare__product">
+                    <button class="box-compare__product-del-btn btn btn-primary icon--trash" type="button" aria-label="{{ text.delete }}" title="{{ text.delete }}" onclick="{{ product.delete_onclick_value|escape }}"></button>
+                    {% if product.img_allowed %}
+                    <a href="{{ product.url }}" title="{{ product.title }}">
+                        <img class="box-compare__img" width="{{ backvar.img_maxwidth }}" height="{{ backvar.img_maxheight }}" src="{{ product.img_url }}"{% if product.img_retina_exists%} srcset="{{ product.img_retina_url }} {{ product.img_retina_size }}"{% endif %} alt="{{ product.img_alt }}" />
+                    </a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $("#box_container_shop_compare").hide();
+                    $(".js-box-compare-dropdown-btn").hide();
+                });
+            </script>
+        {% endif %}
+    {% endif %}
+{% endif %}

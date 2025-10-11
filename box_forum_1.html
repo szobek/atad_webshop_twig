@@ -1,0 +1,23 @@
+<div id="box_forum_content" class="box_content">
+    {% if forum_disp %}
+        <div class="box_forum_list">
+            {% for topic in topics %}
+                <article class="box_forum_item">
+                    <a class="box_forum_item_title icon--b-comment" href="{{ topic.link }}">{{ topic.title }}</a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="box_forum_nocontent mb-3">{{ text.no_topics }}</div>
+    {% endif %}
+    {% if forum_link_disp %}
+        <div class="box_forum_link-wrap text-center{% if new_topic_link_disp %} mb-3{% endif %}">
+            <a class="box_forum_link btn btn-secondary" href="{{ forum_url }}">{{ text.more_topics }}</a>
+        </div>
+    {% endif %}
+    {% if new_topic_link_disp %}
+        <div class="box_forum_link-wrap text-center">
+            <a class="box_forum_new_topic_link btn btn-primary" href="{{ forum_url }}">{{ text.create_topic }}</a>
+        </div>
+    {% endif %}
+</div>

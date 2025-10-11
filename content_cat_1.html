@@ -1,0 +1,148 @@
+{#Alapértelmezett lazyload limit #}
+{% set custom_img_lazyload_limit = backvar.custom_img_lazyload_limit|default(6) %}
+{% set number_of_previous_cat_items = 0 %}
+
+<div id="page_cat_content" class="page_content cat--type-1">
+    {% if tags_disp %}
+    <section class="tag-filtering" aria-label="{{ text.category }} {{ text.filter }}">
+        <div class="container">
+        {% set tag_include_type = "category" %}
+        {% include common_vars.layout_urls.embed_tag_filter_1 %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if product_count_disp %}
+    <section class="cat-artnum">
+        <div class="container">
+            <span class="cat-artnum__text icon--b-info">{{ shopname_title }}</span>
+            <span class="cat-artnum__num font-weight-bold">{{ product_count }} {{ text.pcs }}</span>
+        </div>
+    </section>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    <section class="categories" aria-label="{{ text.categories }}">
+        <div class="container">
+            <div class="row gutters-5 gutters-md-10 gutters-xxl-20 row-gap-10 row-gap-md-20 row-gap-xxl-40" role="list">
+                {% for cat in cat_spec_list if cats_spec_disp %}
+                <div role="listitem" class="col-6 col-xs-4 col-md-3 col-lg-only-custom-5 col-xl-2 category-card category-card--spec spec-category-{{ cat.id }}">
+                    <div class="category-card__inner h-100 img-effect-on-hover">
+                        <div class="category-card__img-wrap text-center product-img-wrapper position-relative">
+                            <a class="category-card__img-link" href="{{ cat.url }}" tabindex="-1" aria-hidden="true">
+                                <picture>
+                                    <source srcset="{{ cat.img_url }} 1x{% if cat.img_retina_exists %}, {{ cat.img_retina_url }} {{ cat.img_retina_size }}{% endif %}">
+                                    <img class="category-card__img product-img" width="{{ backvar.cat_img_maxwidth }}" height="{{ backvar.cat_img_maxheight }}"
+                                         src="{{ cat.img_url }}" alt="{{ cat.name }}" title="{{ cat.name }}"
+                                         {%- if loop.index > custom_img_lazyload_limit %} loading="lazy"{% else %} decoding="async" fetchpriority="high"{% endif -%}
+                                    >
+                                </picture>
+                            </a>
+                        </div>
+                        <div class="category-card__data-wrapper">
+                            <div class="category-card__data">
+                                <a class="category-card__link" href="{{ cat.url }}" aria-label="{{ cat.name }} {{ text.category }}{% if cat.product_count_disp %} ({{ cat.product_count }} {{ text.piece }} {{ text.product }}){% endif %}">
+                                    <div class="category-card__name">{{ cat.name }}</div>
+                                </a>
+                                {% if cat.product_count_disp %}
+                                <span class="category-card__qty-wrap">
+                                    {% if cat.product_count_disp %}
+                                    <span class="category-card__qty" data-text="{{ text.product }}">{{ cat.product_count }}</span>
+                                    {% endif %}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% set number_of_previous_cat_items = number_of_previous_cat_items + cat_spec_list|length %}
+
+                {% for cat in cats_list if cats_disp %}
+                <div role="listitem" class="col-6 col-xs-4 col-md-3 col-lg-only-custom-5 col-xl-2 category-card category-card--normal category-card-{{ cat.id }}{% if tags_disp %} js-filterable{% endif %}{% if cat.tag_list_disp %} {{ cat.tag_list }}{% endif %}">
+                    <div class="category-card__inner h-100 img-effect-on-hover">
+                        <div class="category-card__img-wrap text-center product-img-wrapper position-relative">
+                            <a class="category-card__pic-url" href="{{ cat.url }}" {% if cat.target_blank %} target="_blank"{% endif %} tabindex="-1" aria-hidden="true">
+                                <picture>
+                                    <source srcset="{{ cat.img_url }} 1x{% if cat.img_retina_exists %}, {{ cat.img_retina_url }} {{ cat.img_retina_size }}{% endif %}">
+                                    <img class="category-card__pic product-img" width="{{ backvar.cat_img_maxwidth }}" height="{{ backvar.cat_img_maxheight }}"
+                                         src="{{ cat.img_url }}" alt="{{ cat.name }}" title="{{ cat.name }}"
+                                         {%- if loop.index + number_of_previous_cat_items > custom_img_lazyload_limit %} loading="lazy"{% else %} decoding="async" fetchpriority="high"{% endif -%}
+                                    >
+                                </picture>
+                            </a>
+                        </div>
+                        <div class="category-card__data-wrapper">
+                            <div class="category-card__data">
+                                <a class="category-card__link" href="{{ cat.url }}"{% if cat.target_blank %} target="_blank"{% endif %}
+                                    aria-label="{{ cat.name }} {{ text.category }}
+                                    {%- if cat.product_count_disp or product_new_count_disp %} (
+                                    {%- if cat.product_count_disp %}{{ cat.product_count }} {{ text.piece }} {{ text.product }}{% endif -%}
+                                    {%- if cat.product_new_count_disp %}{{ cat.product_new_count }} {{ text.piece }} {{ text.status_new }} {{ text.product -}}{% endif -%}
+                                    ){% endif %}"
+                                >
+                                    <div class="category-card__name">{{ cat.name }}</div>
+                                </a>
+                                {% if not cat.alt_url_exists and cat.product_count_disp or cat.product_new_count_disp %}
+                                <span class="category-card__qty-wrap">
+                                    {% if cat.product_count_disp %}
+                                    <span class="category-card__qty" data-text="{{ text.product }}">{{ cat.product_count }}</span>
+                                    {% endif %}
+                                    {% if cat.product_new_count_disp %}
+                                    <div class="category-card__new">
+                                        <span class="category-card__new-qty">{{ cat.product_new_count }}</span>&nbsp;
+                                        <span class="category-card__new-text text-lowercase">{{ text.status_new }}</span>
+                                    </div>
+                                    {% endif %}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    {% if retargeting_div_category_disp %}
+    <section class="retargeting">
+        <div class="container">
+            {{ retargeting_div_category }}
+        </div>
+    </section>
+    {% endif %}
+
+    [% if filter_button_position_with_three_settings == "2" %]
+    {% if filter_in_subcategory %}
+        {% embed common_vars.layout_urls.embed_filter_bar_1 %}{% endembed %}
+    {% endif %}
+    [% endif %]
+
+    [% set inner_content %]
+    {{ product_list_script }}
+    <div id="page_cat_artlist">
+        {{ product_list }}
+    </div>
+    [% endset %]
+
+    {% if product_list_disp %}
+    <section class="category-product-list">
+        {% if filter_in_subcategory %}
+            [% if filter_box_in_sidebar == "1" %]
+            {% embed common_vars.layout_urls.embed_filter_sidebar_1 %}
+                {% block rest_content %}[[ inner_content ]]{% endblock %}
+            {% endembed %}
+            [% else %]
+            [[ inner_content ]]
+            [% endif %]
+        {% else %}
+            [[ inner_content ]]
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+</div>

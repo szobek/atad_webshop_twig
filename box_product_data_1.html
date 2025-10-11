@@ -1,0 +1,42 @@
+<div id="box_art_data_content" class="box_content">
+    {% if no_data %}<div class="box_art_data_no"><strong>{{ text.no_available_filter }}</strong></div>{% endif %}
+    {% if data_1_disp %}
+    <div class="form-group data-plus-1">
+        <label for="data-plus-1__select">{{ data_1_name }}</label>
+        <div class="form-select-group">
+            <select onchange="{{ select_1_onchange }}" id="data-plus-1__select" class="form-control">
+                <option value="" selected="selected">{{ text.please_select }}</option>
+                {% for option in data_1_options %}
+                <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endif %}
+    {% if data_2_disp %}
+    <div class="form-group data-plus-2">
+        <label for="data-plus-2__select">{{ data_2_name }}</label>
+        <div class="form-select-group">
+            <select onchange="{{ select_2_onchange }}" id="data-plus-2__select" class="form-control">
+                <option value="" selected="selected">{{ text.please_select }}</option>
+                {% for option in data_2_options %}
+                <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endif %}
+    {% if data_3_disp %}
+    <div class="form-group data-plus-3">
+        <label for="data-plus-3__select">{{ data_3_name }}</label>
+        <div class="form-select-group">
+            <select onchange="{{ select_3_onchange }}" id="data-plus-3__select" class="form-control">
+                <option value="" selected="selected">{{ text.please_select }}</option>
+                {% for option in data_3_options %}
+                <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endif %}
+</div>

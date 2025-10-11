@@ -1,0 +1,42 @@
+{% if paging_disp %}
+<ul class="pagination mb-0">
+    <li class="page-item page-first{% if page_first %} disabled{% endif %} page-arrow">
+        <a class="page-link icon--arrow-first"{% if page_first %} href="#" tabindex="-1" aria-disabled="true"{% endif %} aria-label="{{ text.first ~ ' ' ~ text.page }}"
+            {%- if not page_first %}{% if ajax_first_page_forced %} onclick="{{ ajax_first_onclick }}"{% else %} href="{{ page_first_url }}"{% endif %}{% endif %}>
+        </a>
+    </li>
+    <li class="page-item{% if page_first %} disabled{% endif %} page-prev page-arrow">
+        <a class="page-link icon--arrow-left"{% if page_first %} href="#" tabindex="-1" aria-disabled="true"{% endif %} aria-label="{{ text.previous ~ ' ' ~ text.page }}"
+            {% if not page_first %}{% if ajax_page_prev_disp %} onclick="{{ ajax_page_prev_onclick }}"{% else %} href="{{ page_prev_url }}"{% endif %}{% endif %}>
+        </a>
+    </li>
+    {% for page in pages %}
+    <li class="page-item{% if page.actual %} active{% endif %} page_select_num_{{ page.num }} d-flex d-md-none d-lg-flex d-xl-flex">
+        <a class="page-link" aria-label="{{ loop.index ~ '. /' ~ loop.length ~ ' ' ~ text.page }}"
+            {%- if page.actual %} aria-current="page" href="#"{% else %}
+                {%- if page.ajax_pagination %} onclick="{{ page.ajax_onclick }}"{% else %} href="{{ page.url }}"{% endif -%}
+            {% endif -%}
+        >{{ page.num }}</a>
+    </li>
+    {% endfor %}
+    {% for mobile_page in mobile_pages %}
+    <li class="page-item{% if mobile_page.actual %} active{% endif %} page_select_num_{{ mobile_page.num }} d-none d-md-flex d-lg-none d-xl-none">
+        <a class="page-link" aria-label="{{ loop.index ~ '. /' ~ loop.length ~ ' ' ~ text.page }}"
+            {%- if mobile_page.actual %} aria-current="page" href="#"{% else %}
+                {%- if mobile_page.ajax_pagination %} onclick="{{ mobile_page.ajax_onclick }}"{% else %} href="{{ mobile_page.url }}"{% endif -%}
+            {% endif -%}
+        >{{ mobile_page.num }}</a>
+    </li>
+    {% endfor %}
+    <li class="page-item{% if page_last %} disabled{% endif %} page-next page-arrow">
+        <a class="page-link icon--arrow-right" aria-label="{{ text.next ~ ' ' ~ text.page }}"{% if page_last %} href="#" tabindex="-1" aria-disabled="true"{% endif %}
+            {% if not page_last %}{% if ajax_page_next_disp %} onclick="{{ ajax_page_next_onclick }}"{% else %} href="{{ page_next_url }}"{% endif %}{% endif %}>
+        </a>
+    </li>
+    <li class="page-item page-last{% if page_last %} disabled{% endif %} page-arrow">
+        <a class="page-link icon--arrow-last" aria-label="{{ text.last ~ ' ' ~ text.page }}"{% if page_last %} href="#" tabindex="-1" aria-disabled="true"{% endif %}
+            {% if not page_last %}{% if ajax_last_page_forced %} onclick="{{ ajax_last_onclick }}"{% else %} href="{{ page_last_url }}"{% endif %}{% endif %}>
+        </a>
+    </li>
+</ul>
+{% endif %}

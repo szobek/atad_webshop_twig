@@ -1,0 +1,29 @@
+{% macro avg_stars(avg_score_percent, avg_score) %}
+    {% set countFullStars = avg_score_percent // 20 %}
+    {% set countEmptyStars = (100 - avg_score_percent) // 20 %}
+
+    <div class="stars">
+        {% for i in 1..countFullStars if countFullStars > 0 %}
+            <div class="star star--full"></div>
+        {% endfor %}
+        {% if avg_score_percent % 20 != 0 %}
+            <div class="star star--percent">
+                <div class="star star--full" style="width: {{ ((avg_score_percent % 20) / 20) * 100 }}%;"></div>
+            </div>
+        {% endif %}
+        {% for i in 1..countEmptyStars if countEmptyStars > 0 %}
+            <div class="star star--empty"></div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro stars(score) %}
+    <div class="stars" title="{{ score }}">
+        {% for i in 1..score %}
+            <div class="star star--full"></div>
+        {% endfor %}
+        {% for i in 1..(5 - score) if score < 5 %}
+            <div class="star star--empty"></div>
+        {% endfor %}
+    </div>
+{% endmacro %}

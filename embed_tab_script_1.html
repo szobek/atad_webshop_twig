@@ -1,0 +1,133 @@
+<script>
+    {% if (backvar.custom_tab_scroll_enabled and tab_default_disp) or custom_tab_scroll_enabled %}
+    function scrollToTab(scroll_to) {
+        if (window.matchMedia('(min-width: 768px)').matches) {
+            $('.pane-accordion .tab-pane').removeAttr("style");
+        }
+        setTimeout(function () {
+            scrollToElement({ element: scroll_to });
+        }, 250);
+    }
+    {% endif %}
+
+    $(document).ready(function() {
+        {% if (backvar.custom_tab_scroll_enabled and tab_default_disp) or custom_tab_scroll_enabled %}
+        if ($("#tab-{{ tab_default }}").length > 0) {
+            let $scroll_to;
+
+            if (window.matchMedia('(min-width: 768px)').matches) {
+                $scroll_to = $('#tab-{{ tab_default }}');
+            } else {
+                $scroll_to = $('#pane-header-{{ tab_default }}');
+            }
+            scrollToTab($scroll_to);
+        }
+        {% endif %}
+
+        function initTabsAccordions() {
+            const $tabsAccordion = $('.nav-tabs-accordion');
+            const animationLength = 500;
+            const animationLengthCloseOther = 0;
+
+            function updateAccessibilityRoles(mode, panes) {
+                panes.each(function () {
+                    let $thisPane = $(this);
+
+                    if (mode === 'tabs') {
+                        $thisPane.attr('role', 'tabpanel');
+                    } else if (mode === 'accordion') {
+                        $thisPane.attr('role', 'region');
+                    } else {
+                        $thisPane[0].removeAttribute('role');
+                    }
+                });
+            }
+
+            function handleResponsiveARIA() {
+                const isMobile = window.matchMedia('(max-width: 767px)').matches;
+                $tabsAccordion.each(function () {
+                    let $thisTabAccBlock = $(this);
+                    let panes = $thisTabAccBlock.find('.tab-pane')
+                    updateAccessibilityRoles(isMobile ? 'accordion' : 'tabs', panes);
+                });
+            }
+
+            $tabsAccordion.each(function () {
+                let $thisTabAccBlock = $(this);
+
+                $('.nav-link', $thisTabAccBlock).on("click", function (e) {
+                    let currentTab = $(this);
+                    if (currentTab.attr('href') == "#") {
+                        e.preventDefault();
+
+                        let $currentPane = $('#' + currentTab.attr('aria-controls'));
+
+                        if (!$currentPane.hasClass('active')) {
+                            $('.nav-link', $thisTabAccBlock).removeClass('active').attr({
+                                'aria-selected': 'false',
+                                'aria-expanded': 'false',
+                            });
+                            $('.tab-pane', $thisTabAccBlock).removeClass('active show').prop('inert', true);
+
+                            currentTab.addClass('active').attr({
+                                'aria-selected': 'true',
+                                'aria-expanded': 'true',
+                            });
+                            $currentPane.addClass('active show').prop('inert', false);
+                        }
+                    }
+                });
+
+                $('.pane-header-btn', $thisTabAccBlock).on("click", function (e) {
+                    let $currentAccordionBtn = $(this);
+                    if ($currentAccordionBtn.attr('href') == "#") {
+                        e.preventDefault();
+
+                        let $currentPane = $('#' + $currentAccordionBtn.attr('aria-controls'));
+                        let offset = 10;
+                        if ($("html").hasClass('header-is-visible')) {
+                            offset += $headerFixedHeight;
+                        }
+
+                        if (!$currentAccordionBtn.hasClass('active')) {
+                            let active_pane_header = $('.pane-header-btn', $thisTabAccBlock).not($currentAccordionBtn);
+                            let active_pane = $('.tab-pane', $thisTabAccBlock).not($currentPane);
+
+                            $('.tab-pane', $thisTabAccBlock).not($currentPane).slideUp(animationLengthCloseOther, function () {
+                                /* change active pane header and pane to closed state */
+                                active_pane_header.removeClass('active activating').attr({
+                                    'aria-expanded': 'false'
+                                });
+                                active_pane.removeClass('active activating').prop('inert', true);
+                                /* scroll to clicked block */
+                                scrollToElement({
+                                    element: $currentAccordionBtn,
+                                    duration: 0,
+                                    offset: offset
+                                });
+                            });
+
+                            $currentAccordionBtn.addClass('activating');
+                            $currentPane.addClass('activating');
+
+                            $currentPane.stop().slideDown(animationLength, function () {
+                                $currentAccordionBtn.attr('aria-expanded', 'true').addClass('active').removeClass('activating');
+                                $currentPane.addClass('active').removeClass('activating').prop('inert', false);
+                            });
+                        } else {
+                            $currentPane.stop().slideUp(animationLength, function () {
+                                $currentAccordionBtn.removeClass('active').attr({
+                                    'aria-expanded': 'false'
+                                });
+                                $currentPane.removeClass('active').prop('inert', true);
+                            });
+                        }
+                    }
+                });
+            });
+            handleResponsiveARIA();
+            window.addEventListener('resize', handleResponsiveARIA);
+        }
+        initTabsAccordions();
+    });
+</script>

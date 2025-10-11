@@ -1,0 +1,43 @@
+<div class="question up-block">
+    <div class="question__title-wrap up-block__title-wrap">
+        <div class="question__title up-block__title" id="question_title">{{ text.question_about_product }}</div>
+    </div>
+    {{ question_script }}
+    <div class="up-block__content" id="page_question_content">
+        {{ form_start }}
+        <div class="question__form-inner">
+            <div class="form-group recommend_label_input">
+                <label for="question_name">{{ text.name }}</label>
+                <input type="text" name="question_name" placeholder="{{ text.name }}" id="question_name" class="form-control" value="{{ question_sender_name }}" />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group recommend_label_input">
+                <label for="question_email">{{ text.email }}</label>
+                <input type="email" name="question_email" placeholder="{{ text.email }}" id="question_email" class="form-control" value="{{ question_sender_email }}" />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group recommend_label_input">
+                <label for="question_phone">{{ text.phone_number }}</label>
+                <input type="text" name="question_phone" placeholder="{{ text.phone_number }}" id="question_phone" class="form-control" value="{{ question_sender_phone }}" />
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group recommend_label_input">
+                <label for="question_message">{{ text.question }}</label>
+                <textarea name="question_message" rows="4" placeholder="{{ text.question }}" id="question_message" class="form-control"></textarea>
+                <div class="invalid-feedback">{{ text.error_required }}</div>
+            </div>
+            <div class="form-group">
+                <div class="custom-control custom-checkbox recommend_label_input font-xs">
+                    <input class="custom-control-input" name="question_privacy_policy" id="question_privacy_policy" type="checkbox" value="1" />
+                    <label class="custom-control-label question_label" for="question_privacy_policy">{{ text.accept_privacy_policy }}</label>
+                    <div class="invalid-feedback">{{ text.error_privacy_policy }}</div>
+                </div>
+            </div>
+            <div class="question__status p-3 font-s font-sm-m text-success text-center" id="recommend_error_msg" style="display: none;">{{ text.mail_sent }}</div>
+            <div class="question__send-btn-wrap text-center pb-4">
+                <button type="button" class="question__send-btn btn btn-primary icon--a-mail" id="question_send_button" title="{{ text.button_send }}">{{ text.button_send }}</button>
+            </div>
+        </div>
+        {{ form_end }}
+    </div>
+</div>

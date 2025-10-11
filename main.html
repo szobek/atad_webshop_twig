@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        [[ start ]]
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" as="style" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
+        <noscript>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" />
+        </noscript>
+        <link rel="preload" href="[unas_design_url_base]own/fonts/2400/customicons/custom-icons.css" as="style">
+        <link rel="stylesheet" href="[unas_design_url_base]own/fonts/2400/customicons/custom-icons.css" media="print" onload="this.media='all'">
+        <noscript>
+            <link rel="stylesheet" href="[unas_design_url_base]own/fonts/2400/customicons/custom-icons.css" />
+        </noscript>
+        <script src="[unas_shop_url]/!common_design/base/002400/main.js" type="text/javascript"></script>
+        <script src="[unas_shop_url]/!common_packages/jquery/plugins/flickity/v3/flickity.pkgd.min.js"></script>
+        <script src="[unas_shop_url]/!common_packages/jquery/plugins/toastr/toastr.min.js"></script>
+        <script src="[unas_shop_url]/!common_packages/jquery/plugins/tippy/popper-2.4.4.min.js"></script>
+        <script src="[unas_shop_url]/!common_packages/jquery/plugins/tippy/tippy-bundle.umd.min.js"></script>
+
+        [[ element|name:header_text_section_1;layout:html_closeable;display:none; ]]
+        [[ element|name:header_text_section_2;layout:html_only;display:none; ]]
+        [[ element|name:header_logo;width:400;height:120;layout:img_no_lazy;slide_max_visible_count:1;display:none; ]]
+        {% block start_elements %}
+        [[ element|name:banner_start_big;width:1080;sm_width:576;md_width:768;xxs_retina_ratio:1.8;layout:flickity;text_max:3;display:none;auto_resize:all; ]]
+        [[ element|name:banner_start_small;layout:start_banners;width:300;display:none; ]]
+        [[ element|name:banner_start_1;width:200;layout:banners;text_max:1;xxs_width:192;xxs_retina_ratio:1.8;display:none; ]]
+        [[ element|name:banner_start_2;width:1400;layout:banner_full_width;display:none;auto_resize:all; ]]
+        [[ element|name:banner_start_3;width:680;max_width:992;layout:banner_half_width_inline;text_max:6;display:none; ]]
+        [[ element|name:banner_start_4;width:320;max_width:992;sm_width:576;md_width:768;lg_width:992;layout:banner_quarter_width_inline;text_max:6;display:none; ]]
+        [[ element|name:banner_start_5;width:1400;layout:banner_full_width_inline;text_max:6;display:none;auto_resize:all; ]]
+        [[ element|name:start_blog_title_box;layout:title_box2;display:none ]]
+        [[ element|name:start_brand_slider;layout:flickity_brand;display:none; ]]
+        [[ element|name:banner_start_6;width:680;max_width:992;layout:banner_half_width;text_max:6;display:none; ]]
+        {% endblock %}
+        [[ element|name:cart_summary;layout:html;class:cart_summary_element mt-4; ]]
+        [[ element|name:newsletter_text;layout:html;class:mb-5; ]]
+    </head>
+
+
+    {% if page_id in [ 'page_shop_cart', 'page_shop_order_mods', 'page_shop_order_control' ] %}
+        {% set in_order_flow = true %}
+    {% else %}
+        {% set in_order_flow = false %}
+    {% endif %}
+
+    {% if "page_shop_cat_" in page_id or "page_shop_artdet_" in page_id or "page_shop_art_" in page_id or "page_shop_artspec_" in page_id or "page_shop_search" in page_id %}
+        {% set on_product_page = true %}
+    {% else %}
+        {% set on_product_page = false %}
+    {% endif %}
+
+    [% set temp_box_newsletter %]
+        [[ box|name:newsletter;type:link; ]]
+    [% endset %]
+
+    [% set temp_box_cart %]
+        [[ box|name:cart;disp:counter; ]]
+    [% endset %]
+
+    [% set temp_box_cat_desktop %]
+        [[ box|name:cat;layout_cache:1;expand_cache:1;expand_cache_name:desktop;layout_level0:0;layout_level1:1;layout:2;ajax:1; ]]
+    [% endset %]
+
+    [% set temp_box_cat_mobile %]
+        [[ box|name:cat;layout_cache:1;expand_cache:1;expand_cache_name:mobile;layout_level0:5;layout:6;ajax:1; ]]
+    [% endset %]
+
+    [% set temp_box_menu %]
+        [[ menu|max_level:3;layout:0; ]]
+    [% endset %]
+
+    [% set temp_box_menu_mobile %]
+        [[ menu|max_level:3;layout:5; ]]
+    [% endset %]
+
+    [% set temp_lang_and_money_button_style %]
+        [[ box|name:lang;already:no;disp:button; ]]
+        [[ box|name:currency;form_suffix:2;disp:button; ]]
+    [% endset %]
+
+    [% set temp_lang_and_money_select_style %]
+        [[ box|name:lang;disp:select; ]]
+        [[ box|name:currency;disp:select; ]]
+    [% endset %]
+
+    [% set temp_box_filter %]
+        [[ box|name:filter;disp:desktop; ]]
+    [% endset %]
+
+    [% set temp_filter_button %]
+        [[ box|name:filter;disp:button;prefix:desktop_; ]]
+    [% endset %]
+
+    {# megvizsgáljuk, hogy a szűrés boxnak, van-e tartalma #}
+    [% if temp_box_filter|replace({'\n': '', '\r': '', '\t': ''})|trim == '' %]
+        [% set box_filter_exists = false %] {# üres, tehát az adott oldalon NINCS szűrés box #}
+    [% else %]
+        [% set box_filter_exists = true %] {# nem üres, feltételezzük, hogy LESZ tartalma #}
+        [% if filter_in_subcategory and 'filter-cache-not-exists' in filter_cache_checking %]
+            [% set box_filter_exists = false %] {# ha olyan oldalon vagyunk, ahol lehet köztes szűrés, ÉS a cache nem létezik, akkor feltételezzük, hogy NEM lESZ szűrés box #}
+        [% endif %]
+    [% endif %]
+
+    [% set temp_box_compare_sticky %]
+        [[ box|name:compare;img:1;img_width:60;img_height:60;disp:sticky;ajax:yes; ]]
+    [% endset %]
+
+    [% set temp_box_partner %]
+        [[ box|name:partner ]]
+    [% endset %]
+
+    [% set temp_box_checkout %]
+        [[ box|name:checkout ]]
+    [% endset %]
+
+    [% set temp_box_cert %]
+        [[ box|name:cert ]]
+    [% endset %]
+
+    <body id="unas_design">
+    [% if temp_box_compare_sticky|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+    <div id="box_compare_content" class="text-center fixed-bottom">
+        [[ temp_box_compare_sticky ]]
+    </div>
+    <script>
+        function checkCompareItems() {
+            let $compare_item_num_el = $('.js-box-compare-item-num');
+            $('.box-compare__dropdown-btn-item-num').html($compare_item_num_el.attr('data-count'));
+        }
+        $(document).on('compareBoxRefreshed', function () {
+            checkCompareItems();
+        });
+    </script>
+    [% endif %]
+
+    [[ body_start ]]
+
+    [% set global_settings %]
+        readmore-v2
+        {% if filter_in_subcategory %} [[ filter_cache_checking ]] js-ajax-filter-box-checking{% endif %}
+        [% if filterExists == '1' %] filter-exists[% else %] filter-not-exists[% endif %]
+        {% if filter_box_in_sidebar == "0" %} filter-box-in-dropdown{% else %} filter-box-in-sidebar{% endif %}
+        {% if mobile_nav_position == "1" %} nav-position-top{% else %} nav-position-bottom{% endif %}
+        {% if not in_order_flow %} header-will-fixed{% endif %}
+        {% if fixed_cart_behavior_on_product_details in ["0","1"] %} fixed-cart-on-artdet{% endif %}
+        {% block banner_start_big_class %}{% endblock %}
+    [% endset %]
+
+    <div id="container" class="[[ page_id ]] [[ global_settings|replace({'  ': ''}) ]]">
+        {% block header %}
+        [[ element|name:header_text_section_1;layout:html_closeable;storage_type:session; ]]
+        {% if mobile_nav_position == "1" %}
+        <nav id="nav--mobile-top" class="nav header nav--mobile nav--top d-sm-none js-header{% if not in_order_flow %} js-header-fixed{% endif %}">
+            <div class="header-inner js-header-inner w-100">
+                <div class="d-flex justify-content-center d-sm-none">
+                    [% if temp_box_cat_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_menu_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                    <button type="button" class="hamburger-box__dropdown-btn-mobile burger btn dropdown__btn" id="hamburger-box__dropdown-btn"
+                            aria-label="{{ text.categories }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="hamburger-box__dropdown"
+                            data-btn-for="#hamburger-box__dropdown"
+                    >
+                        <span class="burger__lines">
+                            <span class="burger__line"></span>
+                            <span class="burger__line"></span>
+                            <span class="burger__line"></span>
+                        </span>
+                        <span class="dropdown__btn-text">
+                            {{ text.categories }}
+                        </span>
+                    </button>
+                    [% endif %]
+                    <button class="search-box__dropdown-btn btn dropdown__btn" type="button" data-btn-for="#search-box__dropdown"
+                            aria-label="{{ text.search }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="search-box__dropdown"
+                    >
+                        <span class="search-box__dropdown-btn-icon dropdown__btn-icon icon--search"></span>
+                    </button>
+
+                    [[ box|name:compare;disp:btn; ]]
+
+                    [[ box|name:filter;disp:button; ]]
+
+                    [% if temp_lang_and_money_select_style|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                    <button class="lang-and-money__dropdown-btn btn dropdown__btn"
+                            aria-label="{{ text.lang_and_currency_change }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="lang-and-money__dropdown"
+                            type="button" data-btn-for="#lang-and-money__dropdown"
+                    >
+                        <span class="lang-and-money__dropdown-btn-icon dropdown__btn-icon icon--globe"></span>
+                    </button>
+                    [% endif %]
+
+                    [[ box|name:login;disp:button; ]]
+                    <button class="cart-box__dropdown-btn btn dropdown__btn js-cart-box-loaded-by-ajax"
+                            aria-label="{{ text.button_go_to_cart }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="cart-box__dropdown"
+                            type="button"{% if not in_order_flow %} data-btn-for="#cart-box__dropdown"{% else %} onclick="location.href='[unas_shop_url]/shop_cart.php'"{% endif %}
+                    >
+                        <span class="cart-box__dropdown-btn-icon dropdown__btn-icon icon--cart"></span>
+                        <span class="cart-box__text dropdown__btn-text">{{ text.cart }}</span>
+                        [[ temp_box_cart ]]
+                    </button>
+                </div>
+            </div>
+        </nav>
+        {% endif %}
+        [% set temp_header_text_section_2 %]
+            [[ element|name:header_text_section_2;layout:html_only;class:d-sm-none; ]]
+        [% endset %]
+        <header class="header header--mobile py-3 px-4 d-flex justify-content-center d-sm-none position-relative[% if temp_header_text_section_2|replace({'\n': '', '\r': '', '\t': ''})|trim != '' %] has-tel[% endif %]">
+            [[ element|width:400;height:120;name:header_logo;suffix:2;layout:img_no_lazy;slide_max_visible_count:1;class:logo; ]]
+            [[ temp_header_text_section_2 ]]
+        </header>
+        <header id="header--desktop" class="header header--desktop d-none d-sm-block js-header{% if not in_order_flow %} js-header-fixed{% endif %}">
+            <div class="header-inner js-header-inner">
+                <div class="header__top">
+                    <div class="container">
+                        <div class="header__top-inner">
+                            <div class="row no-gutters gutters-md-10 justify-content-center align-items-center">
+                                <div class="header__top-left col col-xl-auto">
+                                    <div class="header__left-inner d-flex align-items-center">
+                                        [% if temp_box_cat_desktop|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_menu|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                                        <div class="nav-link--products-placeholder-on-fixed-header burger btn">
+                                            <span class="burger__lines">
+                                                <span class="burger__line"></span>
+                                                <span class="burger__line"></span>
+                                                <span class="burger__line"></span>
+                                            </span>
+                                            <span class="burger__text dropdown__btn-text">
+                                                {{ text.categories }}
+                                            </span>
+                                        </div>
+                                        <button type="button" class="hamburger-box__dropdown-btn burger btn dropdown__btn d-lg-none" id="hamburger-box__dropdown-btn2"
+                                                aria-label="{{ text.categories }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="hamburger-box__dropdown"
+                                                data-btn-for="#hamburger-box__dropdown"
+                                        >
+                                            <span class="burger__lines">
+                                              <span class="burger__line"></span>
+                                              <span class="burger__line"></span>
+                                              <span class="burger__line"></span>
+                                            </span>
+                                            <span class="burger__text dropdown__btn-text">
+                                              {{ text.categories }}
+                                            </span>
+                                        </button>
+                                        [% endif %]
+                                        [[ element|width:400;height:120;name:header_logo;layout:img_no_lazy;slide_max_visible_count:1;class:logo;size_type:maximal; ]]
+                                        [[ element|name:header_text_section_2;layout:html_only; ]]
+                                    </div>
+                                </div>
+                                <div class="header__top-right col-auto col-xl d-flex justify-content-end align-items-center">
+                                    <button class="search-box__dropdown-btn btn dropdown__btn d-xl-none" id="#search-box__dropdown-btn2"
+                                            aria-label="{{ text.search }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="search-box__dropdown2"
+                                            type="button" data-btn-for="#search-box__dropdown2"
+                                    >
+                                        <span class="search-box__dropdown-btn-icon dropdown__btn-icon icon--search"></span>
+                                        <span class="search-box__text dropdown__btn-text">{{ text.button_search }}</span>
+                                    </button>
+                                    <div class="search-box__dropdown dropdown__content dropdown__content-till-lg" id="search-box__dropdown2" data-content-for="#search-box__dropdown-btn2" data-content-direction="full">
+                                        <span class="dropdown__caret"></span>
+                                        <button class="dropdown__btn-close search-box__dropdown__btn-close btn btn-close" type="button" aria-label="{{ text.button_close }}"></button>
+                                        [[ box|name:search;suffix:2; ]]
+                                    </div>
+                                    [% if temp_lang_and_money_select_style|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                                    <div class="lang-and-money__wrapper align-self-center d-none d-lg-flex">
+                                        [[ temp_lang_and_money_select_style ]]
+                                    </div>
+                                    <button class="lang-and-money__dropdown-btn btn dropdown__btn d-lg-none"
+                                            aria-label="{{ text.lang_and_currency_change }}" aria-haspopup="dialog" aria-expanded="false" aria-controls="lang-and-money__dropdown"
+                                            type="button" data-btn-for="#lang-and-money__dropdown"
+                                    >
+                                        <span class="lang-and-money__dropdown-btn-icon dropdown__btn-icon icon--globe"></span>
+                                    </button>
+                                    [% endif %]
+                                    [[ box|name:login;disp:button;suffix:2; ]]
+                                    <button id="cart-box__fly-to-desktop" class="cart-box__dropdown-btn btn dropdown__btn js-cart-box-loaded-by-ajax"
+                                            aria-label="{{ text.button_go_to_cart }}" aria-describedby="box_cart_content" aria-haspopup="dialog" aria-expanded="false" aria-controls="cart-box__dropdown"
+                                            type="button"{% if not in_order_flow %} data-btn-for="#cart-box__dropdown"{% else %} onclick="location.href='[unas_shop_url]/shop_cart.php'"{% endif %}
+                                    >
+                                        <span class="cart-box__dropdown-btn-icon dropdown__btn-icon icon--cart"></span>
+                                        <span class="cart-box__text dropdown__btn-text">{{ text.cart }}</span>
+                                        <span class="bubble cart-box__bubble">-</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                [% if temp_box_cat_desktop|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_menu|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                <div class="header__bottom">
+                    <div class="container">
+                        <nav class="navbar d-none d-lg-flex navbar-expand navbar-light align-items-stretch">
+                            [% if temp_box_cat_desktop|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            <ul id="nav--cat" class="nav nav--cat js-navbar-nav">
+                                <li class="nav-item dropdown nav--main nav-item--products[% if page_id == 'page_shop_start' and banner_start_big|replace({'\n': '', '\r': '', '\t': ''})|trim != '' %] show always-opened[% endif %]">
+                                    <a class="nav-link nav-link--products burger d-lg-flex" href="#" onclick="event.preventDefault();" role="button" data-text="{{ text.categories }}" data-toggle="dropdown"
+                                       aria-label="{{ text.categories }}" aria-haspopup="dialog" aria-controls="dropdown-cat"
+                                       [% if page_id == 'page_shop_start' and banner_start_big|replace({'\n': '', '\r': '', '\t': ''})|trim != '' %] aria-expanded="true"[% else %] aria-expanded="false"[% endif %]
+                                    >
+                                        <span class="burger__lines">
+                                            <span class="burger__line"></span>
+                                            <span class="burger__line"></span>
+                                            <span class="burger__line"></span>
+                                        </span>
+                                        <span class="burger__text dropdown__btn-text">
+                                            {{ text.categories }}
+                                        </span>
+                                    </a>
+                                    <div id="dropdown-cat" class="dropdown-menu d-none d-block clearfix dropdown--cat{% if cat_level_breaking == '0' %} with-avoid-breaking-megasubmenu {% else %} with-auto-breaking-megasubmenu {% endif %}dropdown--level-0[% if page_id == 'page_shop_start' and banner_start_big|replace({'\n': '', '\r': '', '\t': ''})|trim != '' %] show[% endif %]">
+                                        [[ temp_box_cat_desktop ]]
+                                    </div>
+                                </li>
+                            </ul>
+                            [% endif %]
+                            [% if temp_box_menu|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            [[ temp_box_menu ]]
+                            [% endif %]
+                        </nav>
+                        {% include common_vars.layout_urls.embed_cat_and_plus_menu_script_1 %}
+                    </div>
+                </div>
+                [% endif %]
+            </div>
+        </header>
+        {% endblock %}
+
+        {% if filter_button_position_with_three_settings == "0" %}
+            [[ temp_filter_button ]]
+        {% endif %}
+
+        {% block filter_dropdown %}
+            {% if filter_box_in_sidebar == "0" %}
+            <div class="filter-dropdown dropdown__content" id="filter-dropdown" data-content-for="#filter-box__dropdown-btn" data-content-direction="left">
+                <button class="dropdown__btn-close filter-dropdown__btn-close btn btn-close" type="button" aria-label="{{ text.button_close }}" data-text="{{ text.button_close|lower }}"></button>
+                <div class="dropdown__content-inner filter-dropdown__inner">
+                    [[ temp_box_filter ]]
+                </div>
+            </div>
+            {% endif %}
+        {% endblock %}
+
+        {% block content %}
+        <main class="main">
+            {% block breadcrumb %}[[ breadcrumb ]]{% endblock %}
+
+            [% set temp_title %]
+                [[ title ]]
+            [% endset %]
+
+            {# filter button after main title #}
+            [% if filter_button_position_with_three_settings == "1" and temp_title|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            <div class="main__title">
+                <div class="container">
+                    <div class="main-title-wrapper d-flex flex-wrap align-items-center">
+                        [[ title ]] [[ temp_filter_button ]]
+                    </div>
+                </div>
+            </div>
+            [% endif %]
+
+            {# filter button sticky or in filter bar #}
+            {% if filter_button_position_with_three_settings == "0" or filter_button_position_with_three_settings == "2" %}
+                [[ title ]]
+            {% endif %}
+
+            [[ content ]]
+
+            {% if on_product_page %}
+                [[ box|name:product_last;piece:8; ]]
+            {% endif %}
+        </main>
+        {% endblock %}
+
+        {% block footer %}
+        <footer id="footer">
+            <div class="footer">
+                <div class="footer-container container">
+                    <div class="footer__navigation">
+                        <div class="row gutters-10">
+                            <nav aria-label="footer nav 1" class="footer__nav footer__nav-1 col-xs-6 col-lg-3 mb-5 mb-lg-3"{% block aos_attributes_footer_1 %}{% endblock %}>[[ element|name:footer_v2_menu_1;layout:html_listing;class_header:footer__header h6; ]]</nav>
+                            <nav aria-label="footer nav 2" class="footer__nav footer__nav-2 col-xs-6 col-lg-3 mb-5 mb-lg-3"{% block aos_attributes_footer_2 %}{% endblock %}>[[ element|name:footer_v2_menu_2;layout:html_listing;class_header:footer__header h6; ]]</nav>
+                            <nav aria-label="footer nav 3" class="footer__nav footer__nav-3 col-xs-6 col-lg-3 mb-5 mb-lg-3"{% block aos_attributes_footer_3 %}{% endblock %}>
+                                [[ element|name:footer_v2_menu_3;layout:html_listing;class:href-icons footer_contact;class_header:footer__header h6; ]]
+                                <div class="footer_social footer_v2_social">
+                                    <ul class="footer__list d-flex list--horizontal">
+                                        [[ element|name:footer_v2_social;layout:html_listing_h; ]]
+                                        <li><button type="button" class="cookie-alert__btn-open btn btn-square icon--cookie" id="cookie_alert_close" onclick="cookie_alert_action(0,-1)" title="{{ text.cookie_consent_settings }}"></button></li>
+                                    </ul>
+                                </div>
+                            </nav>
+                            <nav aria-label="footer nav 4" class="footer__nav footer__nav-4 col-xs-6 col-lg-3 mb-5 mb-lg-3"{% block aos_attributes_footer_4 %}{% endblock %}>
+                                [% if temp_box_newsletter|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                                    [[ element|name:newsletter_title;layout:html_listing;class_header:footer__header h6; ]]
+                                    <a class="btn btn-primary mt-3" href="[unas_shop_url]/shop_newsletter.php">{{ text.button_subscribe }}</a>
+                                [% else %]
+                                    [[ element|name:footer_v2_menu_4;layout:html_listing; ]]
+                                [% endif %]
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                {% block provider %}
+                [[ provider|logo:svg; ]]
+                {% endblock %}
+            </div>
+        </footer>
+        {% endblock %}
+
+
+        {% block partners %}
+        [% set temp_partner_element %]
+        [[ element|name:partner_element;layout:partners; ]]
+        [% endset %]
+
+        [% if temp_partner_element|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_partner|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_checkout|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_cert|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+        <div class="partners py-3"{% block aos_attributes_footer_partners %}{% endblock %} role="region" aria-label="{{ text.design.boxtitle_partner }}">
+            <div class="partners__container container">
+                <div class="parnters__inner row no-gutters gap-10 align-items-center justify-content-center">
+                    [[ temp_partner_element ]]
+                    [[ temp_box_partner ]]
+                    [[ temp_box_checkout ]]
+                    [[ temp_box_cert ]]
+                </div>
+            </div>
+        </div>
+        [% endif %]
+        {% endblock %}
+
+        {% block dropdowns %}
+            [% if temp_box_cat_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_menu_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            <div class="hamburger-box hamburger-box__dropdown dropdown__content" id="hamburger-box__dropdown" data-content-for="#hamburger-box__dropdown-btn, #hamburger-box__dropdown__btn-close" data-content-direction="left">
+                <span class="dropdown__caret"></span>
+                <button class="dropdown__btn-close hamburger-box__dropdown__btn-close btn btn-close" id="hamburger-box__dropdown__btn-close" type="button" title="{{ text.button_close|lower }}" aria-label="{{ text.button_close|lower }}"></button>
+                <div class="dropdown__content-inner hamburger-box__dropdown-inner">
+                    <div class="hamburger-box__dropdown-nav-lists-wrapper">
+                        [% if temp_box_cat_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            [[ temp_box_cat_mobile ]]
+                        [% endif %]
+                        [% if temp_box_menu_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            [% if temp_box_cat_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            <div class="dropdown-divider d-lg-none d-xl-block"></div>
+                            [% endif %]
+                        <div class="nav-list-menu nav-list-menu--main d-lg-none d-xl-block">
+                            [[ temp_box_menu_mobile ]]
+                        </div>
+                        [% endif %]
+                    </div>
+                </div>
+            </div>
+            [% endif %]
+            <div class="search-box__dropdown dropdown__content" id="search-box__dropdown" data-content-for="#search-box__dropdown-btn" data-content-direction="full"
+                 role="dialog" aria-label="{{ text.search }}" tabindex="-1"
+            >
+                <span class="dropdown__caret"></span>
+                <button class="dropdown__btn-close search-box__dropdown__btn-close btn btn-close" type="button" aria-label="{{ text.button_close }}"></button>
+                [[ box|name:search; ]]
+            </div>
+            [% if temp_lang_and_money_button_style|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            <div class="lang-and-money__dropdown dropdown__content" id="lang-and-money__dropdown" data-content-for="#lang-and-money__dropdown-btn" data-content-direction="right">
+                <span class="dropdown__caret"></span>
+                <button class="dropdown__btn-close lang-and-money__dropdown-btn-close btn btn-close" type="button" aria-label="{{ text.button_close }}"></button>
+                <div class="dropdown__content-inner">
+                    <div class="lang-and-money__wrapper d-flex d-xl-none">
+                        [[ temp_lang_and_money_button_style ]]
+                    </div>
+                </div>
+            </div>
+            [% endif %]
+            [[ box|name:login;disp:dropdown; ]]
+            {% if not in_order_flow %}
+            <div class="cart-box__dropdown dropdown__content js-cart-box-dropdown" id="cart-box__dropdown"
+                 data-content-for="#cart-box__dropdown-btn" data-content-direction="right" tabindex="-1" aria-label="{{ text.cart }}"
+                 role="dialog"
+            >
+                <span class="dropdown__caret"></span>
+                <button class="dropdown__btn-close cart-box__dropdown-btn-close btn btn-close" type="button" aria-label="{{ text.button_close }}"></button>
+                <div class="dropdown__content-inner cart-box__dropdown-content-inner" id="box_cart_content2" aria-live="polite">
+                    <div class="loading-spinner-wrapper text-center">
+                        <div class="loading-spinner--small" style="width:30px;height:30px;"></div>
+                    </div>
+                    <script>
+                        $(document).ready(function(){
+                            $('.cart-box__bubble').html($('#box_cart_content').find('.cart-box__bubble').html());
+                            $('.cart-box__dropdown-btn').on("click", function(){
+                                let $thisBtn = $(this);
+                                const $box_cart_2 = $("#box_cart_content2");
+
+                                if (!$thisBtn.hasClass('ajax-loading') && !$thisBtn.hasClass('is-loaded')) {
+                                    $.ajax({
+                                        type: "GET",
+                                        async: true,
+                                        url: "[unas_service_url_base]/shop_ajax/ajax_box_cart.php?get_ajax=1&lang_master=[[ language ]]&cart_num=2",
+                                        beforeSend:function(){
+                                            $thisBtn.addClass('ajax-loading');
+                                            $box_cart_2.addClass('ajax-loading');
+                                        },
+                                        success: function (data) {
+                                            const $thisDropdown = $("#cart-box__dropdown");
+                                            $box_cart_2.html(data).removeClass('ajax-loading').addClass("is-loaded");
+                                            $thisBtn.removeClass('ajax-loading').addClass("is-loaded");
+
+                                            requestAnimationFrame(() => {
+                                                const focusables = findFocusables($thisDropdown[0]);
+                                                if (focusables.length > 0) {
+                                                    const focusExitHandler = createFocusExitHandler($thisDropdown[0], $thisBtn[0], focusables);
+                                                    $thisDropdown.on("keydown", focusExitHandler);
+                                                    focusables[0].focus();
+                                                }
+
+                                                const $box_cart_free_shipping_el = $(".js-cart-box-free-shipping", $box_cart_2);
+                                                const $box_cart_sum_el = $(".js-cart-box-sum", $box_cart_2);
+                                                const $box_cart_btns_el = $(".js-cart-box-btns", $box_cart_2);
+                                                const $box_cart_header_el = $(".js-cart-box-title", $box_cart_2);
+
+                                                if (window.matchMedia('(min-width: 576px)').matches) {
+                                                    if ($box_cart_free_shipping_el.length > 0 && $box_cart_free_shipping_el.css('display') != 'none') {
+                                                        root.style.setProperty("--cart-box-free-shipping-height", $box_cart_free_shipping_el.outerHeight(true) + "px");
+                                                    }
+                                                    if ($box_cart_header_el.length > 0 && $box_cart_header_el.css('display') != 'none') {
+                                                        root.style.setProperty("--cart-box-header-height", $box_cart_header_el.outerHeight(true) + "px");
+                                                    }
+                                                    if ($box_cart_sum_el.length > 0 ) {
+                                                        root.style.setProperty("--cart-box-sum", $box_cart_sum_el.outerHeight(true) + "px");
+                                                    }
+                                                    if ($box_cart_btns_el.length > 0 ) {
+                                                        root.style.setProperty("--cart-box-btns", $box_cart_btns_el.outerHeight(true) + "px");
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    </script>
+                    [[ box|name:cart;price_format:cart;img:1;img_width:60;img_height:60;only_ajax:1; ]]
+                </div>
+            </div>
+            {% endif %}
+        {% endblock %}
+
+        {% block mobile_nav_bottom %}
+            {% if mobile_nav_position == '' or mobile_nav_position not in user_config.mobile_nav_position.options or mobile_nav_position == user_config.mobile_nav_position.default %}
+            <nav id="nav--mobile-bottom" class="nav header nav--mobile nav--bottom d-sm-none js-header{% if not in_order_flow %} js-header-fixed{% endif %}">
+                <div class="header-inner js-header-inner w-100">
+                    <div class="d-flex justify-content-center d-sm-none">
+                        [% if temp_box_cat_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_menu_mobile|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                        <button type="button" class="hamburger-box__dropdown-btn-mobile burger btn dropdown__btn" id="hamburger-box__dropdown-btn"
+                                aria-label="{{ text.categories }}" data-btn-for="#hamburger-box__dropdown"
+                        >
+                            <span class="burger__lines">
+                                <span class="burger__line"></span>
+                                <span class="burger__line"></span>
+                                <span class="burger__line"></span>
+                            </span>
+                            <span class="burger__text dropdown__btn-text">
+                                {{ text.categories }}
+                            </span>
+                        </button>
+                        [% endif %]
+                        <button class="search-box__dropdown-btn btn dropdown__btn" aria-label="{{ text.search }}" type="button" data-btn-for="#search-box__dropdown"
+                                aria-haspopup="dialog" aria-expanded="false" aria-controls="search-box__dropdown"
+                        >
+                            <span class="search-box__dropdown-btn-icon dropdown__btn-icon icon--search"></span>
+                        </button>
+
+                        [[ box|name:compare;disp:btn; ]]
+
+                        [[ box|name:filter;disp:button; ]]
+
+                        [% if temp_lang_and_money_select_style|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                        <button class="lang-and-money__dropdown-btn btn dropdown__btn" aria-label="{{ text.lang_and_currency_change }}" type="button" data-btn-for="#lang-and-money__dropdown">
+                            <span class="lang-and-money__dropdown-btn-icon dropdown__btn-icon icon--globe"></span>
+                        </button>
+                        [% endif %]
+
+                        [[ box|name:login;disp:button; ]]
+                        <button class="cart-box__dropdown-btn btn dropdown__btn js-cart-box-loaded-by-ajax"
+                                aria-label="{{ text.button_go_to_cart }}" type="button"
+                                {%- if not in_order_flow %} data-btn-for="#cart-box__dropdown"{% else %} onclick="location.href='[unas_shop_url]/shop_cart.php'"{% endif -%}
+                        >
+                            <span class="cart-box__dropdown-btn-icon dropdown__btn-icon icon--cart"></span>
+                            <span class="cart-box__text dropdown__btn-text">{{ text.cart }}</span>
+                            [[ temp_box_cart ]]
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            {% endif %}
+        {% endblock %}
+    </div>
+
+    <button class="back_to_top btn icon--arrow-up btn-square-lg{% if back_to_top_on_mobile == "0" %} hide-on-mobile{% endif %}" type="button" aria-label="{{ text.back_to_top }}"></button>
+
+    [[ body_end ]]
+
+    {% block body_end_script %}{% endblock %}
+    </body>
+    [[ end ]]
+</html>

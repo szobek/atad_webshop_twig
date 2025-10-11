@@ -1,0 +1,370 @@
+<div class="sum-box-wrap" role="region" aria-live="polite" aria-label="{{ text.order_summary }}">
+    <div class="sum-box">
+        <div class="sum-box__main-title">{{ text.order_summary }}</div>
+        {% if price_net_disp %}
+        <div class="sum-box__net sum-box-item">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">{{ text.total_net }}:</div>
+                <div class="sum-box__value">{{ total_price_net }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="sum-box__gross sum-box-item">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">{{ text.total_gross }}:</div>
+                <div class="sum-box__value">{{ total_price_gross }}</div>
+            </div>
+        </div>
+
+        {% if total_save_disp %}
+        <div class="sum-box__total-save sum-box-item">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">{{ text.saving }}:</div>
+                <div class="sum-box__value">{{ total_save_gross }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if other_cost_disp %}
+        <div class="sum-box__other-cost sum-box-item js-other-cost-wrap{% if other_cost == ''%} d-none{% endif %}" aria-live="polite" aria-atomic="true">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">{{ text.other_cost }}:</div>
+                <div class="sum-box__value js-other-cost">{{ other_cost }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if total_discount_percent_disp %}
+        <div class="sum-box__total-discount-percent sum-box-item" aria-live="polite" aria-atomic="true">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">
+                    <span class="sum-box__text">{{ text.discount }}</span>
+                    <span class="sum-box__text-2">({{ total_discount_percent_value }}%):</span>
+                </div>
+                <div class="sum-box__value js-discount-percent" data-raw="{{ total_discount_percent_price_raw }}">{{ total_discount_percent_price }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if total_discount_amount_disp %}
+        <div class="sum-box__total-discount--amount sum-box-item">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">
+                    {{ text.discount_amount }}:
+                </div>
+                <div class="sum-box__value">{{ total_discount_amount }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% block usedCouponItem %}
+        {% if coupon_disp and coupon_id != '' %}
+        <div class="sum-box__coupon-item font-s sum-box-item">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title round-bracket-around col-12">
+                    <span class="sum-box__text">{{ text.coupon_code|lower }}:</span>
+                    <span class="sum-box__text-2">{{ coupon_id }}</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endblock %}
+
+        {% if shipping_cost_disp %}
+        <div class="sum-box__shipping-cost sum-box-item"[% if page_id == 'page_shop_order_mods' %] aria-live="polite" aria-atomic="true"[% endif %]>
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">{{ text.shipping_cost }}
+                    {%- apply spaceless -%}
+                    {%- block shippingMethods -%}{#Összes szállítási mód listázása#}
+                        {%- if shipping_methods_disp -%}
+                        &nbsp;<span class="d-inline icon--info" tabindex="0" data-tippy="<div class='cart__shipping-modes font-s px-2'>
+                                {%- for method in shipping_methods -%}
+                                <div class='cart__shipping-mode d-flex'>
+                                    <div class='cart__shipping-mode-name flex-grow-1'>{{ method.name }}</div>
+                                    <div class='cart__shipping-mode-value pl-3 ml-auto font-weight-bold text-right text-nowrap'>{{ method.price }}</div>
+                                </div>
+                                {%- endfor -%}
+                            </div>">
+                        </span>
+                        {%- endif -%}
+                    {%- endblock -%}:
+                    {%- endapply -%}
+                </div>
+                <div class="sum-box__value js-shipping-cost">{{ shipping_cost }}</div>
+            </div>
+        </div>
+        {% else %}
+            {% if shipping_methods_disp %}
+            <div class="cart__only-shipping-modes sum-box-item">
+                {% for method in shipping_methods %}
+                <div class="cart__shipping-mode-name text-wrap font-s pb-3">{{ method.name }} - <span class="font-weight-bold font-xs">{{ method.price }}</span></div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endif %}
+
+        {% if handling_price_disp %}{# Order verification #}
+        <div class="sum-box__handling_price sum-box-item js-handling-cost-wrap{% if handling_price == '' %} d-none{% endif %}" aria-live="polite" aria-atomic="true">
+            <div class="d-flex flex-wrap align-items-center">
+                <div class="sum-box__title">{{ text.handling_price }}:</div>
+                <div class="sum-box__value js-handling-cost">{{ handling_price }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="line-separator"></div>
+
+        <div class="sum-box__total-price" id="sum-box-total-price"{% if not (stock_alert_disp or shipping_free_alert_box_disp or discount_value_calc_alert_box_disp) %} role="alert"{% endif %}>
+            <div class="d-flex flex-wrap align-items-center">
+                <span class="total-price-raw" hidden>{{ total_price_raw }}</span>
+                <div class="sum-box__title">{{ text.total_amount }}:</div>
+                <div class="sum-box__value js-total-price">{{ total_price }}</div>
+            </div>
+        </div>
+
+        {% block totalPoints %}
+            {% if total_points_disp %}
+            <div class="sum-box__point-credit mb-4">
+                <div class="d-flex flex-wrap align-items-center">
+                    <div class="sum-box__title">{{ text.points_for_purchase }}:&nbsp;</div>
+                    <div class="sum-box__value">{{ total_points }}</div>
+                </div>
+            </div>
+            {% endif %}
+        {% endblock %}
+
+        {% block coupon %}
+            {% if coupon_disp %}
+            <div class="sum-box__coupon text-center">
+                <div class="sum-box__coupon-title h5 d-none">{{ text.coupon }}</div>
+                <div class="sum-box__coupon-form-wrapper">
+                    [% if page_id == 'page_shop_cart' %]
+                    <form name="sum-box__coupon-form" class="sum-box__coupon-form" onsubmit="cart_coupon_check('#coupon_id'); return false;">
+                    [% endif  %]
+                        <input class="sum-box__coupon-input form-control[% if page_id == 'page_shop_cart' %]{% if coupon_id != '' %} is-valid{% endif %}[% endif %][% if page_id == 'page_shop_order_mods' %] sum-box__coupon-input--2{% if coupon_id != ''%}{% if coupon_error_disp %} is-invalid{% else %} is-valid{% endif %}{% endif %}[% endif %]" placeholder="{{ text.coupon_code }}" type="text" name="coupon_id" id="coupon_id" value="{{ coupon_id }}"[% if page_id == 'page_shop_cart' %] required[% endif %]{% if coupon_id != '' %} readonly{% endif %} />
+                        [% if page_id == 'page_shop_cart' %]
+                            {% if coupon_id != '' %}
+                            <button class="sum-box__coupon-del-btn btn btn-text2 mt-3" onclick="delCoupon();">{{ text.button_coupon_delete }}</button>
+                            {% else %}
+                            <button class="sum-box__coupon-check-btn btn btn-text2 mt-3">{{ text.button_check }}</button>
+                            {% endif %}
+                        [% endif  %]
+                        [% if page_id == 'page_shop_order_mods' %]
+                            <button class="sum-box__coupon-del-btn sum-box__sum-box__coupon-del-btn--2 btn btn-text2 mt-3" type="reset" onclick="delCoupon();"{% if coupon_id == '' %} disabled{% endif %}>{{ text.button_coupon_delete }}</button>
+                        [% endif  %]
+                        <script>
+
+                            $('.sum-box__coupon-input--2').on('blur', function() {
+                                if ($('.sum-box__coupon-input--2').val() != "") {
+                                    $('.sum-box__sum-box__coupon-del-btn--2').removeAttr('disabled');
+                                } else {
+                                    $('.sum-box__sum-box__coupon-del-btn--2').prop('disabled',true);
+                                }
+                            });
+
+                            function delCoupon() {
+                                $('#coupon_id').removeAttr('value required readonly').val("").removeClass('placeholder-hide');
+                                $('.sum-box__sum-box__coupon-del-btn--2').attr('disabled', true);
+                                $('.sum-box__coupon-input').removeClass('is-valid is-invalid');
+                            }
+                        </script>
+                    [% if page_id == "page_shop_cart" %]
+                    </form>
+                    [% endif  %]
+                </div>
+            </div>
+            {% endif %}
+        {% endblock %}
+
+        {% block nextStepOnCart %}
+            <button class="sum-box__cart-next-btn orderflow-main-btn btn btn-lg btn-block mx-auto js-sum-box-visibility-check js-btn-next"{% if marketing_gift_disp %} onclick="giftDialogOpen(this);" data-onclick="{{ button_order_onclick }}"{% else %}onclick="{{ button_order_onclick }}"{% endif %}>{{ text.button_order_on_cart }}</button>
+            [[ cart_summary ]]
+
+            <script>
+                var giftOverlaySeen = false;
+                function giftDialogOpen(btn) {
+                    var giftContent = "<div class='cart__gift-overlay-btns row no-gutters justify-content-center gap-10'><button class='cart__gift-overlay-scroll-to-gift btn btn-primary icon--a-gift' type='button' onclick='scrollToElement({ element: \".js-cart-gift-products\" }); overlay_close(\"overlay_script\");'>{{ text.button_choose }}</button><button class='cart__gift-overlay-next-btn btn btn-secondary icon--a-close' type='button' onclick='giftDialogCloseNext();'>{{ text.button_skip }}</button></div>";
+
+                    if ($('.js-cart-gift-products').hasClass('ajax-loaded') && giftOverlaySeen === false) {
+                        overlay_load('dialog','{{ text.choose_gift }}!', giftContent);
+                        giftOverlaySeen = true;
+                    } else if ($('.js-cart-gift-products').hasClass('ajax-loading') && giftOverlaySeen === false) {
+                        $(document).on('cartGiftHasContent', function () {
+                            overlay_load('dialog','{{ text.choose_gift }}!', giftContent);
+                            giftOverlaySeen = true;
+                        });
+                        $(document).on('cartGiftHasNoContent', function () {
+                            eval($(btn).data('onclick'));
+                        });
+                    } else {
+                        eval($(btn).data('onclick'));
+                    }
+                }
+                function giftDialogCloseNext(){
+                    $("#overlay_script").bind('onClose', function() {
+                        $(this).unbind('onClose');
+                        setTimeout(function(){ {{ button_order_onclick }} }, 300);
+                    });
+                    overlay_close("overlay_script");
+                }
+            </script>
+        {% endblock %}
+
+        {% block nextStepOnMethods %}
+
+            {% if terms_disp %}
+                {% if terms_checkbox_disp %}
+                <div class="order-mods__terms">
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input js-terms-validation" name="terms" id="order_control_terms" type="checkbox"
+                                   value="1"{% if terms_checked %} checked="checked"{% endif %} onchange="order_mods_terms_change(this);"
+                            >
+                            <label class="custom-control-label font-xs" for="order_control_terms">{{ text.accept_terms_and_privacy_policy }} {{ text.accept_have_to_pay }}</label>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="terms_no_checkbox">
+                    {{ text.accept_terms_and_privacy_policy }} {{ text.accept_have_to_pay }}
+                </div>
+                {% endif %}
+                <script>
+                    /**** ORDER MODS TERMS ONCHANGE ****/
+                    function order_mods_terms_change(el){
+                        $this = $(el);
+                        if($this.is(':checked')){
+                            $this.removeClass('is-invalid');
+                        }else{
+                            $this.addClass('is-invalid');
+                        }
+                    }
+                </script>
+            {% endif %}
+            <button class="sum-box__order-methods-next-btn orderflow-main-btn btn btn-lg btn-block mx-auto js-sum-box-visibility-check js-btn-next" name="button_next" id="button_next" type="button">{{ button_next_text }}</button>
+
+        {% endblock %}
+
+        {#Komment beviteli mezők#}
+        {% block commentInputs %}
+            {{ comment_form_start }}
+            <div class="order-control__comment form-group">
+                <label for="megj">{{ text.note }}</label>
+                <textarea class="form-control order-comment" name="megj"  placeholder="{{ text.note }}" id="megj" rows="3" {% if comment_fixed_length_disp %}maxlength="{{ comment_input_max_length }}"{% endif %}></textarea>
+                {% if comment_fixed_length_disp %}
+                <div class="order-comment__count d-flex font-xs align-items-center justify-content-end py-1 mb-3">
+                    <span class="order-comment__current">0</span>
+                    <span class="order-comment__maximum">/{{ comment_input_max_length }}</span>
+                </div>
+                <script>
+                    $(document).ready(function(){
+                        textareaCharacterCounter('.order-comment',{{ comment_input_max_length }});
+                    });
+                </script>
+                {% endif %}
+            </div>
+
+            {% if shipping_comment_disp %}
+            <div class="order-control__shipping-comment form-group">
+                <label for="szall_megj">{{ text.note_for_shipping }}</label>
+                <textarea class="form-control shipping-comment" name="szall_megj"  placeholder="{{ text.note_for_shipping }}" id="szall_megj" rows="3" {% if shipping_comment_fixed_length_disp %}maxlength="{{ shipping_comment_input_max_length }}"{% endif %}></textarea>
+                {% if shipping_comment_fixed_length_disp %}
+                <div class="shipping-comment__count d-flex font-xs align-items-center justify-content-end py-1 mb-3">
+                    <span class="shipping-comment__current">0</span>
+                    <span class="shipping-comment__maximum">/{{ shipping_comment_input_max_length }}</span>
+                </div>
+                <script>
+                    $(document).ready(function(){
+                        textareaCharacterCounter('.shipping-comment',{{ shipping_comment_input_max_length }});
+                    });
+                </script>
+                {% endif %}
+            </div>
+            {% endif %}
+            {{ comment_form_end }}
+        {% endblock %}
+
+        {% block nextStepOnVerification %}
+
+            {% if terms_disp %}
+            <div class="order-control__terms">
+                {% if terms_checkbox_disp %}
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox font-xs">
+                            <input class="custom-control-input js-order-control-terms-validation" name="terms" id="order_control_terms" type="checkbox" value="1" {% if terms_checked %} checked='checked' {% endif %} />
+                            <label class="custom-control-label order-control__terms-text" for="order_control_terms">{{ text.accept_terms_and_privacy_policy }} {{ text.accept_have_to_pay }}</label>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        $(document).on('clickOrderButtonError', function(e, data) {
+                            var scrollTo;
+                            var faultTo;
+                            switch (data.error) {
+                                case "terms":
+                                    scrollTo = faultTo = ".js-order-control-terms-validation";
+                                    break;
+                                default:
+                                    console.log('LOG: there is an unmanaged switch case, data is: ', data);
+                            }
+                            $(faultTo).addClass('is-invalid');
+                            if(getWindowWidth() < 1200){
+                                scrollToElement({ element: scrollTo });
+                            }
+                        });
+                        {% if gpay_button_disp %}
+                            $(document).on('click','.js-order-control-terms-validation', function(){
+                               if ($(this).is(':checked')) {
+                                   $('#g-btn-wrap').removeClass('js-need-terms');
+                                   $(".js-order-control-terms-validation").removeClass('is-invalid');
+                               } else {
+                                   $('#g-btn-wrap').addClass('js-need-terms');
+                               }
+                            });
+                            $(document).on('click','#g-btn-wrap.js-need-terms', function(){
+                                overlay_load("error",UNAS.text.orderflow_terms_alert1,UNAS.text.orderflow_terms_alert2);
+                                $(".js-order-control-terms-validation").addClass('is-invalid');
+                            });
+                        {% endif %}
+                    </script>
+                {% else %}
+                    <div class="order-control__terms-text font-xs">{{ text.accept_terms_and_privacy_policy }} {{ text.accept_have_to_pay }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if gpay_button_disp %}
+                <div id="g-btn-wrap" class="text-center{% if terms_checkbox_disp %} js-need-terms{% endif %}"></div>
+            {% else %}
+                <button class="sum-box__order-control-next-btn orderflow-main-btn btn btn-lg btn-block mx-auto mt-3 js-btn-next js-sum-box-visibility-check" id="button_next" type="button" onclick="order_control_next();">{{ button_next_text }}</button>
+            {% endif %}
+        {% endblock %}
+
+        {#Kommentek a megrendeléshez#}
+        {% block comment %}
+            {% if comment_disp %}
+                <div class="sum-box__comment mb-2">
+                    <div class="sum-box__title font-weight-bold">{{ text.note }}:</div>
+                    <div class="sum-box__text-2">{{ comment }}</div>
+                </div>
+            {% endif %}
+
+            {% if shipping_comment_disp %}
+                <div class="sum-box__shipping-comment mb-2">
+                    <div class="sum-box__title font-weight-bold">{{ text.note_for_shipping }}:</div>
+                    <div class="sum-box__text-2">{{ shipping_comment }}</div>
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+</div>
+
+{% block scriptMods %}
+<script>
+    function orderModsChangeOrderParam(){
+        calculate_summary();
+    }
+    function orderModsChangeShipping(){
+        calculate_summary();
+    }
+</script>
+{% endblock %}

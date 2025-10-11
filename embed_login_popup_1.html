@@ -1,0 +1,93 @@
+<div class="overlay-sign-in absolute-full d-flex justify-content-center align-items-center">
+    <div class="overlay-sign-inner drop-shadow position-relative">
+        <button type="button" class="overlay-sign-in__btn-close btn btn-close" onclick="overlay_close('overlay_login_outer');"></button>
+        <div class="row gutters-10">
+            {% if noreg_disp %}
+            <div class="col-12 mb-3 mb-sm-0">
+                <div class="overlay-no-reg__container d-none d-sm-block">
+                    <div class="row no-gutters gap-20 align-items-center">
+                        <div class="overlay-no-reg__title-wrap">
+                            <div class="overlay-no-reg__title main-title2 mb-0 icon--b-cart-shopping-fast">{{ text.shopping_without_registration_title }}</div>
+                            <div class="overlay-no-reg__title-sub font-s">{{ text.shopping_without_registration_title_sub }}</div>
+                        </div>
+                        <a class="overlay-no-reg__btn btn btn-primary icon--a-cart-shopping-fast ml-auto" href="{{ noreg_url }}">{{ text.button_continue_without_registration }}</a>
+                    </div>
+                </div>
+                <a class="overlay-no-reg__btn-mobile btn btn-block btn-primary d-sm-none" href="{{ noreg_url }}">
+                    <div class="icon--cart-shopping-fast"></div>
+                    {{ text.button_continue_without_registration }}
+                </a>
+            </div>
+            {% endif %}
+            <div class="col-6 mb-3 d-sm-none">
+                <div class="overlay-login__title-mobile">
+                    <div class="icon--user"></div>
+                    {{ text.login }}
+                </div>
+            </div>
+            <div class="col-6 mb-3 d-sm-none">
+                <a class="overlay-reg__btn-mobile btn btn-block" href="{{ reg_url }}">
+                    <div class="icon--pen-line"></div>
+                    {{ text.registration }}
+                </a>
+            </div>
+            <div class="col-sm-6 overlay-login__col my-sm-4 pl-sm-0">
+                <div class="overlay-login__col-inner">
+                    <div class="overlay-login" id="overlay_login1">
+                        <div class="overlay-login__content">
+                            <div class="overlay-login__title main-title2 icon--b-user d-none d-sm-block">{{ text.login }}</div>
+                            {{ form_start }}
+                                <div class="form-group">
+                                    <label for="shop_user_login_popup">{{ username_title }}</label>
+                                    <input class="page_login_input form-control" name="shop_user_login" id="shop_user_login_popup" type="text" placeholder="{{ username_title }}"/>
+                                </div>
+                                <div class="form-group form-group-lg">
+                                    <label for="shop_pass_login_popup">{{ text.password }}</label>
+                                    <input class="page_login_input form-control" name="shop_pass_login" id="shop_pass_login_popup" type="password" placeholder="{{ text.password }}"/>
+                                </div>
+                                <div class="overlay-login__btn-wrap form-group form-group-lg">
+                                    <button class="overlay-login__btn btn btn-primary" type="submit">{{ text.button_login }}</button>
+                                </div>
+                                <div class="overlay-login__remind-btn-wrap{% if facebook_disp or google_disp %} form-group-lg{% endif %}">
+                                    <button type="button" class="overlay-login__remind-btn btn btn-text2" onclick="overlay_login_remind();">{{ text.forgot_my_password }}</button>
+                                </div>
+                            {{ form_end }}
+                            {% if facebook_disp or google_disp %}
+                            <div class="overlay__social-group form-group">
+                                <div class="row row-gap-10 gutters-5">
+                                    {% if facebook_disp %}
+                                    <div class="col-12">
+                                        {% embed common_vars.layout_urls.embed_facebook_login_1 %}{% endembed %}
+                                    </div>
+                                    {% endif %}
+                                    {% if google_disp %}
+                                    <div class="col-12">
+                                        {% embed common_vars.layout_urls.embed_google_login_1 %}{% endembed %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 d-none d-sm-block my-sm-4 pr-0">
+                <div class="overlay-reg__col-inner">
+                    <div class="overlay-reg" id="overlay_login2">
+                        <div class="overlay-reg__content">
+                            <div class="overlay-reg__title main-title2 icon--b-pen-line">{{ text.registration }}</div>
+                            <div class="overlay-reg__text">{{ text.registration_advantages }}</div>
+                            <ul class="overlay-reg__adv mb-4">
+                                <li>{{ text.registration_promo_text_1 }}</li>
+                                <li>{{ text.registration_promo_text_2 }}</li>
+                                <li>{{ text.registration_promo_text_3 }}</li>
+                            </ul>
+                            <a class="overlay-reg__btn btn btn-primary icon--a-pen-line" href="{{ reg_url }}">{{ text.registration }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

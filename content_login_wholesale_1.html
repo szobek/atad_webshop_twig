@@ -1,0 +1,29 @@
+{% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+<div class="page_content wholesale-login p-4 my-4 container container-max-xs" id="page_login_wholesale_content">
+    [[ box|name:lang;disp:select; ]]
+
+    <div class="form-wrap mb-4">
+    {{ form_start }}
+        <div class="form-group wholesale-login__user-wrap">
+            <label for="wholesale-login__user">{{ username_title }}</label>
+            <input name="shop_user_login" id="wholesale-login__user" placeholder="{{ username_title }}" type="text" class="wholesale-login__input form-control"/>
+        </div>
+        <div class="form-group form-group-lg wholesale-login__pass-wrap">
+            <label for="wholesale-login__pass">{{ text.password }}</label>
+            <input name="shop_pass_login" id="wholesale-login__pass" placeholder="{{ text.password }}" type="password" class="wholesale-login__input form-control"/>
+        </div>
+        <div class="form-group form-group-lg wholesale-login__btns-wrap d-flex flex-wrap gap-10">
+            <button class="wholesale-login__login-btn btn btn-primary">{{ text.button_login }}</button>
+            {% if wholesale_reg %}
+            <a class="wholesale-login__reg-btn btn btn-primary" href="{{ reg_url }}">{{ text.registration }}</a>
+            {% endif %}
+        </div>
+        <div class="wholesale-login__remind-btn-wrap form-group">
+            <button type="button" class="wholesale-login__remind-btn btn btn-text2" onclick="overlay_login_remind();">{{ text.forgot_my_password }}</button>
+        </div>
+    {{ form_end }}
+    </div>
+</div>
+
+{% include common_vars.layout_urls.embed_custom_content_bottom_1 %}

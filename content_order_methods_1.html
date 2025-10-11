@@ -1,0 +1,642 @@
+<div id="page_order_mods_content" class="page_content js-validation">
+    {{ form_start }}
+
+    {{ orderflow }}
+
+    {% include common_vars.layout_urls.embed_custom_content_top_1 %}
+
+    <div class="container">
+        <div class="row gutters-10">
+            <div class="order-left-content">
+                <input type="hidden" name="mods_send" value="ok">
+                <input type="hidden" name="fiz_spec" value="{{ payment_spec }}">
+                <input type="hidden" name="fiz_id" id="fiz_id" value="">
+                <input type="hidden" name="szall_spec" value="{{ shipping_spec }}">
+                <input type="hidden" name="szall_id" id="szall_id" value="">
+
+                <div class="order-mods__main js-methods-validation">
+                    <div class="row gutters-5">
+                        <div class="col-12 col-lg-6 order-mods-section__col{% if primary_type == "billing" %} payment-col{% else %} shipping-col{% endif %}">
+                            <div class="order-mods-section__outer{% if primary_type == "billing" %} payment-mode{% else %} shipping-mode{% endif %}">
+                                {% if primary_disp %}{# this is the master (1st) payment/shipping method #}
+                                    <section class="order-mods-section order-mods-section--master order-mods__{{ primary_type }}-section" id="page_order_mods_{{ primary_type }}" aria-label="{{ primary_title }}">
+                                        <div class="order-mods__main-title">{{ primary_title }}</div>
+
+                                        {% for method in primary_methods %}
+                                            <div class="form-group order-mods__item js-order-mods-item js-method-error-group" id="{{ method.outer_id }}" role="group" aria-label="{{ method.name }}">
+                                                <div class="custom-control custom-radio font-l clearfix">
+                                                    {% if primary_type == "billing" %}{# if the master type is payment #}
+                                                        <input class="custom-control-input fiz_radio" aria-describedby="method_description_{{ method.radio_id }}" name="fiz" id="{{ method.radio_id }}" type="radio"
+                                                               value="{{ method.radio_value }}" onclick="{{ method.radio_onclick_value }}"
+                                                               rel_spec="{{ method.radio_rel_spec }}" rel_connect="{{ method.radio_rel_connect }}"
+                                                               rel_type="{{ method.radio_rel_type }}" rel_online="{{ method.radio_rel_online }}" rel_checkout_direct="{{ method.radio_rel_checkout_direct }}"
+                                                               {%- if method.radio_checked %} checked="checked"{% endif -%}
+                                                        >
+                                                        <label class="custom-control-label order-mods__name" for="{{ method.radio_id }}">{{ method.name }}</label>
+                                                        <div class="order-mods__handling-cost-wrap ml-3 d-inline-block float-right">
+                                                            <div class="order-mods__handling-cost-text mr-2 d-none">{{ text.handling_price }}:</div>
+                                                            <div class="order-mods__handling-cost text-nowrap"></div>
+                                                            <span class="order-mods__handling-cost-hidden"
+                                                                  data-by-products="{{ method.handling_cost_by_products }}"
+                                                                  data-percent="{{ method.handling_cost_percent }}"
+                                                                  data-min="{{ method.handling_cost_min }}"
+                                                                  data-max="{{ method.handling_cost_max }}"
+                                                                  data-fix="{{ method.handling_cost_fix }}"
+                                                            ></span>
+                                                        </div>
+                                                    {% elseif primary_type == "shipping" %}{# if the master type is shipping #}
+                                                        <input class="custom-control-input szall_radio" aria-describedby="method_description_{{ method.radio_id }}" name="szall" id="{{ method.radio_id }}" type="radio"
+                                                               value="{{ method.radio_value }}" onclick="{{ method.radio_onclick_value }}"
+                                                               rel_spec="{{ method.radio_rel_spec }}" rel_connect="{{ method.radio_rel_connect }}"
+                                                               {%- if method.radio_checked %} checked="checked"{% endif -%}
+                                                        >
+                                                        <label class="custom-control-label order-mods__name" for="{{ method.radio_id }}">{{ method.name }}</label>
+                                                        <div class="order-mods__shipping-cost-wrap ml-3 d-inline-block float-right">
+                                                            <div class="order-mods__shipping-cost-text mr-2 d-none">{{ text.shipping_cost }}:</div>
+                                                            <div class="order-mods__shipping-cost text-nowrap">{{ method.shipping_cost }}</div>
+                                                            <span class="order-mods__shipping-cost-hidden">{{ method.shipping_cost_raw }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                {% if method.logo_disp %}
+                                                    <div class="order-mods__logo-wrap">
+                                                        {% if method.logo_link_disp %}<a class="has-img" href="{{ method.logo_link_url }}" title="{{ method.logo_alt }}" target="{{ method.logo_link_target }}">{% endif %}
+                                                        <img class="order-mods__logo" src="{{ method.logo_img_url }}" alt="{{ method.logo_alt }}" title="{{ method.logo_alt }}">
+                                                        {% if method.logo_link_disp %}</a>{% endif %}
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if method.details_disp or method.link_disp or method.delivery_point_disp or method.use_recurring_checkbox or method.use_oneclick_checkbox or method.use_oneclick_pass or change_default_addresses_enabled %}
+                                                    <div class="order-mods__details js-order-mods-details"{% if method.radio_checked %} style="display:block;"{% endif %}>
+                                                        {% if method.details_disp %}
+                                                        <div id="method_description_{{ method.radio_id }}" class="order-mods__description py-3 font-xs font-md-s text-justify">{{ method.details }}</div>
+                                                        {% endif %}
+
+                                                        {% if method.link_disp %}
+                                                        <a class="order-mods__link my-4" href="{{ method.link_url }}" title="{{ method.link_alt }}" target="{{ method.link_target }}">{{ method.link_text }}</a>
+                                                        {% endif %}
+
+                                                        {# recurring start #}
+                                                        {% if method.use_recurring_checkbox %}
+                                                        <div class="custom-control custom-checkbox font-l mt-4">
+                                                            <input class="custom-control-input" type="checkbox" name="use_recurring_{{ method.id }}" id="use_recurring_{{ method.id }}" value="1"{% if method.use_recurring_checked %} checked="checked"{% endif %}>
+                                                            <label class="custom-control-label order-mods__virtual-label font-weight-bold" for="use_recurring_{{ method.id }}">{{ text.oneclick_password }}</label>
+                                                        </div>
+                                                        {% endif %}
+                                                        {# recurring end #}
+
+                                                        {# oneclick start #}
+                                                        {% if method.use_oneclick_checkbox %}
+                                                        <div class="custom-control custom-checkbox font-l mt-4">
+                                                            <input class="custom-control-input" type="checkbox" name="use_oneclick_{{ method.id }}" id="use_oneclick_{{ method.id }}" value="1"{% if method.use_oneclick_checked %} checked="checked"{% endif %}>
+                                                            <label class="custom-control-label order-mods__virtual-label font-weight-bold" for="use_oneclick_{{ method.id }}">{{ text.oneclick_store_card_data }}</label>
+                                                        </div>
+                                                        {% elseif method.use_oneclick_pass %}
+                                                        <div class="form-group order-mods__oneclick-pass--input js-oneclick-pass-wrap mt-4">
+                                                            <label for="oneclick_pass_{{ method.id }}">{{ text.oneclick_password }}</label>
+                                                            <input class="form-control{% if method.oneclick_pass_required %} is-required{% endif %}" type="password" onkeyup="oneclick_pass_change($(this));" name="oneclick_pass_{{ method.id }}" id="oneclick_pass_{{ method.id }}" value="{{ method.oneclick_pass_value }}">
+                                                            <div class="invalid-feedback">{{ text.error_required }}</div>
+                                                        </div>
+                                                        {% endif %}
+                                                        {# oneclick end #}
+
+                                                        {% if method.delivery_point_disp %}
+                                                        <div class="order-mods__delivery-point mb-4 page_order_mods_deliverypoint">
+                                                                {{ method.delivery_point_script }}
+                                                                <div class="order-mods__delivery-options">
+                                                                    <div class="row">
+                                                                        <div class="col-12 js-delivery-point-validation">
+                                                                            <div class="order-mods__delivery-point-selects">
+                                                                                <div id="order-mods-delivery-point-select-text-{{ method.id }}" class="order-mods__delivery-point-select-text mb-2">
+                                                                                    {{ text.select_delivery_point }}
+                                                                                </div>
+                                                                                {% if method.delivery_point_type_multi %}
+                                                                                    {% for i in 1..5 %}
+                                                                                    <div class="form-group form-select-group delivery_point_{{ i }}_wrapper"{% if not attribute(method,"delivery_point_select_" ~ i ~"_disp") %} style="display:none"{% endif %}>
+                                                                                        <span class="delivery_point_{{ i }}_outer">{{ attribute(method,"delivery_point_select_" ~ i) }}</span>
+                                                                                    </div>
+                                                                                    {% endfor %}
+                                                                                {% else %}
+                                                                                <div class="delivery_point_outer">
+                                                                                    <div class="form-group form-select-group">
+                                                                                        <select class="form-control delivery_point" onchange="{{ method.delivery_point_single_onchange_value }}">
+                                                                                            {% if not method.delivery_point_single_only_one_option %}<option value="">--- {{ text.please_select }} ---</option>{% endif %}
+                                                                                            {% for option in method.delivery_options %}
+                                                                                            <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.name }}</option>
+                                                                                            {% endfor %}
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                        {% if method.delivery_point_map_disp %}
+                                                                            <div class="col-12">
+                                                                                <div class="order-mods__delivery-map">
+                                                                                    <div>
+                                                                                        <label>{{ text.select_on_map }}:</label>
+                                                                                        <span class="page_order_mods_deliverypoint_widget">
+                                                                                            <a href="#" aria-label="{{ text.select_on_map }}" onclick="{{ method.delivery_point_map_widget_onclick_value }}"></a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="page_order_mods_deliverypoint_info_outer" {% if method.delivery_point_info != "" %} style='display:block;'{% endif %}>
+                                                                    <div class="page_order_mods_deliverypoint_info font-xs font-md-s text-justify">{{ method.delivery_point_info }}</div>
+                                                                </div>
+                                                            </div>
+                                                        {% else %}
+                                                            {% if change_default_addresses_enabled %}
+                                                                <div class="form-group mt-3">
+                                                                    <label for="{{ primary_type }}_address_{{ method.id }}">{{ attribute(text,primary_type~'_address') }}</label>
+                                                                    <div class="form-select-group">
+                                                                        <select id="{{ primary_type }}_address_{{ method.id }}" class="form-control js-address-select" data-type="{{ primary_type }}" data-id="{{ method.id }}">
+                                                                            {% if primary_type == pre_selected_method_type and new_address != '' %}
+                                                                            <option value="{{ new_address_id }}" selected="selected">{{ new_address }}</option>
+                                                                            {% else %}
+                                                                            <option value="{{ _context['default_' ~ primary_type~'_address_id'] }}" selected="selected">{{ _context['default_' ~ primary_type~'_address'] }}</option>
+                                                                            {% endif %}
+                                                                        </select>
+                                                                    </div>
+                                                                    <button type="button" class="btn btn-text2 text-primary" onclick="redirectToAddNewAddress({{ method.id }},'{{ primary_type }}');">{{ text.new_address }}</button>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </section>
+                                {% else %} {# there is no available master method #}
+                                    <section class="order-mods-section order-mods-section--has-not-master order-mods__{{ primary_type }}-section" id="page_order_mods_{{ primary_type }}" aria-label="{{ primary_title }}">
+                                        <div class="order-mods__main-title">{{ primary_title }}</div>
+
+                                        {# [master_disp_no_custom_disp] with ! (denial): custom text is not given by admin user in Content / Editable contents menu (Order page, if no selectable...) #}
+                                        <div class="order-mods__text-no-master-method-outer {% if custom_content_no_primary_method_disp %}is-custom{% endif %}">
+                                        <span class="order-mods__text-no-master-method">
+                                            {% if custom_content_no_primary_method_disp %}
+                                                {{ custom_content_no_primary_method }}
+                                            {% else %}
+                                               {{ primary_title }}
+                                            {% endif %}
+                                        </span>
+                                        </div>
+                                    </section>
+                                {% endif %}
+                                {% if primary_type == "billing" and point_account_disp %}
+                                    <section class="order-mods-section order-mods__point-account mt-4 font-md-m" id="page_order_mods_virtual">
+                                        <fieldset class="form-group">
+                                            <legend class="order-mods__virtual-text alert alert-info icon--b-info">
+                                                {{ text.your_points_on_your_account }}
+                                                <span class="order-mods__virtual-point">{{ point_account_value }}</span>
+                                            </legend>
+                                            <div class="custom-control custom-checkbox font-l">
+                                                <input class="custom-control-input" type="checkbox" name="use_virtual" id="use_points" value="1" {% if point_use_checked %}checked="checked"{% endif %}>
+                                                <label class="custom-control-label order-mods__virtual-label" for="use_points">{{ text.use_points_on_buy }}</label>
+                                            </div>
+                                        </fieldset>
+                                    </section>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 order-mods-section__col{% if secondary_type == "billing" %} payment-col{% else %} shipping-col{% endif %}">
+                            <div class="order-mods-section__outer{% if secondary_type == "billing" %} payment-mode{% else %} shipping-mode{% endif %}">
+                                {% if secondary_disp %}{# this is the slave (2nd) payment/shipping method #}
+                                    <section class="order-mods-section order-mods-section--slave order-mods__{{ secondary_type }}-section" id="page_order_mods_{{ secondary_type }}" aria-label="{{ secondary_title }}">
+                                        <div class="order-mods__main-title">{{ secondary_title }}</div>
+                                        {% for method in secondary_methods %}
+                                            <div class="form-group order-mods__item js-order-mods-item js-method-error-group" id="{{ method.outer_id }}">
+                                                <div class="custom-control custom-radio font-l clearfix">
+                                                    {% if secondary_type == "billing" %}{# if the master type is payment #}
+                                                        <input class="custom-control-input fiz_radio" aria-describedby="method_description_{{ method.radio_id }}" name="fiz" id="{{ method.radio_id }}" type="radio"
+                                                               value="{{ method.radio_value }}" onclick="{{ method.radio_onclick_value }}"
+                                                               rel_spec="{{ method.radio_rel_spec }}" rel_connect="{{ method.radio_rel_connect }}"
+                                                               rel_type="{{ method.radio_rel_type }}" rel_online="{{ method.radio_rel_online }}" rel_checkout_direct="{{ method.radio_rel_checkout_direct }}"
+                                                               {%- if method.radio_checked %} checked="checked"{% endif -%}
+                                                        >
+                                                        <label class="custom-control-label order-mods__name" for="{{ method.radio_id }}">{{ method.name }}</label>
+                                                        <div class="order-mods__handling-cost-wrap ml-3 d-inline-block float-right">
+                                                            <div class="order-mods__handling-cost-text mr-2 d-none">{{ text.handling_price }}:</div>
+                                                            <div class="order-mods__handling-cost text-nowrap"></div>
+                                                            <span class="order-mods__handling-cost-hidden"
+                                                                 data-by-products="{{ method.handling_cost_by_products }}"
+                                                                 data-percent="{{ method.handling_cost_percent }}"
+                                                                 data-min="{{ method.handling_cost_min }}"
+                                                                 data-max="{{ method.handling_cost_max }}"
+                                                                 data-fix="{{ method.handling_cost_fix }}"
+                                                             ></span>
+                                                        </div>
+                                                    {% elseif secondary_type == "shipping" %}{# if the master type is shipping #}
+                                                        <input class="custom-control-input szall_radio" aria-describedby="method_description_{{ method.radio_id }}" name="szall" id="{{ method.radio_id }}" type="radio"
+                                                               value="{{ method.radio_value }}" onclick="{{ method.radio_onclick_value }}"
+                                                               rel_spec="{{ method.radio_rel_spec }}" rel_connect="{{ method.radio_rel_connect }}"
+                                                               {%- if method.radio_checked %} checked="checked"{% endif -%}
+                                                        >
+                                                        <label class="custom-control-label order-mods__name" for="{{ method.radio_id }}">{{ method.name }}</label>
+                                                        <div class="order-mods__shipping-cost-wrap ml-3 d-inline-block float-right">
+                                                            <div class="order-mods__shipping-cost-text mr-2 d-none">{{ text.shipping_cost }}:</div>
+                                                            <div class="order-mods__shipping-cost text-nowrap">{{ method.shipping_cost }}</div>
+                                                            <span class="order-mods__shipping-cost-hidden">{{ method.shipping_cost_raw }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                {% if method.logo_disp %}
+                                                    <div class="order-mods__logo-wrap">
+                                                        {% if method.logo_link_disp %}<a class="has-img" href="{{ method.logo_link_url }}" title="{{ method.logo_alt }}" target="{{ method.logo_link_target }}">{% endif %}
+                                                        <img class="order-mods__logo" src="{{ method.logo_img_url }}" alt="{{ method.logo_alt }}" title="{{ method.logo_alt }}">
+                                                        {% if method.logo_link_disp %}</a>{% endif %}
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if method.details_disp or method.link_disp or method.delivery_point_disp or method.use_recurring_checkbox or method.use_oneclick_checkbox or method.use_oneclick_pass or change_default_addresses_enabled %}
+                                                    <div class="order-mods__details js-order-mods-details"{% if method.radio_checked %} style="display:block;"{% endif %}>
+                                                        {% if method.details_disp %}
+                                                        <div id="method_description_{{ method.radio_id }}" class="order-mods__description py-3 font-xs font-md-s text-justify">{{ method.details }}</div>
+                                                        {% endif %}
+
+                                                        {% if method.link_disp %}
+                                                        <a class="order-mods__link my-4" href="{{ method.link_url }}" title="{{ method.link_alt }}"
+                                                           target="{{ method.link_target }}">{{ method.link_text }}
+                                                        </a>
+                                                        {% endif %}
+
+                                                        {# recurring start #}
+                                                        {% if method.use_recurring_checkbox %}
+                                                        <div class="custom-control custom-checkbox font-l mt-4">
+                                                            <input class="custom-control-input" type="checkbox" name="use_recurring_{{ method.id }}" id="use_recurring_{{ method.id }}" value="1" {% if method.use_recurring_checked %}checked="checked"{% endif %}>
+                                                            <label class="custom-control-label order-mods__virtual-label font-weight-bold" for="use_recurring_{{ method.id }}">{{ text.recurring_store_card_data }}</label>
+                                                        </div>
+                                                        {% endif %}
+                                                        {# recurring end #}
+
+                                                        {# oneclick start #}
+                                                        {% if method.use_oneclick_checkbox %}
+                                                        <div class="custom-control custom-checkbox font-l mt-4">
+                                                            <input class="custom-control-input" type="checkbox" name="use_oneclick_{{ method.id }}" id="use_oneclick_{{ method.id }}" value="1" {% if method.use_oneclick_checked %}checked="checked"{% endif %}>
+                                                            <label class="custom-control-label order-mods__virtual-label font-weight-bold" for="use_oneclick_{{ method.id }}">{{ text.oneclick_store_card_data }}</label>
+                                                        </div>
+                                                        {% elseif method.use_oneclick_pass %}
+                                                        <div class="form-group order-mods__oneclick-pass--input js-oneclick-pass-wrap mt-4">
+                                                            <label for="oneclick_pass_{{ method.id }}">{{ text.oneclick_password }}</label>
+                                                            <input class="form-control{% if method.oneclick_pass_required %} is-required{% endif %}" type="password" onkeyup="oneclick_pass_change($(this));" name="oneclick_pass_{{ method.id }}" id="oneclick_pass_{{ method.id }}" value="{{ method.oneclick_pass_value }}">
+                                                            <div class="invalid-feedback">{{ text.error_required }}</div>
+                                                        </div>
+                                                        {% endif %}
+                                                        {# oneclick end #}
+
+                                                        {% if method.delivery_point_disp %}
+                                                        <div class="order-mods__delivery-point mb-4 page_order_mods_deliverypoint">
+                                                            {{ method.delivery_point_script }}
+                                                            <div class="order-mods__delivery-options">
+                                                                <div class="row">
+                                                                    <div class="col-12 js-delivery-point-validation">
+                                                                        <div class="order-mods__delivery-point-selects">
+                                                                            <div id="order-mods-delivery-point-select-text-{{ method.id }}" class="order-mods__delivery-point-select-text mb-2">
+                                                                                {{ text.select_delivery_point }}
+                                                                            </div>
+                                                                            {% if method.delivery_point_type_multi %}
+                                                                                {% for i in 1..5 %}
+                                                                                <div class="form-group form-select-group delivery_point_{{ i }}_wrapper"{% if not attribute(method,"delivery_point_select_" ~ i ~"_disp") %} style="display:none"{% endif %}>
+                                                                                    <span class="delivery_point_{{ i }}_outer">{{ attribute(method,"delivery_point_select_" ~ i) }}</span>
+                                                                                </div>
+                                                                                {% endfor %}
+                                                                            {% else %}
+                                                                            <div class="delivery_point_outer">
+                                                                                <div class="form-group form-select-group">
+                                                                                    <select class="form-control delivery_point" onchange="{{ method.delivery_point_single_onchange_value }}">
+                                                                                        {% if not method.delivery_point_single_only_one_option %}<option value="">--- {{ text.please_select }} ---</option>{% endif %}
+                                                                                        {% for option in method.delivery_options %}
+                                                                                        <option value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.name }}</option>
+                                                                                        {% endfor %}
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </div>
+                                                                    {% if method.delivery_point_map_disp %}
+                                                                    <div class="col-12">
+                                                                        <div class="order-mods__delivery-map">
+                                                                            <div>
+                                                                                <label>{{ text.select_on_map }}:</label>
+                                                                                <span class="page_order_mods_deliverypoint_widget">
+                                                                                    <a href="#" aria-label="{{ text.select_on_map }}" onclick="{{ method.delivery_point_map_widget_onclick_value }}"></a>
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="page_order_mods_deliverypoint_info_outer" {% if method.delivery_point_info != "" %} style='display:block;'{% endif %}>
+                                                                <div class="page_order_mods_deliverypoint_info font-xs font-md-s">{{ method.delivery_point_info }}</div>
+                                                            </div>
+                                                        </div>
+                                                        {% else %}
+                                                            {% if change_default_addresses_enabled %}
+                                                            <div class="form-group mt-3">
+                                                                <label for="{{ secondary_type }}_address_{{ method.id }}">{{ attribute(text,secondary_type~'_address') }}</label>
+                                                                <div class="form-select-group">
+                                                                    <select id="{{ secondary_type }}_address_{{ method.id }}" class="form-control js-address-select" data-type="{{ secondary_type }}" data-id="{{ method.id }}">
+                                                                        <option value="{{ _context['default_' ~ secondary_type~'_address_id'] }}" selected="selected">{{ _context['default_' ~ secondary_type~'_address'] }}</option>
+                                                                    </select>
+                                                                </div>
+                                                                <button type="button" class="btn btn-text2 text-primary" onclick="redirectToAddNewAddress({{ method.id }},'{{ secondary_type }}');">{{ text.new_address }}</button>
+                                                            </div>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </section>
+                                {% else %}{# there is no available slave method #}
+                                    <section class="order-mods-section order-mods-section--has-not-slave order-mods__{{ secondary_type }}-section" id="page_order_mods_{{ secondary_type }}" aria-label="{{ secondary_title }}">
+                                        <div class="order-mods__main-title">
+                                            {{ secondary_title }}
+                                            <span class="icon--exclamation text-warning"></span>
+                                        </div>
+                                        {# [slave_disp_no_custom_disp] with ! (denial): custom text is not given by admin user in Content / Editable contents menu (Order page, if no selectable...) #}
+                                        <div class="order-mods__text-no-slave-method-outer {% if custom_content_no_secondary_method_disp %}is-custom{% endif %}">
+                                            <span class="order-mods__text-no-slave-method ">
+                                                {% if custom_content_no_secondary_method_disp %}
+                                                    {{ custom_content_no_secondary_method }}
+                                                {% else %}
+                                                    {{ secondary_title }}
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </section>
+                                {% endif %}
+                                {% if secondary_type == "billing" and point_account_disp %}
+                                    <section class="order-mods-section order-mods__point-account mt-4" id="page_order_mods_virtual">
+                                        <fieldset class="form-group">
+                                            <legend class="order-mods__virtual-text alert alert-info icon--b-info">
+                                                {{ text.your_points_on_your_account }}
+                                                <span class="order-mods__virtual-point">{{ point_account_value }}</span>
+                                            </legend>
+                                            <div class="custom-control custom-checkbox font-l">
+                                                <input class="custom-control-input" type="checkbox" name="use_virtual" id="use_points" value="1"{% if point_use_checked %} checked="checked"{% endif %}>
+                                                <label class="custom-control-label order-mods__virtual-label" for="use_points">{{ text.use_points_on_buy }}</label>
+                                            </div>
+                                        </fieldset>
+                                    </section>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if order_params_disp %}
+                        <div class="col-12 params-col order-mods-section__col">
+                            <section class="order-mods-section__outer order-mods__params-section js-param-validation" aria-label="{{ text.other_order_data }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="order-mods__params-title order-mods__main-title">{{ text.other_order_data }}</div>
+                                </div>
+                                <div class="order-mods__params">
+                                    <div class="row">
+                                        {% for param in order_params %}
+                                        <div class="col-lg-6 col-xl-12 col-xxl-6 order-mods__param js-order-methods-order-param{% if param.first_checked_on_empty %} js-first-checked{% endif %}{% if param.is_radio_plus_service %} js-param-radio-plus-service{% endif %}{% if param.required %} js-param-required{% endif %} param-type-{% if param.type == 'radio' %}{{ param.radio_appearance }}{% else %}{{ param.type }}{% endif %}"
+                                             id="page_order_mods_param_{{ param.id }}" data-enabled-payment-methods="{{ param.enabled_payment_methods }}" data-enabled-shipping-methods="{{ param.enabled_shipping_methods }}"
+                                        >
+                                            {% if param.type == "radio" %}
+                                                {% if param.radio_appearance == 'select' %}
+                                                <div class="form-group order-mods__param--select">
+                                                    <label for="{{ param.id }}">{{ param.title }}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}{% if param.required %} <span class="title-required-text round-bracket-around">{{ text.error_required }}</span>{% endif %}</label>
+                                                    <div class="form-select-group">
+                                                        <select class="form-control{% if param.error_disp %} is-invalid{% endif %}" name="order_param_{{ param.id }}" id="{{ param.id }}" onchange="order_mods_params_check(this,true);" data-id="{{ param.id }}">
+                                                            {% if not param.first_checked_on_empty or (param.first_checked_on_empty and not param.required) %}<option selected{% if param.required %} disabled{% endif %} value="">{{ text.please_select }}</option>{% endif %}
+                                                            {% for option in param.radio_options %}
+                                                            <option {% if option.plus_service_has_price %}class="js-radio-plus-service-has-price" data-price="{{ option.price }}" data-discount="{{ option.discount }}"{% endif %} value="{{ option.value }}" {% if option.selected %}selected="selected"{% endif %}>{{ option.text }}{% if option.plus_service_has_price %}&nbsp;({{ option.price }}){% endif %}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="invalid-feedback">{{ text.error_required }}</div>
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <fieldset class="form-group order-mods__param--radios">
+                                                    <legend class="order-mods__param-title">
+                                                        {{ param.title }}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}
+                                                        {% if param.required %}&nbsp;<span class="title-required-text round-bracket-around">{{ text.error_required }}</span>{% endif %}
+                                                    </legend>
+                                                    {% for option in param.radio_options %}
+                                                    <div class="custom-control custom-radio order-mods__param--radio">
+                                                        <input data-id="{{ param.id }}" class="custom-control-input{% if param.error_disp %} is-invalid{% endif %} {% if option.plus_service_has_price %} js-radio-plus-service-has-price{% endif %}" id="order_param_{{ param.id }}_{{ option.value }}" name="order_param_{{ param.id }}" type="radio" value="{{ option.value }}" {% if option.checked %}checked="checked"{% endif %} onchange="order_mods_params_check(this,true);" data-price="{{ option.price }}" data-discount="{{ option.discount }}">
+                                                        <label class="custom-control-label" for="order_param_{{ param.id }}_{{ option.value }}">{{ option.text }}{% if option.plus_service_has_price %} <span class="order-control-value" id="price">{{ option.price }}</span>{% endif %}</label>
+                                                        {% if loop.last %}<div class="invalid-feedback">{{ text.error_required }}</div>{% endif %}
+                                                    </div>
+                                                    {% endfor %}
+                                                </fieldset>
+                                                {% endif %}
+                                            {% elseif param.type == "input" %}
+                                            <div class="form-group order-mods__param--input ">
+                                                <label for="{{ param.input_name }}">{{ param.title }}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}</label>
+                                                <input data-id="{{ param.id }}"{% if param.required %} placeholder="{{ text.error_required }}"{% endif%} class="form-control{% if param.error_disp %} is-invalid{% endif %}" type="text" name="{{ param.input_name }}" id="{{ param.input_name }}" value="{{ param.input_value }}" onchange="order_mods_params_check(this,true);">
+                                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                                            </div>
+                                            {% elseif param.type in ["date", "date_time"] %}
+                                            <div class="form-group order-mods__param--{{ param.type }} ">
+                                                <label for="{{ param.input_name }}">
+                                                    {{ param.title }}
+                                                    {% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}
+                                                    {% if param.required %}&nbsp;<span class="title-required-text round-bracket-around">{{ text.error_required }}</span>{% endif %}
+                                                </label>
+                                                <input data-id="{{ param.id }}" class="form-control{% if param.error_disp %} is-invalid{% endif %} js-date-picker" id="{{ param.input_name }}"
+                                                       value="{{ param.input_value }}" type="{{ param.input_type }}" name="{{ param.input_name }}"
+                                                       {%- if param.min_disp %} min="{{ param.min }}"{% endif %}
+                                                       {%- if param.max_disp %} max="{{ param.max }}"{% endif %}
+                                                       onchange="order_mods_params_check(this,true);" data-holiday-disabled="{{ param.holidays_disabled }}" data-weekend-disabled="{{ param.weekend_disabled }}"
+                                                >
+                                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                                            </div>
+                                            {% elseif param.type == "file" %}
+                                            <div class="form-group">
+                                                <label class="custom-file-label-inline" for="{{ param.input_name }}">{{ param.title }}{% if param.desc_disp %}&nbsp;<span class="param-details-icon icon--info" data-tippy="{{ param.desc|escape }}"></span>{% endif %}</label>
+                                                <div class="custom-file order-mods__param--file">
+                                                    <input data-id="{{ param.id }}" class="custom-file-input custom-file-input--2 cust_input cust_input_file{% if param.error_disp %} is-invalid{% endif %}" size="50" name="{{ param.input_name }}" id="{{ param.input_name }}" onchange="file_input_filname_change(this);order_mods_params_check(this,true);" type="file">
+                                                    <label class="custom-file-label custom-file-label--2" for="{{ param.input_name }}">
+                                                        <div class="custom-file-name" data-text="{{ text.no_file_selected }}">{{ text.no_file_selected }}</div>
+                                                        <div class="custom-file-choose-btn">{{ text.select_file }}</div>
+                                                    </label>
+                                                    <div class="invalid-feedback">{{ text.error_required }}</div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+
+                                        {% if weekend_disabled or holidays_disabled %}
+                                        <script>
+                                            function isHoliday(date) {
+                                                let day = date.getDate();
+
+                                                if (day < 10) {
+                                                    day = "0" + day;
+                                                }
+
+                                                let month = date.getMonth() + 1;
+
+                                                if (month < 10) {
+                                                    month = "0" + month;
+                                                }
+
+                                                let dateString = [date.getFullYear(), month, day].join(".");
+
+                                                let holidays = {{ holidays }};
+
+                                                return jQuery.inArray(dateString, holidays) > -1
+                                            }
+
+                                            $(document).ready(function () {
+                                                if ($(".js-date-picker").length > 0) {
+                                                    $(document).on("change", ".js-date-picker", function () {
+                                                        let $this = $(this);
+                                                        let date = new Date($this.val());
+
+                                                        let weekendDisabled = $this.data("weekend-disabled");
+
+                                                        if (typeof weekendDisabled === "undefined") {
+                                                            weekendDisabled = false;
+                                                        } else if (parseInt(weekendDisabled) === 1) {
+                                                            weekendDisabled = true;
+                                                        } else {
+                                                            weekendDisabled = false;
+                                                        }
+
+                                                        let holidayDisabled = $this.data("holiday-disabled");
+
+                                                        if (typeof holidayDisabled === "undefined") {
+                                                            holidayDisabled = false;
+                                                        } else if (parseInt(holidayDisabled) === 1) {
+                                                            holidayDisabled = true;
+                                                        } else {
+                                                            holidayDisabled = false;
+                                                        }
+
+                                                        let dayOfTheWeek = date.getDay();
+                                                        let isWeekend = (dayOfTheWeek === 6 || dayOfTheWeek === 0);
+
+                                                        let weekendError = weekendDisabled && isWeekend;
+                                                        let holidayError = holidayDisabled && isHoliday(date);
+
+                                                        if (weekendError || holidayError) {
+                                                            let errorText = '{{ text.error_order_param_weekend }}';
+
+                                                            if (holidayError) {
+                                                                errorText = '{{ text.error_order_param_holiday }}';
+                                                            }
+
+                                                            let temp_type = $this.attr('type');
+                                                $this.attr('type','text');
+                                                $this.val('');
+                                                $this.attr('type', temp_type);
+
+                                                            overlay_load('error order_parameter__weekend_error', errorText, '');
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        </script>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {{ mod_script }}
+
+                {% for plus_mod in plus_mods %}
+                    {% if plus_mod.content_disp %}
+                    <div class="order-mods__plus-mod mb-3">
+                    {{ plus_mod.content }}
+                    </div>
+                    {% else %}
+                        <div class="order-mods__param py-4 px-2 px-md-4 {% if plus_mod.error_disp %}has-fault{% endif %}" id="page_order_mods_{{ plus_mods.id }}">
+                            <div class="row align-items-center">
+                                {% if plus_mod.title_disp %}
+                                <div class="col-md-4">
+                                    <div class="order-mods__param-title mb-2 mb-md-0">
+                                        {{ plus_mod.title }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if plus_mod.input_disp %}
+                                <div class="col-md-8">
+                                    {{ plus_mod.input }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="order-right-content">
+                {% embed common_vars.layout_urls.embed_summary_box_1 %}
+                    {% block commentInputs %}{% endblock %}
+                    {% block comment %}{% endblock %}
+                    {% block nextStepOnCart %}{% endblock %}
+                    {% block nextStepOnVerification %}{% endblock %}
+                {% endembed %}
+            </div>
+        </div>
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+
+    <div class="order-mods__prev-btn-wrap mb-5">
+        <div class="container">
+            <button class="order-mods__prev-btn btn btn--back" name="button_prev" id="button_prev" type="button">{{ text.button_back }}</button>
+        </div>
+    </div>
+
+    {{ form_end }}
+    <script>
+        $(document).on('deliveryPointSelected', function() {
+            temp_id = document.form_order.szall_id.value;
+            $("#szall_mod_" + temp_id + " .js-delivery-point-validation .order-mods__delivery-point-selects").removeClass('has-fault');
+            $("#szall_mod_" + temp_id + " .js-delivery-point-validation select").removeClass('is-invalid');
+        });
+
+        $(document).on('changeShippingMethod changePaymentMethod', function(){
+            calculate_summary();
+
+            if (orderflow_no_mode_selected==1) {
+                if ($(".js-order-mods-item.order-mods--active.js-order-mods--disabled").length>0) {
+                    $(".js-order-mods-item.order-mods--active.js-order-mods--disabled").removeClass("order-mods--active");
+                }
+            }
+        });
+
+        $(document).on('changeOrderParam', function () {
+            calculate_summary();
+        });
+
+        $(document).ready(function() {
+            calculate_summary();
+
+            var checkedRadio = $(".js-order-mods-item input[type=radio]:checked");
+            checkedRadio.closest(".js-order-mods-item").addClass("order-mods--active").find('.js-order-mods-details').slideDown();
+
+            function removeActiveClassFromOrderMods(section) {
+                var $orderModsSection = section.closest('.order-mods-section');
+                $(".js-order-mods-item", $orderModsSection).each(function() {
+                    var $this = $(this);
+                    if ($this.hasClass('order-mods--active')) {
+                        $this.removeClass('order-mods--active').find('.js-order-mods-details').slideUp();
+                    }
+                })
+            }
+
+            $('.js-order-mods-item input[type=radio]').on('change', function() {
+                var $this = $(this);
+                removeActiveClassFromOrderMods($this);
+                $this.closest(".js-order-mods-item").addClass("order-mods--active").find('.js-order-mods-details').slideDown();
+
+                calculate_summary();
+            });
+        });
+    </script>
+</div>

@@ -1,0 +1,19 @@
+{% if element_disp %}
+    {% if session_vars[name ~ '_hide'] != "1" and cookie_vars[name ~ '_hide'] != "1" %}
+    <div class="js-element nanobar js-nanobar" data-element-name="{{ name }}" role="region" aria-label="nanobar">
+        <div class="container">
+            <div class="{{ name }} nanobar__inner{% if class != '' %} {{ class }}{% endif %}">
+                {% for slide in slides %}
+                    {{ slide.html }}
+                {% endfor %}
+                <button type="button" class="btn btn-close nanobar__btn-close" onclick="closeNanobar(this,'{{ name }}_hide','{{ storage_type }}','--nanobar-height');" aria-label="{{ text.button_close }}" title="{{ text.button_close }}"></button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+            root.style.setProperty('--nanobar-height', getHeight($(".js-nanobar")) + "px");
+        });
+    </script>
+    {% endif %}
+{% endif %}

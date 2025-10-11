@@ -1,0 +1,41 @@
+<div id="page_forum_content" class="page-forum page_content">
+    <div class="container">
+        <div class="page-forum__container container-max-lg px-0">
+            <div class="page-forum__inner">
+                {% if forum_disp %}
+                    <div class="forum-topcis__title text-center main-title2">{{ text.forum_topics }}</div>
+                    <section class="forum-topics{% if paging_disp %} mb-4{% endif %}">
+                    {% for topic in topics %}
+                        <article class="forum-topic py-3 border-bottom">
+                            <a class="forum-topic__title icon--b-comment" href="{{ topic.url }}">{{ topic.title }}</a>
+                        </article>
+                    {% endfor %}
+                    </section>
+                    {% if paging_disp %}
+                    <nav class="forum-paging" aria-label="pagination">
+                        {{ paging_content }}
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="page-forum__no-topic alert alert-info icon--b-info">{{ text.no_topics }}</div>
+                {% endif %}
+            </div>
+            {% if new_topic_disp %}
+                {{ new_topic_form_start }}
+                <div class="page-forum__create-topic">
+                    <div class="create-topic__container container-max-sm px-0">
+                        <div class="create-topic__title text-center main-title2">{{ text.create_new_topic }}</div>
+                        <div class="create-topic__input form-group">
+                            <label for="create_topic">{{ text.topic_title }}:</label>
+                            <input id="create_topic" name="title" type="text" value="" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="create-topic__btn-wrap text-center">
+                            <button name="Submit" class="btn btn-primary">{{ text.button_ok }}</button>
+                        </div>
+                    </div>
+                </div>
+                {{ new_topic_form_end }}
+            {% endif %}
+        </div>
+    </div>
+</div>

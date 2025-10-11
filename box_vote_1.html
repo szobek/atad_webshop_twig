@@ -1,0 +1,42 @@
+<div id='box_vote_content' class='box_content'>
+    {% if vote_disp %}
+        {{ form_start }}
+            <div class="vote-box__title">{{ vote_title }}</div>
+            {% if already_voted %}
+                <div class="vote-box__vote-options">
+                {% for vote_option in vote_options %}
+                    <div class="vote-option vote-box__vote-option vote--{{ vote_option.num }}">
+                        <div class="vote-option__name-wrap"><span class="vote-option__name">{{ vote_option.name }}</span></div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ vote_option.percent }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ vote_option.percent }}%">
+                                <div class="vote-option__percent">{{ vote_option.percent }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                {% for vote_option in vote_options %}
+                    <div class="custom-control custom-radio font-s">
+                        <input class="custom-control-input vote_box_radio" name="vote" type="radio" id="vote_box_radio{{ vote_option.value }}" onclick="vote_disable('');" value="{{ vote_option.value }}">
+                        <label class="custom-control-label" for="vote_box_radio{{ vote_option.value }}">{{ vote_option.name }}</label>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if not already_voted %}
+                <div class="custom-control custom-checkbox font-xs mb-4">
+                    <input class="custom-control-input" name="vote_privacy_policy" id="vote_box_privacy_policy" type="checkbox" onclick="vote_disable('');" value="1"/>
+                    <label class="custom-control-label" for="vote_box_privacy_policy">{{ text.accept_privacy_policy }}</label>
+                </div>
+                <div class="vote-box__btn-wrap text-center mb-4">
+                    <button type="submit" name="submit_button" class="vote-box__btn btn btn-primary" id="vote_box_button" disabled="disabled">{{ text.button_vote }}</button>
+                </div>
+            {% endif %}
+        {{ form_end }}
+    {% else %}
+        <div class="vote-box__no-content">{{ text.no_open_vote }}</div>
+    {% endif %}
+    <div class="vote-box__vote-btn-wrap text-center">
+        <a href="{{ vote_url }}" class="vote-box__vote-btn btn btn-secondary">{{ text.more_votes }}</a>
+    </div>
+</div>

@@ -1,0 +1,277 @@
+{% extends "main.html" %}
+
+{% if animation_on_scroll == "1" %}
+    {# get default aos animation type #}
+    {% set global_aos = animation_on_scroll_type %}
+
+    {# get default aos delay #}
+    {% set global_aos_delay = animation_on_scroll_delay %}
+
+    {# get default normal duration (slow/fast) #}
+    {% set global_aos_duration_text = animation_on_scroll_duration %}
+
+    {# get default normal duration #}
+    {% set global_aos_duration = animation_on_scroll_normal_duration %}
+
+    {# get default multipliers for slow and fast duration #}
+    {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+    {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+    {% set aos_multiplier = 1 %}
+
+    {# get settings for slow duration #}
+    {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+
+    {# get settings for fast duration #}
+    {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+    {% if global_aos_duration_text == 'slow' %}
+        {% set global_aos_duration = global_aos_duration * global_slow_multiplier %}
+        {% set aos_multiplier = global_slow_multiplier %}
+    {% elseif global_aos_duration_text == 'fast' %}
+        {% set global_aos_duration = global_aos_duration * global_fast_multiplier %}
+        {% set aos_multiplier = global_fast_multiplier %}
+    {% endif %}
+
+    {# find the nearest number which is divisible by 50 (for css values) #}
+    {% set global_aos_duration = ((global_aos_duration / 50)|round) * 50 %}
+{% endif %}
+
+{% block start_elements %}
+    [[ element|width:1080;name:banner_start_big;layout:flickity;class:slideshow;auto_resize:all;xxs_retina_ratio:1.8; ]]
+    [[ element|name:banner_start_small;layout:start_banners;width:300;class:start-block-small;container_class:container;grid_class:row gutters-5 gutters-md-10 gutters-xl-20 row-gap-20;grid_col_class:col-sm-6 col-xl-3; ]]
+    [[ element|name:banner_start_1;width:200;xxs_retina_ratio:1.8;xxs_width:192;auto_resize:set;layout:banners;class:start-block-small;container_class:container;grid_class:row gutters-5 gutters-md-10 gutters-xxl-20 row-gap-10 row-gap-md-20 row-gap-xxl-40;grid_col_class:col-6 col-xs-4 col-md-3 col-lg-only-custom-5 col-xl-2; ]]
+    [[ element|name:banner_start_2;width:1400;layout:banner_full_width;auto_resize:all;class:start-block;container_class:container;grid_class:row gutters-5 gutters-md-10 gutters-xl-20 row-gap-10 row-gap-xl-20;grid_col_class:col-12; ]]
+    [[ element|name:banner_start_3;width:680;layout:banner_half_width_inline;grid_col_class:col-lg-6; ]]
+    [[ element|name:banner_start_4;width:320;layout:banner_quarter_width_inline;grid_col_class:col-sm-6 col-lg-3; ]]
+    [[ element|name:banner_start_5;width:1400;layout:banner_full_width_inline;auto_resize:all;grid_col_class:col-12; ]]
+    [[ element|name:banner_start_6;width:680;layout:banner_half_width;class:href-icons start-block;container_class:container;grid_class:row gutters-5 gutters-md-10 gutters-xl-20 row-gap-20;grid_col_class:col-lg-6; ]]
+    [[ element|name:start_brand_slider;layout:flickity_brand;class:start-block;container_class:container; ]]
+
+    {% if animation_on_scroll == "1" %}
+    <link rel="stylesheet" href="[unas_service_url_base]/!common_packages/jquery/plugins/aos/3.0.0-beta-6/aos.css" media="print" onload="this.media='all'">
+    {% endif %}
+{% endblock %}
+
+{% block banner_start_big_class %}
+[% if banner_start_big|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %] has-banner-start-big[% else %] no-banner-start-big[% endif %]
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    [% if banner_start_big|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+    <div class="banner_start_big__wrapper js-slideshow start-block-small">
+        <div class="container px-0 px-md-4">
+            <div class="slideshow-container d-flex">
+                <div class="slideshow-sidebar d-none d-lg-block"></div>
+                <div class="slideshow-wrapper flex-grow-1 align-self-center">[[ banner_start_big ]]</div>
+            </div>
+        </div>
+    </div>
+    [% else %]
+    <div class="spacer-b-3"></div>
+    [% endif %]
+    [[ content ]]
+</main>
+{% endblock %}
+
+{% block aos_attributes_footer_1 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_1.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_1.aos != '' %}
+                    {{ common_vars.footer_1.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_1.aos_delay != '' %}
+                    {{ common_vars.footer_1.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+            data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50  }}"
+            {% endif %}
+            {% if common_vars.footer_1.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_1.aos_duratin }}
+            {% endif %}
+            {% if common_vars.footer_1.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_1.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_2 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_2.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_2.aos != '' %}
+                    {{ common_vars.footer_2.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_2.aos_delay != '' %}
+                    {{ common_vars.footer_2.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50  }}"
+            {% endif %}
+            {% if common_vars.footer_2.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_2.aos_duratin }}
+            {% endif %}
+            {% if common_vars.footer_2.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_2.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_3 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_3.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_3.aos != '' %}
+                    {{ common_vars.footer_3.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_3.aos_delay != '' %}
+                    {{ common_vars.footer_3.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50  }}"
+            {% endif %}
+            {% if common_vars.footer_3.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_3.aos_duratin }}
+            {% endif %}
+            {% if common_vars.footer_3.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_3.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_4 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_4.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_4.aos != '' %}
+                    {{ common_vars.footer_4.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_4.aos_delay != '' %}
+                    {{ common_vars.footer_4.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50  }}"
+            {% endif %}
+            {% if common_vars.footer_4.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_4.aos_duratin }}
+            {% endif %}
+            {% if common_vars.footer_4.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_4.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_partners %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_partners.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_partners.aos != '' %}
+                    {{ common_vars.footer_partners.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_partners.aos_delay != '' %}
+                    {{ common_vars.footer_partners.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50  }}"
+            {% endif %}
+            {% if common_vars.footer_partners.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_partners.aos_duratin }}
+            {% endif %}
+            {% if common_vars.footer_partners.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_partners.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block body_end_script %}
+    {% if animation_on_scroll == "1" %}
+    <script src="[unas_service_url_base]/!common_packages/jquery/plugins/aos/3.0.0-beta-6/aos.js"></script>
+    <script type="text/javascript_load">
+    window.addEventListener("DOMContentLoaded", function() {
+        AOS.init({
+            /* Global settings: */
+            disable: false, /*accepts following values: 'phone', 'tablet', 'mobile', boolean, expression or function*/
+            startEvent: 'DOMContentLoaded', /* name of the event dispatched on the document, that AOS should initialize on */
+            initClassName: 'aos-init', /* class applied after initialization */
+            animatedClassName: 'aos-animate', /* class applied on animation */
+            useClassNames: false, /* if true, will add content of `data-aos` as classes on scroll */
+            disableMutationObserver: false, /* disables automatic mutations' detections (advanced) */
+            debounceDelay: 50, /* the delay on debounce used while resizing window (advanced) */
+            throttleDelay: 99, /* the delay on throttle used while scrolling the page (advanced) */
+
+            /* Settings that can be overridden on per-element basis, by `data-aos-*` attributes: */
+            offset: {{ animation_on_scroll_offset }}, /* default: 120, offset (in px) from the original trigger point */
+            delay: {{ animation_on_scroll_delay }}, /* default: 0, values from 0 to 3000, with step 50ms */
+            duration: {{ global_aos_duration }}, /* default: 400, values from 0 to 3000, with step 50ms */
+            easing: '{{ animation_on_scroll_easing }}', /* default easing for AOS animations */
+            once: {% if animation_on_scroll_once == "0" %}true{% else %}false{% endif %}, /* whether animation should happen only once - while scrolling down */
+            mirror: {% if animation_on_scroll_mirror == "1" %}true{% else %}false{% endif %}, /* whether elements should animate out while scrolling past them */
+            anchorPlacement: 'top-bottom', /* defines which position of the element regarding to window should trigger the animation */
+        });
+
+        /* refresh AOS when img loaded */
+        document.querySelectorAll('img')
+            .forEach((img) =>
+                img.addEventListener('load', () =>
+                    AOS.refresh()
+                )
+            );
+    });
+    </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+<div id='box_news_content' class='box_content'>
+    {% for news_item in news %}
+        <div class="box_news_item">
+            <div class="box_news_title_wrapper">
+                <a class="box_news_title" href="{{ news_item.url }}">{{ news_item.title }}</a>
+                <a class="box_news_link" href="{{ news_item.url }}" aria-label="{{ text.details }}" title="{{ text.details }}"></a>
+            </div>
+            <div class="box_news_date">{{ news_item.date }} {{ news_item.time }}</div>
+            <div class="box_news_content font-s d-none">{{ news_item.content }}</div>
+        </div>
+    {% endfor %}
+    {% if news_more_disp %}
+        <div class="box_news_button_more-wrap text-center">
+            <a class="box_news_button_more btn btn-secondary" href="{{ news_url }}">{{ text.more_news }}</a>
+        </div>
+    {% endif %}
+</div>

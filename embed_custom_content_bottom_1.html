@@ -1,0 +1,59 @@
+{% if custom_content_bottom_disp %}
+<section id="custom-content-bottom" class="custom-content custom-content--bottom custom-content--[[ page_id ]]">
+    <div class="custom-content__container container{% if backvar.custom_custom_content_container_class %} {{ backvar.custom_custom_content_container_class }}{% endif %}">
+        <div class="custom-content__container-inner"
+            [% if page_id == 'page_shop_start' %]
+            {% if animation_on_scroll == "1" and backvar.custom_content_bottom_aos != '0' %}
+                {% set temp_aos %}
+                    {% if backvar.custom_content_bottom_aos != '' %}
+                        {{ backvar.custom_content_bottom_aos }}
+                    {% else %}
+                        {{ animation_on_scroll_type }}
+                    {% endif %}
+                {% endset %}
+                data-aos="{{ temp_aos|trim }}"
+                {% if backvar.custom_content_bottom_aos_duration != '' %}
+                data-aos-duration="{{ backvar.custom_content_bottom_aos_duration }}"
+                {% endif %}
+                {% if backvar.custom_content_bottom_aos_offset != '' %}
+                data-aos-offset="{{ backvar.custom_content_bottom_aos_offset }}"
+                {% endif %}
+                {% if backvar.custom_content_bottom_aos_delay != '' %}
+                data-aos-delay="{{ backvar.custom_content_bottom_aos_delay }}"
+                {% endif %}
+            {% endif %}
+            [% endif %]
+        >
+            {% set temp_content %}
+            <div class="custom-content__content page_txt">{{ custom_content_bottom }}</div>
+            {% endset %}
+            [% if "page_shop_cat" in page_id or "page_shop_art" in page_id %]
+                {% if collapsible_contents_on_category_and_product_list %}
+                <div class="read-more">
+                    <div class="read-more__content custom-content__content page_txt">{{ custom_content_bottom }}</div>
+                    <div class="read-more__btn-wrap">
+                        <button class="read-more__btn btn" type="button">
+                            <span class="read-more-text" data-closed="{{ text.more_description }}" data-opened="{{ text.less }}" aria-label="{{ text.more_description }}"></span>
+                        </button>
+                    </div>
+                </div>
+                {% else %}
+                {{ temp_content }}
+                {% endif %}
+            [% else %]
+                {{ temp_content }}
+            [% endif %]
+        </div>
+    </div>
+</section>
+{% endif %}
+
+[% if "page_shop_cat" in page_id or "page_shop_art" in page_id %]
+{% if collapsible_contents_on_category_and_product_list and (custom_content_top_disp or custom_content_bottom_disp) %}
+<script>
+    $(document).ready(function(){
+        $('.read-more:not(.is-processed)').each(readMoreOpener);
+    });
+</script>
+{% endif %}
+[% endif %]

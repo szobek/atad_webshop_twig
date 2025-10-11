@@ -1,0 +1,30 @@
+{% if box_disp %}
+    <script>
+        let global_box_page_limit{{ suffix }} = "{{ limit }}";
+        {% if backvar.custom_blog_limit != "" %}global_box_page_limit{{ suffix }} = "{{ backvar.custom_blog_limit }}";{% endif %}
+        {% if not backvar.blog_card_numbers_at_breakpoints_disable and backvar.blog_card_numbers_at_breakpoints and filter == "blog" %}
+            {% for key,value in common_vars.grid_breakpoints|reverse %}
+                {% if backvar.blog_card_numbers_at_breakpoints[key] %}  {# the breakpoint exists in 'blog_card_numbers_at_breakpoints' node #}
+                if (window.matchMedia('(min-width: {{ value }}px)').matches) {
+                    global_box_page_limit{{ suffix }} = "{{ backvar.blog_card_numbers_at_breakpoints[key] }}";
+                }
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        $(document).ready(function(){
+            let box_page_ajax_data = {{ ajax_data }};
+            box_page_ajax_data.limit = global_box_page_limit{{ suffix }};
+            $.ajax({
+                type: "GET",
+                async: true,
+                url: unas_shop_url+"/"+service_type+"_page.php",
+                data: box_page_ajax_data,
+                success: function(result){
+                    $("#box_page_content{{ suffix }}").html(result);
+                }
+            });
+        });
+    </script>
+    <div id='box_page_content{{ suffix }}'></div>
+{% endif %}

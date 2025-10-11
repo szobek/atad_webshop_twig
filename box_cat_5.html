@@ -1,0 +1,40 @@
+{% if cats_disp %}
+<div class="nav-list-menu nav-list-menu--main">
+    <ul class="nav-list-mobile nav-list-mobile--0" data-level="0" aria-label="{{ text.categories }}">
+        {% for cat_item in cat_list %}
+        <li id="nav-item-{{ cat_item.id }}--m" class="nav-item{% if cat_item.spec %} spec-item{% endif %}{% if cat_item.cat_sub_disp %} dropdown has-submenu{% endif %} js-nav-item-{{ cat_item.id }}">
+            <a class="nav-link" href="{{ cat_item.url }}"{% if cat_item.target_blank %} target="_blank"{% endif %}
+               aria-label="{{ cat_item.name }} {{ text.category }}{% if cat_item.product_count_disp %} ({{ cat_item.product_count }} {{ text.piece }} {{ text.product }}){% endif %}"
+            >
+                {% if backvar.custom_icon_enabled %}
+                <span class="nav-link__icon">
+                    <img width="{{ backvar.custom_icon_width }}" height="{{ backvar.custom_icon_height }}" alt="{{ cat_item.name }} icon" class="lazyload"
+                         src="[unas_shop_url]/main_pic/space.gif"
+                         {% if backvar.custom_icon_ext == 'svg' %}
+                         data-src="[unas_shop_ordered]/pic/cat/{{ cat_item.id }}.svg"
+                         {% else %}
+                         data-srcset="[unas_shop_ordered]/pic/cat/{{ cat_item.id }}.{{ backvar.custom_icon_ext }} 1x, [unas_shop_ordered]/pic/cat/{{ cat_item.id }}_2x.{{ backvar.custom_icon_ext }} 2x"
+                         {% endif %}
+                         onerror="this.onerror=null; this.src='[unas_shop_url]/main_pic/space.gif'"
+                    >
+                </span>
+                {% endif %}
+                <span class="nav-link__text">
+                    {{ cat_item.name }}{% if cat_item.product_count_disp %}&nbsp;<span class="nav-item__count round-bracket-around">{{ cat_item.product_count }}</span>{% endif %}
+                </span>
+            </a>
+            {% if cat_item.cat_sub_exists %}
+            <button class="btn btn-text nav-button" type="button" data-toggle="dropdown" aria-label="{{ text.more_categories }}" aria-haspopup="true" aria-expanded="false" onclick="handleSub2(this,'{{ cat_item.id }}','{{ cat_item.cat_sub_ajax_url }}');"></button>
+            {% endif %}
+
+            {% if cat_item.cat_sub_exists %}
+            <div class="nav-list-menu nav-list-menu--sub">
+                <div class="loading-spinner"></div>
+                {% if cat_item.cat_sub_disp %}{{ cat_item.cat_sub_list }}{% endif %}
+            </div>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}

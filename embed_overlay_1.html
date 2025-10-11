@@ -1,0 +1,212 @@
+{% if button_close_disp %}
+<div class="overlay_close">
+    <button type="button" class="overlay_close-btn btn" onclick='overlay_close("overlay_{{ id }}");'></button>
+</div>
+{% endif %}
+
+<div class="overlay__title-wrap">
+    <div class="overlay-icon overlay-info__icon icon--info text-info"></div>
+    <div class="overlay-icon overlay-ok__icon icon--check text-success"></div>
+    <div class="overlay-icon overlay-error__icon icon--ban text-danger"></div>
+    <div class="overlay-icon overlay-warning__icon icon--exclamation text-warning"></div>
+    <div class="overlay-icon overlay-dialog__icon icon--question2 text-info"></div>
+    <div class="overlay_title">{{ title }}</div>
+</div>
+
+{% if text_disp %}
+<div class="overlay_text text_disp">{{ text_content }}</div>
+{% endif %}
+
+{% if texts_disp %}
+<div class="overlay_text texts_disp">
+    {% for text in texts %}
+    <div>
+        {% if text.title_disp %}{{ text.title }}:{% endif %}
+        {{ text.value }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if id == "reg_decide_on_form" %}
+    <div id="overlay_reg_decide_on_form_content" class="d-flex flex-column mb-3">
+        <div class="form-group">
+            <label for="overlay_passwd1">{{ text.password }}</label>
+            <input class="form-control overlay_password_check" data-invalid-empty="{{ text.error_required }}" name="overlay_passwd1" id="overlay_passwd1" type="password" autocomplete="new-password" placeholder="{{ text.password }}">
+        </div>
+        <div class="form-group">
+            <label for="overlay_passwd2">{{ text.password_again }}</label>
+            <input class="form-control overlay_password_check" data-invalid-empty="{{ text.error_required }}" name="overlay_passwd2" id="overlay_passwd2" type="password" autocomplete="new-password" placeholder="{{ text.password_again }}">
+            <div class="invalid-feedback js-password-error-message mt-3"></div>
+        </div>
+        {% if terms_disp %}
+            {% if terms_checkbox_disp %}
+                <div class="custom-control custom-checkbox mt-auto">
+                    <input class="custom-control-input" onclick="overlayTermsCheckboxChange();" name="overlay_terms" id="overlay_terms" type="checkbox" value="1">
+                    <label class="custom-control-label" for="overlay_terms">{{ text.accept_terms_and_privacy_policy }}</label>
+                    <div class="invalid-feedback position-absolute">{{ text.error_required }}</div>
+                </div>
+            {% else %}
+                <div class="new-cust__terms-accept mt-auto">
+                    {{ text.accept_terms_and_privacy_policy }}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if id == "already_registered_email_login" %}
+<div id="overlay_already_registered_email_login_content">
+    <div class="js-already-registered-email my-4 mx-auto d-flex align-items-center justify-content-center font-weight-bold font-xl"></div>
+    <input name="shop_user_login" id="shop_user_login" aria-label="{{ text.email }}" placeholder="{{ text.email }}" type="hidden" maxlength="100" class="form-control" spellcheck="false" autocomplete="email" autocapitalize="off">
+    <div class="form-group form-group-lg">
+        <label for="shop_pass_login_popup">{{ text.password }}</label>
+        <input onkeydown="if(event.keyCode === 13) { ajax_login(); }" class="page_login_input form-control js-already-registered-password" data-invalid-empty="{{ text.error_required }}" name="shop_pass_login" id="shop_pass_login_popup" type="password" placeholder="{{ text.password }}"/>
+        <div class="invalid-feedback"></div>
+    </div>
+    <div class="js-remind-btn-wrap overlay-login__remind-btn-wrap">
+        <button type="button" class="overlay-login__remind-btn btn btn-text2" onclick="ajax_remind();">{{ text.forgot_my_password }}</button>
+    </div>
+    <div class="js-remind-response-wrap" style="display:none;">
+        <div class="alert alert-success js-remind-response-message"></div>
+    </div>
+</div>
+{% endif %}
+
+{% if id == "remind" %}
+<div id="overlay_remind_content">
+    {{ form_start }}
+    <div class="overlay_text">
+        <div class="form-group">
+            <label for="shop_user_login">{{ login_name }}</label>
+            <input class="form-control" name="shop_user_login" id="shop_user_login" data-placeholder="{{ login_name }}" type="text" />
+        </div>
+    </div>
+    {{ form_end }}
+</div>
+{% endif %}
+
+{% if id == "newsletter" %}
+    {{ form_start }}
+    <div class="overlay_text">
+        {% if name_disp %}
+        <div class="form-group">
+            <label for="news_name">{{ text.name }}</label>
+            <input class="form-control" name="news_name" id="news_name" data-placeholder="{{ text.name }}" type="text"  maxlength="200" />
+        </div>
+        {% endif %}
+        <div class="form-group">
+            <label for="news_emai">{{ text.email }}</label>
+            <input class="form-control" name="news_emai" id="news_emai" data-placeholder="{{ text.email }}" type="email"  maxlength="200" />
+        </div>
+        {% if address_disp %}
+        <div class="form-group">
+            <label for="news_addr">{{ text.address }}</label>
+            <input class="form-control" name="news_addr" id="news_addr" data-placeholder="{{ text.address }}" type="text"  maxlength="200" />
+        </div>
+        {% endif %}
+        <div class='form-group overlay_privacy_policy'>
+            <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" name="news_privacy_policy" id="news_privacy_policy_popup" type="checkbox" value="1" />
+                <label class="custom-control-label" for="news_privacy_policy_popup">{{ text.accept_privacy_policy }}</label>
+            </div>
+        </div>
+    </div>
+    {{ form_end }}
+{% endif %}
+
+{% if id == "penalty" %}
+<div class="overlay_text">
+    <div id="page_penalty_money"><strong>{{ text.error_unpaid_order }}:</strong> {{ amount }}</div>
+    <div id="page_penalty_wait">{{ wait }}</div>
+</div>
+{% endif %}
+
+{% if id == "product_subscription" %}
+<div id="overlay_product_subscription_content">
+    <div id="overlay_product_subscription_subscribe" class="subscribe_text" style="display: none;">
+        <form class="subscribe_without_login" onsubmit="return false">
+            {% if name_disp %}
+            <div class="form-group overlay_row">
+                <label for="subscribe_name">{{ text.name }}</label>
+                <input class="overlay_input form-control" id="subscribe_name" type="text" name="name" data-placeholder="{{ text.name }}">
+            </div>
+            {% endif %}
+            <div class="form-group overlay_row">
+                <label for="subscribe_email">{{ text.email }}</label>
+                <input class="overlay_input form-control" id="subscribe_email" type="email" name="email" data-placeholder="{{ text.email }}">
+            </div>
+            {% if address_disp %}
+            <div class="form-group overlay_row">
+                <label for="subscribe_address">{{ text.address }}</label>
+                <input class='overlay_input form-control' id="subscribe_address" type="text" name="address" data-placeholder="{{ text.address }}">
+            </div>
+            {% endif %}
+        </form>
+    </div>
+    <div id="overlay_product_subscription_agree" class="subscribe_text" style="display: none;">
+        <div class="form-group">
+            <div class="custom-control custom-checkbox overlay_privacy_policy">
+                <input class="custom-control-input" name="privacy_policy" id="product_subscribe_privacy_policy" type="checkbox" value="1" />
+                <label class="custom-control-label text-left font-xs" for="product_subscribe_privacy_policy">{{ text.accept_privacy_policy }}</label>
+            </div>
+        </div>
+        <div class="subscribe_validation_error text-left text-danger font-xs my-3" style="display: none;"></div>
+        <div class="overlay_subscribe_button_wrap">
+            <button class="overlay_subscribe_button btn btn-primary"></button>
+        </div>
+    </div>
+    <div id="overlay_product_subscribe_no_login" class="subscribe_text" style="display: none;">
+        <div class="form-group overlay_row">
+            <label for="subscribe_no_login_email">{{ text.email }}</label>
+            <input class="overlay_input form-control" id="subscribe_no_login_email" type="email" name="email" data-placeholder="{{ text.email }}">
+        </div>
+        <div class="overlay_privacy_policy form-group">
+            <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" name="privacy_policy_2" id="product_subscribe_no_login_privacy_policy" type="checkbox" value="1" />
+                <label class="custom-control-label font-xs" for="product_subscribe_no_login_privacy_policy">{{ text.accept_privacy_policy }}</label>
+            </div>
+        </div>
+        <div class="subscribe_validation_error text-left text-danger font-xs my-3" style="display: none;">
+            <div id="privacy">{{ text.error_privacy_policy }}</div>
+            <div id="email">{{ text.error_email_required }}</div>
+            <div id="not_valid_email">{{ text.error_email_format }}</div>
+        </div>
+        <div class="overlay_subscribe_button_wrap">
+            <button class="overlay_subscribe_button btn btn-primary">{{ text.button_subscribe }}</button>
+        </div>
+        <input type="hidden" class='overlay_title_hidden_stock_modify' value="{{ text.overlay_title_stock_modify }}">
+        <input type="hidden" class='overlay_title_hidden_price_modify' value="{{ text.overlay_title_price_modify }}">
+    </div>
+
+    {% if recaptcha_content != "" %}
+        {{ recaptcha_content }}
+        {{ recaptcha_script }}
+    {% endif %}
+</div>
+{% endif %}
+
+{% if id == "save_filter" %}
+<div id="overlay_save_filter_content">
+    <div class="overlay_text">
+        <div class="form-group">
+            <label for="filter_name">{{ text.filter_name }}</label>
+            <input class="overlay_input mt-3 filter_name form-control" type="text" id="filter_name" name="filter_name" maxlength="150" data-placeholder="{{ text.filter_name }}">
+        </div>
+        <div class="errors text-left d-none text-danger font-s" id="filter_save_errors">
+            <div class="error error_empty_input d-none">{{ text.error_name_required }}</div>
+            <div class="error error_filter_exists d-none">{{ text.error_filter_already_exists }}</div>
+            <div class="error error_name_exists d-none">{{ text.error_filter_name_already_exists }}</div>
+        </div>
+        <input type="hidden" name="filter_page_id" id="filter_page_id">
+    </div>
+</div>
+{% endif %}
+
+{% if buttons|length > 0 %}
+<div class="overlay-buttons d-flex flex-wrap gap-10 px-4 pt-4 justify-content-center flex-row-reverse {% if key == 'explicit' %} overlay-btns--explicit{% endif %}">
+    {% for button in buttons %}
+    <button type="button" class="{% if button.button_id_disp %}{{ button.button_id }} {% endif%}close btn{% if id == "cart_add_ok" and loop.index == "2" %} btn-light{% else %} btn-primary{% endif %} overlay-button overlay_button_{{ button.num }} {{ button.class }}{% if "save" in button.onclick %} overlay_button_save{% endif%}{% if "close" in button.onclick %} overlay_button_close{% endif%}{% if "shop_reg" in button.onclick %} overlay_button_reg{% endif%}{% if "remind" in button.onclick %} overlay_button_remind{% endif%}" onclick="{{ button.onclick }}">{{ button.text }}</button>
+    {% endfor %}
+</div>
+{% endif %}

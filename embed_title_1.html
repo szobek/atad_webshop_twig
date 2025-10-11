@@ -1,0 +1,11 @@
+{% if disp and layout_subtype != "blog_details" %}
+    [% if filter_button_position_with_three_settings == "1" %] {#inline filter btn next to main title#}
+    <{{ tag }} class="mb-0 mr-3">{{ title_text }}</{{ tag }}>
+    [% else %]
+    <div class="main__title">
+        <div class="container">
+            <{{ tag }}>{{ title_text }}</{{ tag }}>
+        </div>
+    </div>
+    [% endif %]
+{% endif %}

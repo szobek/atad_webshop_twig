@@ -1,0 +1,79 @@
+{% set carousel_enabled = backvar.custom_carousel_enabled %}
+{% set productListId = related_type ~ "_products" %}
+
+{{ start_script }}
+
+{% if related_type == "artpack" %}
+    {% set img_width = backvar.products_in_bundle_main_img_maxwidth %}
+    {% set img_height = backvar.products_in_bundle_main_img_maxheight %}
+    {% set carousel_enabled = backvar.custom_products_in_bundle_carousel_enabled %}
+    {% set carousel_arrows = backvar.custom_products_in_bundle_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_products_in_bundle_carousel_nums %}
+    {% set carousel_dots = backvar.custom_products_in_bundle_carousel_dots %}
+
+    {% set temp_title %}
+    <div class="products-in-bundle__title mb-2">{{ text.products_in_bundle }}</div>
+    <div class="products-in-bundle__info-content font-s font-md-m">
+        {% set items = [] %}
+        {% for product in products %}
+            {% set old_qty = items[product.unit] %}
+
+            {% if old_qty != "" %}
+                {% set new_qty = product.qty + old_qty %}
+                {% set items = items|merge({ (product.unit): new_qty }) %}
+            {% else %}
+                {% set items = items|merge({ (product.unit): product.qty }) %}
+            {% endif %}
+        {% endfor %}
+
+        {% for key,value in items %}
+            <span class="products-in-bundle__component">{{ value }}&nbsp;{{ key }}{% if not loop.last %}<span class="products-in-bundle__component-divider"></span>{% endif %}</span>{% if loop.last %}&nbsp;{{ text.product }}{% endif %}
+        {% endfor %}
+    </div>
+    {% endset %}
+
+    {% set prod_recomm_title = temp_title %}
+
+    {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+        {% block embed_card %}
+            {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}
+                {% block sale %}{% endblock %}
+                {% block new %}{% endblock %}
+                {% block custom_badges %}{% endblock %}
+                {% block bundle_qty %}
+                <div class="product__badge-bundle-qty badge">
+                    <span class="qty">{{ product.qty }}</span>
+                    <span class="unit">{{ product.unit }}</span>
+                </div>
+                {% endblock %}
+                {% block params %}{% endblock %}
+                {% block review %}{% endblock %}
+                {% block stock %}{% endblock %}
+                {% block cart %}{% endblock %}
+                {% block functions %}{% endblock %}
+                {% block price %}{% endblock %}
+                {% block loginNeeded %}{% endblock %}
+            {% endembed %}
+        {% endblock %}
+    {% endembed %}
+{% elseif related_type == "similar" %}
+    {% set img_width = backvar.similar_product_main_img_maxwidth %}
+    {% set img_height = backvar.similar_product_main_img_maxheight %}
+    {% set carousel_enabled = backvar.custom_similar_product_carousel_enabled %}
+    {% set carousel_arrows = backvar.custom_similar_product_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_similar_product_carousel_nums %}
+    {% set carousel_dots = backvar.custom_similar_product_carousel_dots %}
+    {% set prod_recomm_title = text.similar_products %}
+
+    {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}{% endembed %}
+{% elseif related_type == "additional" %}
+    {% set img_width = backvar.additional_product_main_img_maxwidth %}
+    {% set img_height = backvar.additional_product_main_img_maxheight %}
+    {% set carousel_enabled = backvar.custom_additional_product_carousel_enabled %}
+    {% set carousel_arrows = backvar.custom_additional_product_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_additional_product_carousel_nums %}
+    {% set carousel_dots = backvar.custom_additional_product_carousel_dots %}
+    {% set prod_recomm_title = text.additional_products %}
+
+    {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}{% endembed %}
+{% endif %}

@@ -1,0 +1,27 @@
+<div class="ac_wrap row gutters-10{% if not price_disp %} no-price{% endif %}">
+    <div class="ac_pic col-auto">
+        <img src="{{ img_url }}"{% if img_retina_exists %} srcset="{{ img_retina_url }} {{ img_retina_size }}"{% endif %} alt="{{ img_alt }}" width="{{ backvar.img_maxwidth }}" height="{{ backvar.img_maxheight }}" />
+    </div>
+    <div class="ac_name col">
+        <span class="search-name">{{ name }}</span>
+    </div>
+    {% if category %}
+    <div class="ac_text_cat_col col-auto">
+        <div class="ac_text_cat">{{ text.search_autocomplete_category }}</div>
+    </div>
+    {% else %}
+        {% if product and price_disp %}
+        <div class="ac_price col-auto{% if price_sale_disp %} has-price-sale{% endif %}">
+            <span class="ac_price--base product-price--base"{% if price_normal_info_text_disp %} tabindex="0" data-tippy="{{ price_normal_info_text }}"{% endif %}>
+                {{ price_normal_text }}<span class="ac_price--base-value{% if sale_disp and price_line_through %} text-line-through{% endif %}">{{ price }}</span>{% if price_normal_info_text_disp %}&nbsp;<span class="icon--info"></span>{% endif %}
+            </span>
+            {% if price_sale_disp %}
+            <div class="ac_price--sale product-price--sale">
+                {{ price_discounted_text }}
+                {{ price_sale }}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endif %}
+</div>

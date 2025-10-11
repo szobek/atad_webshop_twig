@@ -1,0 +1,28 @@
+<div id="page_searchcomplex_content" class="page_content main-block">
+    {% if fuzzy_suggestion_disp %}
+    <div class="container-max-md px-lg-0">
+        <div class="suggestion mb-3">
+            <div class="suggestion-inner px-4 py-3 p-sm-4">
+                <div class="row gutters-5">
+                    <div class="col-12 col-sm-auto mb-2 mb-sm-0 icon--b-question2">{{ text.fuzzy_suggestion }}</div>
+                    {% for fuzzy_suggestion in fuzzy_suggestions %}
+                    <div class="col-auto mb-2 mb-sm-0">
+                        <a href="shop_search.php?search={{ fuzzy_suggestion.urlencoded|escape }}">{{ fuzzy_suggestion.highlighted }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="container mb-5">
+        {{ searchcomplex_form }}
+    </div>
+
+    {% include common_vars.layout_urls.embed_custom_content_bottom_1 %}
+
+    {% if custom_content_error_disp %}
+    <div class="page_txt">{{ custom_content_error }}</div>
+    {% endif %}
+</div>

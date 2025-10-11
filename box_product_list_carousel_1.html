@@ -1,0 +1,42 @@
+{% if products_disp %}
+    {# START - Beállítások #}
+    {% set img_width = backvar.main_img_maxwidth %}
+    {% set img_height = backvar.main_img_maxheight %}
+    {% set product_measure_class = "product_link_promo" %}
+    {% set carousel_enabled = backvar.custom_carousel_enabled %}
+    {% set carousel_arrows = backvar.custom_carousel_arrows %}
+    {% set carousel_nums = backvar.custom_carousel_nums %}
+    {% set carousel_dots = backvar.custom_carousel_dots %}
+    {% set prod_recomm_title = title %}
+    {# END - beállítások #}
+
+    {{ start_script }}
+
+    <div class="product-offer--{{ box_name }} start-block-small"
+        {% if animation_on_scroll == 1 and backvar.custom_aos != '0' %}
+            {% set temp_aos %}
+                {% if backvar.custom_aos != '' %}
+                    {{ backvar.custom_aos }}
+                {% else %}
+                    {{ animation_on_scroll_type }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            {% if backvar.custom_aos_duration != '' %}
+            data-aos-duration="{{ backvar.custom_aos_duration }}"
+            {% endif %}
+            {% if backvar.custom_aos_offset != '' %}
+            data-aos-offset="{{ backvar.custom_aos_offset }}"
+            {% endif %}
+            {% if backvar.custom_aos_delay != '' %}
+            data-aos-delay="{{ backvar.custom_aos_delay }}"
+            {% endif %}
+        {% endif %}
+    >
+        {% embed common_vars.layout_urls.embed_product_list_1_card_frame_1 %}
+            {% block embed_card %}
+                {% embed attribute(common_vars.layout_urls,"embed_product_list_1_card_" ~ card_view) %}{% endembed %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+{% endif %}

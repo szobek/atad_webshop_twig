@@ -1,0 +1,14 @@
+{% for partner in partners %}
+<div class="partner__item">
+    {% if partner.custom %}
+        {{ partner.content }}
+    {% else %}
+    <a class="has-img" href="{{ partner.url }}" target="_blank" title="{{ partner.alt }}" {{ partner.nofollow }}>
+        <img class="partner__img lazyload"  alt="{{ partner.alt }}" width="{{ partner.img_width }}" height="{{ partner.img_height }}"
+             src="[unas_shop_url]/main_pic/space.gif" data-src="{{ partner.img_url }}" data-srcset="{{ partner.img_retina_url }} 2x"
+             style="width:{{ partner.img_width }}px;max-height:{{ partner.img_height }}px;"
+        />
+    </a>
+    {% endif %}
+</div>
+{% endfor %}

@@ -1,0 +1,92 @@
+{% import common_vars.layout_urls.macro_average_rating_1 as rating %}
+<div class="review-summary">
+    <div class="row gutters-10 gutters-lg-20 gutters-xl-40 align-items-center">
+        <div class="review-summary__average-text col-lg-6 mb-4 mb-lg-0">
+            <div class="review-summary__average-title d-inline-flex text-center text-lg-left font-weight-bold font-l mb-3">{{ text.reviews_avg }}:</div>
+            <div class="review-summary__average-content d-inline-flex flex-wrap justify-content-center justify-content-lg-start align-items-baseline mb-3">
+                <div class="review-summary__stars px-0 col-auto">
+                    {{ rating.avg_stars(reviews_score_percent, reviews_score_avg) }}
+                </div>
+                <span class="review-summary__score-num px-3">{{ reviews_score_avg|replace({',': '.'}) }}</span>
+                <span class="review-summary__reviews-count">({{ reviews_count }} {{ text.review }})</span>
+            </div>
+            <div class="no-review row no-gutters col-gap-20 row-gap-5 align-items-center">
+                <div class="no-review__tilte">{{ text.question_no_review }}</div>
+                [% if page_id == "page_shop_artforum" %]
+                <button type="button" class="product-reviews__jump-to-writing-btn btn btn-primary js-scroll-to-btn" data-scroll=".writing-review__title" data-offset="50">{{ text.button_write_review }}</button>
+                [% else %]
+                <a class="product-review__write-review-btn btn btn-primary" href="{{ reviews_url }}">{{ text.button_write_review }}</a>
+                [% endif %]
+            </div>
+        </div>
+        <div class="product-reviews__summary-bars-col col-lg-6">
+            <div class="product-reviews__summary-bars ml-lg-auto">
+                <div class="product-reviews__summary-bar mb-3">
+                    <div class="row gutters-10 align-items-center">
+                        <div class="col-auto d-flex">
+                            {{ rating.stars(5) }}
+                        </div>
+                        <div class="col progress-bar__col">
+                            <div class="progress">
+                                <div class="progress-bar" aria-label="5 stars voting percentage" role="progressbar" aria-valuenow="{{ review_star_5_count * 100 / reviews_count }}" aria-valuemin="0" aria-valuemax="100"  style="width: {{ review_star_5_count * 100 / reviews_count }}%;"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto progress-bar__count-col">({{ review_star_5_count }})</div>
+                    </div>
+                </div>
+                <div class="product-reviews__summary-bar mb-3">
+                    <div class="row gutters-10 align-items-center">
+                        <div class="col-auto d-flex">
+                            {{ rating.stars(4) }}
+                        </div>
+                        <div class="col progress-bar__col">
+                            <div class="progress">
+                                <div class="progress-bar" aria-label="4 stars voting percentage" role="progressbar" aria-valuenow="{{ review_star_4_count * 100 / reviews_count }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ review_star_4_count * 100 / reviews_count }}%;"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto progress-bar__count-col">({{ review_star_4_count }})</div>
+                    </div>
+                </div>
+                <div class="product-reviews__summary-bar mb-3">
+                    <div class="row gutters-10 align-items-center">
+                        <div class="col-auto d-flex">
+                            {{ rating.stars(3) }}
+                        </div>
+                        <div class="col progress-bar__col">
+                            <div class="progress">
+                                <div class="progress-bar" aria-label="3 stars voting percentage" role="progressbar" aria-valuenow="{{ review_star_3_count * 100 / reviews_count }}" aria-valuemin="0" aria-valuemax="100"  style="width: {{ review_star_3_count * 100 / reviews_count }}%;"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto progress-bar__count-col">({{ review_star_3_count }})</div>
+                    </div>
+                </div>
+                <div class="product-reviews__summary-bar mb-3">
+                    <div class="row gutters-10 align-items-center">
+                        <div class="col-auto d-flex">
+                            {{ rating.stars(2) }}
+                        </div>
+                        <div class="col progress-bar__col">
+                            <div class="progress">
+                                <div class="progress-bar" aria-label="2 stars voting percentage" role="progressbar" aria-valuenow="{{ review_star_2_count * 100 / reviews_count }}" aria-valuemin="0" aria-valuemax="100"  style="width: {{ review_star_2_count * 100 / reviews_count }}%;"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto progress-bar__count-col">({{ review_star_2_count }})</div>
+                    </div>
+                </div>
+                <div class="product-reviews__summary-bar">
+                    <div class="row gutters-10 align-items-center">
+                        <div class="col-auto d-flex">
+                            {{ rating.stars(1) }}
+                        </div>
+                        <div class="col progress-bar__col">
+                            <div class="progress">
+                                <div class="progress-bar" aria-label="1 star voting percentage" role="progressbar" aria-valuenow="{{ review_star_1_count * 100 / reviews_count }}" aria-valuemin="0" aria-valuemax="100"  style="width: {{ review_star_1_count * 100 / reviews_count }}%;"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto progress-bar__count-col">({{ review_star_1_count }})</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

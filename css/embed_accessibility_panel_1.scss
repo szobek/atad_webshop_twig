@@ -1,0 +1,33 @@
+.accessibility-panel {
+  position: fixed;
+  left: -20000px;
+  top: 0;
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 420px;
+  border-bottom-right-radius: $border-radius;
+  background: $white;
+  box-shadow: 0 0 14px 0 rgba(15, 17, 17, .5);
+  z-index: 1500;
+  > * {
+    pointer-events: none;
+  }
+  &.visible {
+    left: 0;
+  }
+}
+.accessibility-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+.accessibility-item {
+  pointer-events: auto;
+  margin-bottom: 5px;
+  font-size: 14px;
+  text-decoration: none;
+}

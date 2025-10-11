@@ -1,0 +1,277 @@
+{% import common_vars.layout_urls.macro_average_rating_1 as rating %}
+
+{% for product in _context[productsArray] %}
+    {% if product.variants_disp %}
+        {% set variant_classes = " js-has-variant js-variant-type-2 has-unselected-variant " %}
+    {% else %}
+        {% set variant_classes = "" %}
+    {% endif %}
+
+    <{{ subver >= 2 ? (not carousel_enabled ? 'div role="listitem"' : 'div') : 'article' }} class="{{ grid_col }} {{ listItemType }} product list-2-card-2 js-product {{ variant_classes }}{{ product.class }}" id="{{ listMainType }}{{ product.id }}">
+        <div class="product__inner" role="group" aria-label="{{ loop.index ~ '. ' ~ text.product ~ ':' ~ product.name }}">
+            <div class="row gutters-10 gutters-xl-20 row-gap-10">
+                <div class="col-sm-8 col-md-6 col-lg-7 col-xl-8 product__left-col">
+                    <div class="row gutters-10 gutters-xl-20 row-gap-5 product__left-row">
+                        <div class="product__img-col align-self-center col-auto">
+                            <div class="product__img-outer position-relative text-center">
+                                <div class="product-img-wrapper">
+                                    <a class="{{ product_measure_class }}" data-sku="{{ product.sku }}" href="{{ product.url }}" aria-hidden="true" tabindex="-1">
+                                        <img class="product__img product-img js-main-img lazyload" src="[unas_shop_url]/main_pic/space.gif" width="{{ img_width }}" height="{{ img_height }}"
+                                             data-src="{{ product.img_url }}"
+                                             data-src-orig="{{ product.img_url }}"
+                                             {% if product.img_retina_exists %}
+                                             data-srcset="{{ product.img_retina_url }} {{ product.img_retina_size }}"
+                                             data-srcset-orig="{{ product.img_retina_url }} {{ product.img_retina_size }}"
+                                             {% endif %} alt="{{ product.img_alt }}" title="{{ product.img_alt }}" id="{{ product.img_id }}"
+                                        >
+                                        <div class="loading-spinner"></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product__name-wrap-col col">
+                            <div class="product__name-wrap">
+                                {% block new %}
+                                    {% if product.new_disp %}
+                                    <div class="product__badge-new badge badge--new mr-3">{{ text.status_new }}</div>
+                                    {% endif %}
+                                {% endblock %}
+
+                                <h2 class="product__name">
+                                    <a class="product__name-link {{ product_measure_class }}" data-sku="{{ product.sku }}" href="{{ product.url }}">{{ product.name }}</a>
+                                </h2>
+                            </div>
+                            {% if product.sku_disp %}
+                            <div class="product__sku font-s" title="{{ text.sku }}">{{ product.sku }}</div>
+                            {% endif %}
+                            {% if product.product_type_params_disp %}
+                            <div class="product__types" aria-label="{{ text.product_types }}" role="group">
+                                {% for product_type_param in product.product_type_params %}
+                                <div class="product__type-wrap" role="group" aria-label="{{ product_type_param.title }}">
+                                    <div class="product__type type--{{ product_type_param.type }}" data-tippy="{{ product_type_param.title }}">
+                                    {% for value_attribute in product_type_param.value_attributes %}
+                                        <a href="{{ value_attribute.url }}" class="product__type-value{% if value_attribute.sku == product.sku %} itself{% endif %}" data-sku="{{ value_attribute.sku }}"
+                                            {%- if 'color' in product_type_param.type %}{% if product_type_param.type == 'color_text' %} title="{{ value_attribute.color_text }}"{% endif %}
+                                            {%- elseif 'pic' not in product_type_param.type and 'icon' not in product_type_param.type %} aria-label="{{ value_attribute.option_name }}"{% endif %}
+                                            {%- if value_attribute.sku == product.sku %} aria-current="true"{% endif -%}
+                                        >
+                                            {% if product_type_param.type in ['color','color_text'] %}
+                                            <div class="product__type-option--color" style="{% if value_attribute.color_code|lower == "#ffffff" %}color:#dddddd;{% else %}color:{{ value_attribute.color_code }};{% endif %}background-color:{{ value_attribute.color_code }};"></div>
+                                            {% else %}
+                                            {{ value_attribute.option_name }}
+                                            {% endif %}
+                                        </a>
+                                        {% if loop.last and product_type_param.value_count_rest > 0 %}
+                                        <div class="product__type-value product__type-more">+ {{ product_type_param.value_count_rest }}</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="break d-xl-none"></div>
+                        {% if product.stock_disp and product.product_type_params_disp and show_stock_with_product_types_on_product_list == "1" or product.stock_disp and not product.product_type_params_disp or product.status_1_disp or product.status_2_disp or product.status_3_disp %}
+                        <div class="product__stock-and-statuses-col col">
+                            <div class="product__badges-2">
+                                {% if product.stock_disp and product.product_type_params_disp and show_stock_with_product_types_on_product_list == "1" or product.stock_disp and not product.product_type_params_disp %}
+                                <div class="product__stock stock{% if not product.sale_disp and not product.new_disp %} only_stock_status{% endif %}{% if product.stock_available %} on-stock{% else %}{% if product.no_stock_but_buyable_disp %} to-order{% else %} no-stock{% endif %}{% endif %}">
+                                    <div class="product__stock-text product-stock-text">
+                                        {% if product.stock_available %}
+                                        <div class="stock__content icon--b-on-stock">
+                                            {% if not product.stock_interval_text_exists %}
+                                            <span class="stock__text">{{ text.status_on_stock }}</span>
+                                            {% endif %}
+                                            {% if not product.stock_text_only %}
+                                            <span class="stock__qty-and-unit{% if product.stock_interval_text_exists %} is-text{% endif %}">
+                                            {% if not product.stock_interval_text_exists %}({% endif %}{{ product.stock_qty }}{% if not product.stock_interval_text_exists %}&nbsp;{{ product.unit }}){% endif %}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        {% else %}
+                                            {% if product.no_stock_but_buyable_disp %}
+                                            <div class="stock__content icon--b-to-order">{{ text.status_orderable }}</div>
+                                            {% else %}
+                                            <div class="stock__content icon--b-no-stock">{{ text.status_no_stock }}</div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if product.status_1_disp %}
+                                <div class="product__custom-status badge--2 badge--custom-1{% if status_1_link_disp %} has-link{% endif %}">
+                                    {% if status_1_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=3" aria-label="{{ text.product_status }}:{{ product.status_1 }}">{% endif %}
+                                    <div class="product__custom-text product-custom-text">
+                                        {{ product.status_1 }}
+                                    </div>
+                                    {% if status_1_link_disp %}</a>{% endif %}
+                                </div>
+                                {% endif %}
+
+                                {% if product.status_2_disp %}
+                                <div class="product__custom-status badge--2 badge--custom-2{% if status_2_link_disp %} has-link{% endif %}">
+                                    {% if status_2_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=4" aria-label="{{ text.product_status }}:{{ product.status_2 }}">{% endif %}
+                                    <div class="product__custom-text product-custom-text">
+                                        {{ product.status_2 }}
+                                    </div>
+                                    {% if status_2_link_disp %}</a>{% endif %}
+                                </div>
+                                {% endif %}
+
+                                {% if product.status_3_disp %}
+                                <div class="product__custom-status badge--2 badge--custom-3{% if status_3_link_disp %} has-link{% endif %}">
+                                    {% if status_3_link_disp %}<a href="[unas_shop_url]/shop_artspec.php?artspec=5" aria-label="{{ text.product_status }}:{{ product.status_3 }}">{% endif %}
+                                    <div class="product__custom-text product-custom-text">
+                                        {{ product.status_3 }}
+                                    </div>
+                                    {% if status_3_link_disp %}</a>{% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% block functions %}
+                        {% if product.compare_disp or product.favourites_disp or product_tooltip_enabled %}
+                        <div class="product__functions-col col col-lg-auto">
+                            <div class="product__funcs">
+                                {% if product.compare_disp %}
+                                <button type="button" class="product__func-btn product__btn-compare icon--compare page_art_func_compare page_art_func_compare_{{ product.sku_id }}{% if product.compare_checked %} page_art_func_compare_checked{% endif %}" aria-label="{{ text.comparison }}" onclick="{{ product.compare_onclick|escape }}" {% if product.compare_checked %}data-tippy="{{ text.delete_from_compare }}"{% else %}data-tippy="{{ text.comparison }}"{% endif %}></button>
+                                {% endif %}
+                                {% if product.favourites_disp %}
+                                    {% if favourites_page %}  {# Kedvencek oldal (törlés a kedvencek közül) #}
+                                    <button type="button" class="product__func-btn product__btn-remove-fav icon--favo favourites_item_del" onclick="{{ product.favourite_del_onclick|escape }}" aria-label="{{ product.favourite_text }}" data-tippy="{{ product.favourite_text }}"></button>
+                                    {% else %}
+                                    <button type="button" class="product__func-btn favourites-btn icon--favo page_artdet_func_favourites_{{ product.sku_id }} page_artdet_func_favourites_outer_{{ product.sku_id }}{% if product.favourites_checked %} added remove_favourites{% endif %}" id="page_artlist_func_favourites_{{ product.sku_id }}" onclick="{{ product.favourite_onclick|escape }}" aria-label="{{ product.favourite_text }}" data-tippy="{{ product.favourite_text }}"> </button>
+                                    {% endif %}
+                                {% endif %}
+                                {% if product_tooltip_enabled %}
+                                <button type="button" class="product__func-btn product__btn-tooltip icon--search-plus js-product-tooltip-click" aria-haspopup="dialog" aria-label="{{ text.preview }}" data-sku="{{ product.sku_id }}" data-tippy="{{ text.preview }}"></button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endblock %}
+                    </div>
+                </div>
+                <div class="col-sm-4 col-md-6 col-lg-5 col-xl-4 product__right-col">
+                    <div class="row flex-sm-column flex-md-row gutters-10 gutters-xl-20 product__right-row">
+                        {% block price %}
+                        {% if product.price_disp or block('loginNeeded') is not empty and login_needed and not product.inquire_disp %}
+                        <div class="product__prices-wrap-col col-auto col-sm-12 col-md">
+                            <div class="product__prices-wrap">
+                                {% if product.price_disp %}
+                                <div class="product__prices row no-gutters row-gap-5{% if product.price_sale_disp %} has-price-sale{% endif %}">
+                                    {% block sale %}
+                                        {% if product.sale_disp %}
+                                        <div class="col-auto col-sm-12 col-md-auto">
+                                            <div class="product__badge-sale badge badge--sale">
+                                                <span id="price_save_{{ product.id }}" data-percent="%">{{ product.sale_percent }}</span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    {% endblock %}
+                                    <div class="col">
+                                        <span class="product__price-base product-price--base"{% if product.price_normal_info_text_disp %} tabindex="0" data-tippy="{{ product.price_normal_info_text }}"{% endif %}>
+                                            {{ product.price_normal_text }}<span class="product__price-base-value{% if product.price_line_through and product.sale_disp %} text-line-through{% endif %}">{{ product.price }}</span>{% if product.price_normal_info_text_disp %}&nbsp;<span class="icon--info"></span>{% endif %}
+                                        </span>
+
+                                        {% if product.price_sale_disp %}
+                                        <div class="product__price-sale product-price--sale">
+                                            {{ product.price_discounted_text }}
+                                            {{ product.price_sale }}
+                                        </div>
+                                        {% endif %}
+
+                                        {% block price_unit %}
+                                            {% if price_unit_enabled and price_unit_exists and product.price_unit_disp %}
+                                            <div class="product__price-unit-wrap">
+                                                <div class="product__price-unit product-price--unit-price" title="{{ text.unit_price }}" aria-label="{{ text.unit_price }}">{{ product.price_unit }}</div>
+                                            </div>
+                                            {% endif %}
+                                        {% endblock %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {# az árak megtekintéséhez be kell lépni #}
+                                {% block loginNeeded %}
+                                    {% if login_needed and not product.inquire_disp %}
+                                    <button class="product__price-login-btn btn btn-text font-s" type="button" aria-haspopup="dialog" onclick="overlay_login()">
+                                        {{ text.need_login_to_prices }}
+                                    </button>
+                                    {% endif %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endblock %}
+                        {% block cart %}
+                        <div class="product__main-wrap-col col col-sm-12 col-md-auto">
+                            <div class="product__main-wrap">
+                                {% if product.cart_disp %}
+                                <div class="product__main row no-gutters flex-nowrap">
+                                    {# Átirányítás a részletek oldalra, mert összevont termék vagy van változata (config) #}
+                                    {% if attribute(product,redirectToDetails) or product.variants_disp %}
+                                    <div class="col">
+                                        <button class="product__main-btn product__details-btn btn icon--details" onclick="{{ attribute(product,cartOnClick) }}" title="{{ text.button_details }}" aria-label="{{ text.button_details }}" type="button"></button>
+                                    </div>
+                                    {% else %}
+                                        {% block cartInput %}
+                                            {% if quantity_input_unit_position_with_two_settings == "1" %}
+                                            <div class="product__cart-input-col quantity-unit-type--under">
+                                                <div class="product__cart-input-wrap page_qty_input_outer">
+                                                    <input name="{{ product.cart_input_name }}" id="{{ product.cart_input_id }}" type="number" value="{{ product.cart_input_value_number }}" class="page_qty_input form-control" step="{{ product.cart_input_data_step }}" data-min="{{ product.cart_input_data_min }}" data-max="{{ product.cart_input_data_max }}" data-step="{{ product.cart_input_data_step }}" aria-label="{{ text.quantity }}">
+                                                    <div class="product__qty-buttons">
+                                                        <button type="button" class="qtyplus_common" aria-label="{{ text.plus }}"></button>
+                                                        <button type="button" class="qtyminus_common qty_disable" aria-label="{{ text.minus }}"></button>
+                                                    </div>
+                                                    {% if cart_unit_disp %}<div class="product__cart-unit">{{ product.unit }}</div>{% endif %}
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="product__cart-input-col quantity-unit-type--tippy">
+                                                <div class="product__cart-input-wrap page_qty_input_outer"{% if cart_unit_disp %} data-tippy="{{ product.unit }}"{% endif %}>
+                                                    <input name="{{ product.cart_input_name }}" id="{{ product.cart_input_id }}" type="number" value="{{ product.cart_input_value_number }}" class="page_qty_input form-control" step="{{ product.cart_input_data_step }}" data-min="{{ product.cart_input_data_min }}" data-max="{{ product.cart_input_data_max }}" data-step="{{ product.cart_input_data_step }}" aria-label="{{ text.quantity }}">
+                                                    <div class="product__qty-buttons">
+                                                        <button type="button" class="qtyplus_common" aria-label="{{ text.plus }}"></button>
+                                                        <button type="button" class="qtyminus_common qty_disable" aria-label="{{ text.minus }}"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% endblock %}
+                                        <div class="product__main-btn-col">
+                                            <button class="product__main-btn product__cart-btn btn icon--cart" onclick="{{ attribute(product,cartOnClick) }}" type="button" title="{{ attribute(product,cartBtnText) }}" aria-label="{{ attribute(product,cartBtnText) }}"></button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}{# Nincs kosár #}
+                                    {% if product.inquire_disp %} {# Érdeklődjön státusz #}
+                                    <button class="product__inquire-btn btn icon--b-inquire" type="button" aria-haspopup="dialog" title="{{ text.button_inquire }}" aria-label="{{ text.button_inquire }}" onclick="popup_question_dialog('{{ product.sku }}');">{{ text.button_inquire }}</button>
+                                    {% else %}
+                                        {% if product.no_buyable_disp %} {# Aktív, nem vásárolható #}
+                                        <div class="not-buyable__text icon--b-no-stock">{{ text.status_not_buyable }}</div>
+                                        {% else %}{# Kosárba helyezéshez be kell lépni #}
+                                            {% if product.no_stock_disp %} {# Nincs raktáron #}
+                                                <div class="not-stock__text icon--b-no-stock">{{ text.status_no_stock }}</div>
+                                            {% else %}
+                                                {% if not login_needed %}
+                                                <button class="product__cart-login-btn btn btn-text icon--b-head" type="button" aria-haspopup="dialog" onclick="overlay_login()">{{ text.need_login_to_cart }}</button>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endblock %}
+                    </div>
+                </div>
+                {% block bundle_qty %}{% endblock %}
+                {% block gift_badge %}{% endblock %}
+                {% block recommendDel %}{% endblock %}
+            </div>
+        </div>
+    </{{ subver >= 2 ? 'div' : 'article' }}>{#product#}
+{% endfor %}

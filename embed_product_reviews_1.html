@@ -1,0 +1,244 @@
+{% import common_vars.layout_urls.macro_average_rating_1 as rating %}
+<div class="product-reviews">
+    <div class="row no-gutters">
+    {% set pswpLoopIndex = 0 %}
+
+    {% for review in reviews %}
+    <div class="product-review col-12">
+        <div class="product-review__head mb-3 mb-sm-4">
+            <div class="row gutters-10 gutters-xl-20 align-items-center">
+                <div class="product-review__stars-outer col-sm-auto d-inline-flex align-items-center">
+                    <div class="stars">
+                        {{ rating.stars(review.score) }}
+                    </div>
+                </div>
+                {% if review.author_name_disp %}<div class="product-review__author col-auto">{{ review.author_name }}</div>{% endif %}
+                <div class="product-review__created-at col-auto">{{ review.date }}</div>
+                {% if review.is_verified_customer %}
+                <div class="product-review__verified-customer-wrap col-auto">
+                    <div class="product-review__verified-customer-badge icon--b-cart-circle-check">{{ text.verified_purchase }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="product-review__body">
+            <div class="product-review__wrap">
+                <div class="product-review__message mb-3 mb-sm-4 text-justify">{{ review.message }}</div>
+                {% if pro_con_disp and (review.pro_disp or review.con_disp) %}
+                <div class="product-review__adv-disadv">
+                    {% if review.pro_disp %}
+                    <div class="product-review__advantage">
+                        <span class="review-text__title">{{ text.advantages }}:</span>
+                        <span class="review-text__content">{{ review.pro }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if review.con_disp %}
+                    <div class="product-review__disadvantage">
+                        <span class="review-text__title">{{ text.disadvantages }}:</span>
+                        <span class="review-text__content">{{ review.con }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if review.images_disp %}
+                <div class="product-review__images-wrap">
+                    <div class="product-review__images-title mb-3">
+                        <div class="review-text__title">{{ text.images }}:</div>
+                    </div>
+                    <div class="product-review__images-content d-flex flex-wrap gap-20">
+                        {% for image in review.images %}
+                        <div class="product-review__image js-init-ps-reviews" data-loop-index="{{ pswpLoopIndex }}">
+                            <img src="{{ image.img_url }}" alt="{{ name }}" title="{{ name }}" width="{{ image.img_width }}" height="{{ image.img_height }}">
+                        </div>
+                        {% set pswpLoopIndex = pswpLoopIndex + 1 %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if review.admin_answer_disp %}
+                <div class="product-review__admin-answer-wrapper mt-4 p-4">
+                    <div class="product-review__admin-answer-title font-weight-bold">{{ review.respondent }}:</div>
+                    <div class="product-review__admin-answer">{{ review.admin_answer }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+{% if upload_review_images %}
+<div class="photoSwipeDatasReviews invisible">
+    {% for review in reviews %}
+        {% if review.images_disp %}
+            {% for image in review.images %}
+                <a href="{{ image.img_url }}"></a>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</div>
+<script>
+var $clickElementToInitPsReviews = '.js-init-ps-reviews';
+
+var initPhotoSwipeReviewsFromDOM = function () {
+    var $pswp = $('.pswp')[0];
+    var $psDatas = $('.photoSwipeDatasReviews');
+
+    $psDatas.each(function () {
+        var $pics = $(this),
+            getItems = function () {
+                var items = [];
+                $pics.find('a').each(function () {
+                    var $this = $(this),
+                        $href = $this.attr('href'),
+                        $width = 0,
+                        $height = 0,
+                        item = {
+                            src: $href,
+                            w: $width,
+                            h: $height
+                        };
+                    items.push(item);
+                });
+                return items;
+            };
+
+        var items = getItems();
+
+        $($clickElementToInitPsReviews).on('click', function (event) {
+            var $this = $(this);
+            event.preventDefault();
+
+            var $index = parseInt($this.attr('data-loop-index'));
+            var options = {
+                index: $index,
+                history: false,
+                bgOpacity: 1,
+                shareEl: false,
+                showHideOpacity: true,
+                getThumbBoundsFn: function (index) {
+                    /** azon képeről nagyítson a photoswipe, melyek láthatók **/
+                    var thumbnails = $($clickElementToInitPsReviews).map(function () {
+                        var $this = $(this);
+                        if ($this.is(":visible")) {
+                            return this;
+                        }
+                    }).get();
+
+                    var thumbnail = thumbnails[index];
+                    var pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
+                    var zoomedImgHeight = items[index].h;
+                    var zoomedImgWidth = items[index].w;
+                    var zoomedImgRatio = zoomedImgHeight / zoomedImgWidth;
+                    var rect = thumbnail.getBoundingClientRect();
+                    var zoomableImgHeight = rect.height;
+                    var zoomableImgWidth = rect.width;
+                    var zoomableImgRatio = (zoomableImgHeight / zoomableImgWidth);
+                    var offsetY = 0;
+                    var offsetX = 0;
+                    var returnWidth = zoomableImgWidth;
+
+                    if (zoomedImgRatio < 1) { /* a nagyított kép fekvő */
+                        if (zoomedImgWidth < zoomableImgWidth) { /*A nagyított kép keskenyebb */
+                            offsetX = (zoomableImgWidth - zoomedImgWidth) / 2;
+                            offsetY = (Math.abs(zoomableImgHeight - zoomedImgHeight)) / 2;
+                            returnWidth = zoomedImgWidth;
+                        } else { /*A nagyított kép szélesebb */
+                            offsetY = (zoomableImgHeight - (zoomableImgWidth * zoomedImgRatio)) / 2;
+                        }
+
+                    } else if (zoomedImgRatio > 1) { /* a nagyított kép álló */
+                        if (zoomedImgHeight < zoomableImgHeight) { /*A nagyított kép alacsonyabb */
+                            offsetX = (zoomableImgWidth - zoomedImgWidth) / 2;
+                            offsetY = (zoomableImgHeight - zoomedImgHeight) / 2;
+                            returnWidth = zoomedImgWidth;
+                        } else { /*A nagyított kép magasabb */
+                            offsetX = (zoomableImgWidth - (zoomableImgHeight / zoomedImgRatio)) / 2;
+                            if (zoomedImgRatio > zoomableImgRatio) returnWidth = zoomableImgHeight / zoomedImgRatio;
+                        }
+                    } else { /*A nagyított kép négyzetes */
+                        if (zoomedImgWidth < zoomableImgWidth) { /*A nagyított kép keskenyebb */
+                            offsetX = (zoomableImgWidth - zoomedImgWidth) / 2;
+                            offsetY = (Math.abs(zoomableImgHeight - zoomedImgHeight)) / 2;
+                            returnWidth = zoomedImgWidth;
+                        } else { /*A nagyított kép szélesebb */
+                            offsetY = (zoomableImgHeight - zoomableImgWidth) / 2;
+                        }
+                    }
+
+                    return {x: rect.left + offsetX, y: rect.top + pageYScroll + offsetY, w: returnWidth};
+                },
+                getDoubleTapZoom: function (isMouseClick, item) {
+                    if (isMouseClick) {
+                        return 1;
+                    } else {
+                        return item.initialZoomLevel < 0.7 ? 1 : 1.5;
+                    }
+                }
+            };
+
+            var photoSwipeReviews = new PhotoSwipe($pswp, PhotoSwipeUI_Default, items, options);
+
+            //Méret nélküli képekhez képek lekérdezése
+            photoSwipeReviews.listen('gettingData', function (index, item) {
+                if (item.w < 1 || item.h < 1) {
+                    var img = new Image();
+                    img.onload = function () { // Kép betöltése után lekéri a méreteket
+                        item.w = this.width; // Kép szélességének beállítása
+                        item.h = this.height; // Kép magasságának beállítása
+                        photoSwipeReviews.invalidateCurrItems(); // Elemek újra inicializálása
+                        photoSwipeReviews.updateSize(true); // Elemek újra inicializálása
+                    }
+                    img.src = item.src; // Képek betöltése
+                }
+            });
+
+            photoSwipeReviews.init();
+        });
+    });
+};
+
+$(document).ready(function () {
+    initPhotoSwipeReviewsFromDOM();
+});
+</script>
+
+{% if reviews_page_disp %}
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="pswp__bg"></div>
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close"></button>
+                <button class="pswp__button pswp__button--fs"></button>
+                <button class="pswp__button pswp__button--zoom"></button>
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+            <button class="pswp__button pswp__button--arrow--left"></button>
+            <button class="pswp__button pswp__button--arrow--right"></button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}

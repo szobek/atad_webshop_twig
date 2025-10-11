@@ -1,0 +1,96 @@
+<div class="forum-topic page_content" id="page_forum_topic_content">
+    <div class="container container-max-md">
+        <div class="forum-topic__comments-outer mb-5">
+            <header class="forum-topic__title main-title2">{{ topic_title }}</header>
+            {% if comments_disp %}
+                {% if paging_disp %}
+                <nav class="forum-topic-paging d-flex align-items-center justify-content-center my-4 py-3 border-top" aria-label="pagination">
+                    {{ paging_content }}
+                </nav>
+                {% endif %}
+                <section class='forum-topic__posts mb-5'>
+                    {% for comment in comments %}
+                        <article class="forum-topic__post">
+                            <header class='"forum-topic__post-header p-3 font-weight-bold border-bottom'>
+                                <div class="row align-items-baseline">
+                                    <div class="col-sm-8">
+                                        <div class="forum-topic__post-name-and-email d-flex flex-wrap align-items-baseline">
+                                            <div class="forum-topic__num-wrap font-l bg-primary mr-3 d-inline-flex align-items-center justify-content-center">
+                                                <span class='forum-topic__num text-white'>{{ comment.num }}</span>
+                                            </div>
+                                            <div class="forum-topic__post-name mr-2">{{ comment.name }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="forum-topic__post-date-and-time d-flex align-items-baseline justify-content-end font-s">
+                                            <div class="forum-topic__post-date">{{ comment.date }}&nbsp;-&nbsp;</div>
+                                            <div class="forum-topic__post-time">{{ comment.time }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </header>
+                            <div class="page_artforum_element_message p-3">{{ comment.content }}</div>
+                        </article>
+                    {% endfor %}
+                </section>
+            {% else %}
+                <div class="forum-topic__no-comments alert alert-info icon--b-info" role="alert">{{ text.no_comments_in_topic }}</div>
+            {% endif %}
+        </div>
+
+        {% if new_comment_disp %}
+            {{ new_comment_form_start }}
+            <div class='forum-new-note'>
+                <div class="forum-new-note__container p-5">
+                    <div class="forum-new-note__title text-center main-title2 mb-5">{{ text.comment_on_the_topic }}</div>
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for='name'>{{ text.name }}</label>
+                                <input class="form-control{% if new_comment_name_error_disp %} is-invalid{% endif %}" name="name" id="name" type="text" placeholder="{{ text.name }}" value="{{ new_comment_posted_name }}" maxlength="100" />
+                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                            </div>
+                        </div>
+                        {% if new_comment_email_disp %}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="emai">{{ text.email }}</label>
+                                    <input class="form-control{% if new_comment_email_error_disp %} is-invalid{% endif %}" name="emai" id="emai" type="email" placeholder="{{ text.email }}" value="{{ new_comment_posted_email }}" maxlength="100" />
+                                    <div class="invalid-feedback">{{ new_comment_email_error_text }}</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="note">{{ text.comment }}</label>
+                                <textarea class="form-control{% if new_comment_content_error_disp %} is-invalid{% endif %}" name="note" id="note" rows="4" placeholder="{{ text.comment }}">{{ new_comment_posted_comment }}</textarea>
+                                <div class="invalid-feedback">{{ text.error_required }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group page_forum_newnote_privacy_policy">
+                        <div class="custom-control custom-checkbox font-s">
+                            <input class="custom-control-input{% if new_comment_pp_error_disp %} is-invalid{% endif %}" name="newitem_privacy_policy" id="newitem_privacy_policy" type="checkbox" value="1" {% if new_comment_pp_checked %}checked="checked"{% endif %}/>
+                            <label class="custom-control-label" for="newitem_privacy_policy">{{ text.accept_privacy_policy }}</label>
+                            <div class="invalid-feedback">{{ text.error_privacy_policy }}</div>
+                        </div>
+                    </div>
+                    <div class="page_forum_newnote_button text-center my-3">
+                    {% if recaptcha_disp %}
+                        {{ recaptcha_script }}
+                        <button class="g-recaptcha btn btn-primary icon--a-mail" {{ recaptcha_attributes }}>{{ text.button_send_comment }}</button>
+                    {% else %}
+                        <button name="Submit" class="btn btn-primary icon--a-mail">{{ text.button_send_comment }}</button>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+            {{ new_comment_form_end }}
+        {% endif %}
+        {% if back_disp %}
+        <div class="forum-topic__btn-back-wrap mt-5">
+            <a class="forum-topic__btn-back btn btn--back" type="button" href="{{ back_url }}">{{ text.button_back }}</a>
+        </div>
+        {% endif %}
+    </div>
+</div>

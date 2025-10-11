@@ -1,0 +1,165 @@
+{% set gls = [
+    {
+        title: "GLS házhozszállítás 2 kg-ig",
+        description: "A szállítást a GLS futárszolgálat végzi, munkanapokon 8:00 - 18:00 között. A szállításról a futárszolgálat értesítést küld a megadott e-mail címre, vagy telefonszámra. Átuftási idő a rendeléstől számítva 2 - 4 munkanap.",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "1.600 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    },
+    {
+        title: "GLS házhozszállítás 2,1 - 5 kg-ig",
+        description: "A szállítást a GLS futárszolgálat végzi, munkanapokon 8:00 - 18:00 között. A szállításról a futárszolgálat értesítést küld a megadott e-mail címre, vagy telefonszámra. Átuftási idő a rendeléstől számítva 2 - 4 munkanap.",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "2.000 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    },
+    {
+        title: "GLS házhozszállítás 5,1 - 20 kg",
+        description: "Kiválóan felépített hálózatával gyors és zökkenőmentes csomagszállítást tesz lehetővé, így a csomagok már a feladást követő munkanapon kiszállításra kerülnek. A hatalmas GLS HUB mellett 89 depó és több mint 2200 futár gondoskodik arról, hogy a csomagok a megfelelő szortírozást követően minél előbb eljuthassanak a címzettekhez. A házhozszállítás mellett 1700 átadópontból (GLS CsomagPontok és GLS Automaták) álló hálózatával a GLS ebben a szegmensben is országos lefedettséget kínál.",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "2.600 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    },
+    {
+        title: "GLS házhozszállítás 20,1 - 30 kg-ig",
+        description: "A szállítást a GLS futárszolgálat végzi, munkanapokon 8:00 - 18:00 között. A szállításról a futárszolgálat értesítést küld a megadott e-mail címre, vagy telefonszámra. Átuftási idő a rendeléstől számítva 2 - 4 munkanap.",
+        tableHeaders: ["Megrendelés végösszege", "Állítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "3.000 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    },
+    {
+        title: "GLS csomagpont és automata 5 kg-ig",
+        description: "A GLS futárszolgálat a kiválasztott csomagpontra szállítja a terméket. A szállításról a futárszolgálat értesítést küld a megadott e-mail címre, vagy telefonszámra. Átuftási idő a rendeléstől számítva 2 - 4 munkanap.",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "1.500 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    },
+    {
+        title: "GLS csomagpont és automata 5,1 - 20 kg-ig",
+        description: "A GLS futárszolgálat a kiválasztott csomagpontra szállítja a terméket. A szállításról a futárszolgálat értesítést küld a megadott e-mail címre, vagy telefonszámra. Átuftási idő a rendeléstől számítva 2 - 4 munkanap.",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "2.200 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    }
+] %}
+
+{% set hands = [
+    {
+        title: "Személyes átvétel",
+        description: "Lehetőség van személyes átvételre is cégünk telephelyén, előre egyeztetett időpontban. Az átvétel díjmentes.",
+        tableHeaders: [],
+        tableData: []
+    }
+] %}
+
+{% set mpl = [
+    {
+        title: "MPL futárszolgálat 2 kg-ig",
+        description: "A szállítás hétköznap 8-16 óra között történik. Átfutási idő a rendeléstől számítva 3 - 4 munkanap! Szállítás módja: MPL Magyar Posta futárszolgálata. Csomagküldő szolgáltatásunk (Magyarország területére) díja: bruttó 1500 Ft. Bruttó 50 000 Ft rendelési érték felett a kiszállítás INGYENES! A fizetés történhet utánvéttel, bankkártyával, illetve előre utalással.",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "1.500 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    },
+    {
+        title: "MPL futárszolgálat 10kg -ig",
+        description: "A szállítás hétköznap 8-16 óra között történik. Átfutási idő a rendeléstől számítva 3 - 4 munkanap! Szállítás módja: MPL Magyar Posta futárszolgálata. Csomagküldő szolgáltatásunk (Magyarország területére) díja: bruttó 1800 Ft. Bruttó 50 000 Ft rendelési érték felett a kiszállítás INGYENES! A fizetés történhet utánvéttel, bankkártyával, illetve előre utalással.",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "1.800 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    },
+    {
+        title: "MPL futárszolgálat 10 kg felett",
+        description: "A szállítás hétköznap 8-16 óra között történik. Átfutási idő a rendeléstől számítva 3 - 4 munkanap! Szállítás módja: MPL Magyar Posta futárszolgálata. Csomagküldő szolgáltatásunk (Magyarország területére) díja: bruttó 2600 Ft. Bruttó 50 000 Ft rendelési érték felett a kiszállítás INGYENES! A fizetés történhet utánvéttel, bankkártyával, illetve előre utalással",
+        tableHeaders: ["Megrendelés végösszege", "Szállítási díj"],
+        tableData: [
+            { min: "0", max: "49.999 Ft", fee: "2.600 Ft" },
+            { min: "50.000 Ft", max: "-", fee: "Ingyenes" }
+        ]
+    }
+] %}
+
+{% set informations = gls|merge(hands)|merge(mpl) %}
+<style>
+.szallitasi-info {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    margin: 20px;
+}
+
+.szallitasi-info h2 {
+    color: #1bddff;
+}
+
+.szallitasi-info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.szallitasi-info th,
+.szallitasi-info td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.szallitasi-info th {
+    background-color: #f2f2f2;
+}
+
+.szallitasi-info tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#carry-wrapper {
+    max-width: 800px;
+    margin: auto;
+}
+</style>
+
+
+<div id="carry-wrapper">
+    {% for info in informations %}
+        <div class="szallitasi-info">
+            <h2>{{ info.title }}</h2>
+            <p>{{ info.description }}</p>
+            
+            {% if info.tableData|length > 0 %}
+                <table>
+                    <thead>
+                        <tr>
+                            {% for header in info.tableHeaders %}
+                                <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in info.tableData %}
+                            <tr>
+                                <td>{{ row.min }}{% if row.max != '-' %} - {{ row.max }}{% endif %}</td>
+                                <td>{{ row.fee }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

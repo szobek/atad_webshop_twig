@@ -170,7 +170,7 @@
                     {% set grid = "col-" ~ page_content.default ~ " col-xs-" ~ page_content.xs ~ " col-sm-" ~ page_content.sm ~ " col-md-" ~ page_content.md ~ " col-lg-" ~ page_content.lg ~ " col-xl-" ~ page_content.xl ~ " col-xxl-" ~ page_content.xxl %}
                     {% if page_content.type == "normal" %}
                     {% if page_content.title == "szallitasi_info_twig" %}
-                    {% include "carry_infos.html" %}
+                    {% include "included_files/carry_infos.html" %}
                     {% endif %}
                     <article id="page_content_{{ page_content.id }}" class="{{ classes }} {{ grid }} page_content--normal">
                         <div class="page_txt type_normal">{{ page_content.normal_content }}</div>

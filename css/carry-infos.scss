@@ -1,0 +1,36 @@
+.szallitasi-info {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    margin: 20px;
+
+    h2 {
+        color: #1bddff;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    }
+}
+
+#carry-wrapper {
+    max-width: 800px;
+    margin: auto;
+}

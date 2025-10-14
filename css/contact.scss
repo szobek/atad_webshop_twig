@@ -1,0 +1,30 @@
+.contact-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+    padding:20px;
+    .box {
+        &:nth-child(1){
+            display:flex;
+            flex-direction:column;
+            gap:15px;
+            padding:20px;
+        }
+        width: 50%;
+        svg {
+            fill: #ff401b;
+            width: 30px;
+        }
+        .contact-info {
+            color: #ff401b;
+            display: flex;
+            .contact-text {
+                display:flex;
+                align-items: center;
+                margin-left: 25px;
+            }
+        }
+    }
+}

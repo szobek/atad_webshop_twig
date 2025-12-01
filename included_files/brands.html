@@ -1,0 +1,67 @@
+<div class="brands-wrapper"></div>
+<script>
+    const linkPrefix = "https://www.atadcleankft.hu/"
+    const brandImgPrefix = "https://shop.unas.hu/shop_ordered/83094/pic/brands/"
+    const brands = [
+        { name: "Lucart", imgSrc: `${brandImgPrefix}1-3.png`, get link() { return convertLink(this.name) } },
+        { name: "Dayco", imgSrc: `${brandImgPrefix}10.png`, get link() { return convertLink(this.name) } },
+        { name: "Temca", imgSrc: `${brandImgPrefix}12.png`, get link() { return convertLink(this.name) } },
+        { name: "Mar plast", imgSrc: `${brandImgPrefix}13.png`, get link() { return convertLink(this.name) } },
+        { name: "Vileda", imgSrc: `${brandImgPrefix}14.png`, get link() { return convertLink(this.name) } },
+        { name: "Innoveng", imgSrc: `${brandImgPrefix}15.png`, get link() { return convertLink(this.name) } },
+        // { name: "Ataker", imgSrc: `${brandImgPrefix}17.png`, get link() { return convertLink(this.name) } },
+        // { name: "Uctem plas", imgSrc: `${brandImgPrefix}18.png`, get link() { return convertLink(this.name) } },
+        { name: "Plafor", imgSrc: `${brandImgPrefix}19.png`, get link() { return convertLink(this.name) } },
+        { name: "Celtex", imgSrc: `${brandImgPrefix}2-4.png`, get link() { return convertLink(this.name) } },
+        { name: "Plum", imgSrc: `${brandImgPrefix}20.png`, get link() { return convertLink(this.name) } },
+        // { name: "Ugurlar plastic", imgSrc: `${brandImgPrefix}21.png`, get link() { return convertLink(this.name) } },
+        { name: "Bonus", imgSrc: `${brandImgPrefix}3-4.png`, get link() { return convertLink(this.name) } },
+        { name: "Satino", imgSrc: `${brandImgPrefix}4-2.png`, get link() { return convertLink(this.name) } },
+        { name: "Dreumex", imgSrc: `${brandImgPrefix}5-2.png`, get link() { return convertLink(this.name) } },
+        { name: "Fato", imgSrc: `${brandImgPrefix}6.png`, get link() { return convertLink(this.name) } },
+        { name: "Filmop", imgSrc: `${brandImgPrefix}7.png`, get link() { return convertLink(this.name) } },
+        { name: "Igeax", imgSrc: `${brandImgPrefix}8.png`, get link() { return convertLink(this.name) } },
+        { name: "Frosch", imgSrc: `${brandImgPrefix}16.png`, get link() { return convertLink(this.name) } },
+        { name: "Walter", imgSrc: `${brandImgPrefix}walter.png`, get link() { return convertLink(this.name) } },
+        { name: "B-Chem", imgSrc: `${brandImgPrefix}b.png`, get link() { return convertLink(this.name) } },
+        { name: "Atád Clean Kft", imgSrc: `https://shop.unas.hu/shop_ordered/83094/pic/no_pic.png`, get link() { return convertLink(this.name) } },
+    ]
+
+    const convertLink = (brandName) => {
+        const str = brandName
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replaceAll(" ", "-")
+            .toLowerCase();
+        const str2=str.charAt(0).toUpperCase()+str.slice(1);
+        return `${linkPrefix}${str2}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const brandsWrapper = document.querySelector('.brands-wrapper');
+        brands.forEach(brand => {
+            const brandItem = document.createElement('div');
+            brandItem.classList.add('brand-item');
+
+            const brandLink = document.createElement('a');
+            brandLink.href = brand.link;
+            // brandLink.target = "_blank";
+
+            const brandImg = document.createElement('img');
+            brandImg.src = brand.imgSrc;
+            brandImg.alt = `${brand.name} Logo`;
+
+            const brandName = document.createElement('span');
+            brandName.textContent = brand.name;
+
+            brandLink.appendChild(brandImg);
+            brandLink.appendChild(brandName);
+            brandItem.appendChild(brandLink);
+            brandsWrapper.appendChild(brandItem);
+        });
+    });
+</script>
+<style>
+    :root{--body-bg-color: #e4eeeb;--brand-label-bg-color: var(--body-bg-color);--brand-label-text-color: #1d1919 }.brands-wrapper{display:flex;max-width:1200px;margin:0 auto;flex-wrap:wrap;justify-content:center;gap:2rem;padding:2rem 0;align-items:center}.brand-item{flex:1 1 150px;max-width:200px;text-align:center;position:relative;padding:10px;background-color:#fff}.brand-item img{max-width:100%;height:auto;display:block;margin:0 auto 1rem}.brand-item span{display:block;font-size:1.2rem;position:absolute;top:10px;left:-5px;font-weight:bold;background-color:var(--brand-label-bg-color);color:var(--brand-label-text-color);padding:5px 5px 5px 10px;border-radius:0 5px 5px 0}body{background-color:var(--brand-label-bg-color)}/*# sourceMappingURL=brand.min.css.map */
+</style>

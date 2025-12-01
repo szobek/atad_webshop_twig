@@ -1,0 +1,49 @@
+:root {
+        --body-bg-color: #e4eeeb;
+        --brand-label-bg-color: var(--body-bg-color);
+        --brand-label-text-color: #1d1919
+    }
+
+    .brands-wrapper {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+        padding: 2rem 0;
+        align-items: center
+    }
+
+    .brand-item {
+        flex: 1 1 150px;
+        max-width: 200px;
+        text-align: center;
+        position: relative;
+        padding: 10px;
+        background-color: #fff
+    }
+
+    .brand-item img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto 1rem
+    }
+
+    .brand-item span {
+        display: block;
+        font-size: 1.2rem;
+        position: absolute;
+        top: 10px;
+        left: -5px;
+        font-weight: bold;
+        background-color: var(--brand-label-bg-color);
+        color: var(--brand-label-text-color);
+        padding: 5px 5px 5px 10px;
+        border-radius: 0 5px 5px 0
+    }
+
+    body {
+        background-color: var(--brand-label-bg-color)
+    }

@@ -169,20 +169,21 @@
                 {% if page_content.disp %}
                     {% set grid = "col-" ~ page_content.default ~ " col-xs-" ~ page_content.xs ~ " col-sm-" ~ page_content.sm ~ " col-md-" ~ page_content.md ~ " col-lg-" ~ page_content.lg ~ " col-xl-" ~ page_content.xl ~ " col-xxl-" ~ page_content.xxl %}
                     {% if page_content.type == "normal" %}
-
-
-                   {% set includes = {
+                    
+                    {% set includes = {
                         'szallitasi_info_twig': 'included_files/carry_infos.html',
                         'contact_twig': 'included_files/contact.html',
                         'brands_twig': 'included_files/brands.html',
                         'about_twig': 'included_files/about.html',
+                        'faq_twig': 'included_files/faq.html'
                     } %}
+
 
                     {% if includes[page_content.title] is defined %}
                         {% include includes[page_content.title] %}
-                    {% endif %}
+                    {% endif %} 
 
-                     
+                   
                         <article id="page_content_{{ page_content.id }}" class="{{ classes }} {{ grid }} page_content--normal">
                         <div class="page_txt type_normal">{{ page_content.normal_content }}</div>
                     </article>
